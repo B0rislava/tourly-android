@@ -4,14 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.tourly.app.ui.theme.TourlyTheme
+import androidx.compose.ui.unit.dp
+import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.ui.theme.TourlyTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +23,41 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TourlyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Greeting(name = "Android")
                 }
             }
         }
     }
-}
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Greeting(name: String) {
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Hello $name!",
+            fontFamily = OutfitFamily,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
 }
 
-@Preview(showBackground = true)
+
+@Preview(name = "Light Mode")
 @Composable
-fun GreetingPreview() {
-    TourlyTheme {
+fun GreetingLightPreview() {
+    TourlyTheme(darkTheme = false) {
+        Greeting("Android")
+    }
+}
+
+@Preview(name = "Dark Mode")
+@Composable
+fun GreetingDarkPreview() {
+    TourlyTheme(darkTheme = true) {
         Greeting("Android")
     }
 }
