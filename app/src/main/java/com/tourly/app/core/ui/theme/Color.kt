@@ -7,22 +7,25 @@ sealed class ThemeColors(
     val surface: Color,
     val primary: Color,
     val accent: Color,
-    val text: Color
+    val text: Color,
+    val field: Color,
 ) {
 
     object LightColors : ThemeColors(
+        primary = Color(0xFFB1BC8D),
         background = Color(0xFFFFFAF2),
         surface = Color(0xFFF9E7CC),
-        primary = Color(0xFFB1BC8D),
         accent = Color(0xFFD4A373),
-        text = Color(0xFF755C4F)
+        text = Color(0xFF755C4F),
+        field = Color(0xFFFFFFFF),
     )
 
     object DarkColors : ThemeColors(
+        primary = Color(0xFF747C68),
         background = Color(0xFF2D2620),
         surface = Color(0xFF473B35),
-        primary = Color(0xFF747C68),
         accent = Color(0xFFD4A079),
-        text = Color(0xFFF4ECE4)
+        text = Color(0xFFF4ECE4),
+        field = Color(0xFFB2A89E),
     )
 }

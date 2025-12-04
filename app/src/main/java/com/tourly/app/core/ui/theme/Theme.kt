@@ -11,24 +11,28 @@ fun ThemeColors.toColorScheme(darkTheme: Boolean): ColorScheme {
     return if (darkTheme) {
         darkColorScheme(
             primary = primary,
-            background = background,
-            surface = surface,
             onPrimary = text,
+            background = background,
             onBackground = text,
+            surface = surface,
             onSurface = text,
             secondary = accent,
-            onSecondary = background
+            onSecondary = background,
+            tertiary = field,
+            onTertiary = text
         )
     } else {
         lightColorScheme(
             primary = primary,
-            background = background,
-            surface = surface,
             onPrimary = text,
+            background = background,
             onBackground = text,
+            surface = surface,
             onSurface = text,
             secondary = accent,
-            onSecondary = background
+            onSecondary = background,
+            tertiary = field,
+            onTertiary = text
         )
     }
 }
