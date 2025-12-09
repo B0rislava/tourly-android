@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.login.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

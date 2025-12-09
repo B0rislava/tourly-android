@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.core.ui.components.foundation
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon

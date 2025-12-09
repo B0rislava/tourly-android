@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.login.presentation.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
+import com.tourly.app.core.ui.components.foundation.AppLogo
 import com.tourly.app.core.ui.theme.OutfitFamily
 
 @Composable

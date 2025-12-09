@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.core.ui.components.foundation
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

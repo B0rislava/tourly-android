@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.login.presentation.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import com.tourly.app.R
+import com.tourly.app.core.ui.components.foundation.AppTextField
 import com.tourly.app.core.ui.theme.TourlyTheme
 
 @Composable
@@ -38,14 +39,14 @@ fun PasswordTextField(
         trailingIcon = {
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
-                    imageVector = if(passwordVisible) Icons.Outlined.Visibility
+                    imageVector = if (passwordVisible) Icons.Outlined.Visibility
                     else Icons.Outlined.VisibilityOff,
-                    contentDescription = if(passwordVisible) stringResource(id = R.string.hide_password)
+                    contentDescription = if (passwordVisible) stringResource(id = R.string.hide_password)
                     else stringResource(id = R.string.show_password)
                 )
             }
         },
-        visualTransformation = if(passwordVisible) VisualTransformation.None
+        visualTransformation = if (passwordVisible) VisualTransformation.None
         else PasswordVisualTransformation()
     )
 }
