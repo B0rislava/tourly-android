@@ -26,6 +26,6 @@ sealed class ThemeColors(
         surface = Color(0xFF473B35),
         accent = Color(0xFFD4A079),
         text = Color(0xFFF4ECE4),
-        field = Color(0xFFB2A89E),
+        field = Color(0xFF23201D),
     )
 }
