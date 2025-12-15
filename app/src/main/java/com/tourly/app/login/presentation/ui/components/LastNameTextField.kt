@@ -4,6 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.core.ui.components.foundation.AppTextField
 
 @Composable
@@ -19,7 +21,7 @@ fun LastNameTextField(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.Person,
-                contentDescription = "Last Name"
+                contentDescription = stringResource(id = R.string.last_name)
             )
         }
     )
