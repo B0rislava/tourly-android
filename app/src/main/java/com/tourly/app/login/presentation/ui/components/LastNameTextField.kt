@@ -17,7 +17,6 @@ fun LastNameTextField(
         value = value,
         onValueChange = onValueChange,
         label = "Last Name",
-        placeholder = "Jane DOe",
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.Person,
