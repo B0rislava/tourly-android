@@ -2,8 +2,8 @@ package com.tourly.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.state.SignUpUiState
-import com.tourly.app.login.presentation.ui.components.UserRole
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
