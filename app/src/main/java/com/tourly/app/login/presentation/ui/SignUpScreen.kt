@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.ui.theme.TourlyTheme
-import com.tourly.app.login.presentation.ui.components.UserRole
+import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.viewmodel.SignUpViewModel
 
 @Composable
@@ -49,16 +49,16 @@ fun SignUpScreen(
 }
 
 @Preview(
-    name = "Sign Up Dark Mode",
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
-)
-@Preview(
     name = "Sign Up Light Mode",
     showBackground = true,
     showSystemUi = true,
     uiMode = Configuration.UI_MODE_TYPE_NORMAL
+)
+@Preview(
+    name = "Sign Up Dark Mode",
+    showBackground = true,
+    showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
 )
 @Composable
 fun PreviewSignUpScreen() {

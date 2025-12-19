@@ -1,6 +1,6 @@
 package com.tourly.app.login.presentation.state
 
-import com.tourly.app.login.presentation.ui.components.UserRole
+import com.tourly.app.login.domain.UserRole
 
 data class SignUpUiState(
     val email: String = "",

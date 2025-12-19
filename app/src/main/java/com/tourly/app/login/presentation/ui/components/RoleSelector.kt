@@ -1,9 +1,14 @@
 package com.tourly.app.login.presentation.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,10 +16,11 @@ import androidx.compose.material.icons.outlined.CardTravel
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-
-enum class UserRole { Traveler, Guide }
+import com.tourly.app.login.domain.UserRole
 
 @Composable
 fun RoleSelector(
@@ -22,32 +28,52 @@ fun RoleSelector(
     selectedRole: UserRole,
     onRoleSelected: (UserRole) -> Unit
 ) {
-    Row(
+    val indicatorProgress by animateFloatAsState(
+        targetValue = if (selectedRole == UserRole.Traveler) 0f else 1f,
+        animationSpec = tween(durationMillis = 300),
+        label = "indicator_offset"
+    )
+
+    Box(
         modifier = modifier
-            .background(color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(size = 16.dp)
+            .fillMaxWidth()
+            .height(46.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(all = 4.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(space = 4.dp)
+            .padding(4.dp)
     ) {
-
-        RoleButton(
-            text = "Traveler",
-            icon = Icons.Outlined.Person,
-            isActive = selectedRole == UserRole.Traveler,
-            onClick = { onRoleSelected(UserRole.Traveler) },
-            modifier = Modifier.weight(weight = 1f)
+        // INDICATOR
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .fillMaxHeight()
+                .graphicsLayer {
+                    translationX = size.width * indicatorProgress
+                }
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(12.dp)
+                )
         )
 
-        RoleButton(
-            text = "Guide",
-            icon = Icons.Outlined.CardTravel,
-            isActive = selectedRole == UserRole.Guide,
-            onClick = { onRoleSelected(UserRole.Guide) },
-            modifier = Modifier.weight(weight = 1f)
-        )
+        Row(modifier = Modifier.fillMaxSize()) {
+            RoleButton(
+                text = "Traveler",
+                icon = Icons.Outlined.Person,
+                isActive = selectedRole == UserRole.Traveler,
+                onClick = { onRoleSelected(UserRole.Traveler) },
+                modifier = Modifier.weight(1f)
+            )
+
+            RoleButton(
+                text = "Guide",
+                icon = Icons.Outlined.CardTravel,
+                isActive = selectedRole == UserRole.Guide,
+                onClick = { onRoleSelected(UserRole.Guide) },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
-
-
