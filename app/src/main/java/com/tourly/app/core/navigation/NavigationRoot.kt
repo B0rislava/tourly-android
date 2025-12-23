@@ -2,31 +2,17 @@ package com.tourly.app.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.serialization.SavedStateConfiguration
 import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 
 @Composable
 fun NavigationRoot() {
 
-    val backStack = rememberNavBackStack(
-        configuration = SavedStateConfiguration {
-            serializersModule = SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(Route.Welcome::class, Route.Welcome.serializer())
-                    subclass(Route.SignIn::class, Route.SignIn.serializer())
-                    subclass(Route.SignUp::class, Route.SignUp.serializer())
-                }
-            }
-        },
-        Route.Welcome
-    )
+    val backStack = rememberNavBackStack(Route.Welcome)
+
     NavDisplay(
         backStack = backStack,
         entryProvider = { key ->
