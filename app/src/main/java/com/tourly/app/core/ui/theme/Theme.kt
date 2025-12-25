@@ -1,38 +1,50 @@
 package com.tourly.app.core.ui.theme
 
+import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 fun ThemeColors.toColorScheme(darkTheme: Boolean): ColorScheme {
     return if (darkTheme) {
         darkColorScheme(
-            primary = primary,
-            onPrimary = text,
             background = background,
             onBackground = text,
+
             surface = surface,
             onSurface = text,
+
+            primary = primary,
+            onPrimary = text,
+
             secondary = accent,
             onSecondary = background,
-            tertiary = field,
-            onTertiary = text
+
+            error = error,
+            onError = background
         )
     } else {
         lightColorScheme(
-            primary = primary,
-            onPrimary = text,
             background = background,
             onBackground = text,
+
             surface = surface,
             onSurface = text,
+
+            primary = primary,
+            onPrimary = text,
+
             secondary = accent,
             onSecondary = background,
-            tertiary = field,
-            onTertiary = text
+
+            error = error,
+            onError = background
         )
     }
 }
@@ -43,8 +55,15 @@ fun TourlyTheme(
     content: @Composable () -> Unit
 ) {
     val palette = if (darkTheme) ThemeColors.DarkColors else ThemeColors.LightColors
-
     val colorScheme = palette.toColorScheme(darkTheme)
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,

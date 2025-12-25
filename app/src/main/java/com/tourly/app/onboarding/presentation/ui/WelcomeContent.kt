@@ -1,5 +1,6 @@
 package com.tourly.app.onboarding.presentation.ui
 
+import com.tourly.app.core.ui.utils.WindowSizeState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,9 +9,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,11 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tourly.app.R
 import com.tourly.app.core.ui.components.foundation.AppLogoWithText
-import com.tourly.app.core.ui.components.foundation.PrimaryButton
+import com.tourly.app.core.ui.components.foundation.OutlinedPillButton
 import com.tourly.app.core.ui.theme.OutfitFamily
 
 @Composable
 fun WelcomeContent(
+    windowSizeState: WindowSizeState,
     onGetStartedClick: () -> Unit
 ) {
     Box(
@@ -37,59 +38,78 @@ fun WelcomeContent(
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
+        // Simplified: Only check for compact height and width
+        val isCompactHeight = windowSizeState.isHeightCompact
+        val isExpandedWidth = windowSizeState.isWidthExpanded
+
+        WelcomeContentLayout(
+            isCompactHeight = isCompactHeight,
+            isExpandedWidth = isExpandedWidth,
+            onGetStartedClick = onGetStartedClick
+        )
+    }
+}
+
+@Composable
+private fun WelcomeContentLayout(
+    isCompactHeight: Boolean,
+    isExpandedWidth: Boolean,
+    onGetStartedClick: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(height = 70.dp))
+            Spacer(modifier = Modifier.height(if (isCompactHeight) 40.dp else 60.dp))
 
-            AppLogoWithText(fontSize = 40.sp)
+            // Use Material 3 typography scale instead of manual sizing
+            AppLogoWithText(fontSize = if (isCompactHeight) 32.sp else 40.sp)
 
-            Spacer(modifier = Modifier.height(height = 16.dp))
+            Spacer(modifier = Modifier.height(if (isCompactHeight) 12.dp else 16.dp))
 
             Text(
                 text = stringResource(id = R.string.welcome_abroad),
+                style = MaterialTheme.typography.headlineLarge,
                 fontFamily = OutfitFamily,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 38.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(height = 8.dp))
+            Spacer(modifier = Modifier.height(if (isCompactHeight) 4.dp else 8.dp))
 
             Text(
                 text = stringResource(id = R.string.welcome_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
                 fontFamily = OutfitFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
+
+            Spacer(modifier = Modifier.height(if (isCompactHeight) 20.dp else 28.dp))
+
+            OutlinedPillButton(
+                text = "Start Now",
+                onClick = onGetStartedClick,
+                modifier = Modifier.wrapContentWidth()
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
+        // Use fillMaxWidth with responsive fraction based on device type
         Image(
-            painter = painterResource(id = R.drawable.globe),
+            painter = painterResource(id = R.drawable.traveler),
             contentDescription = null,
             modifier = Modifier
-                .requiredWidth(width = 470.dp)
-                .height(height = 700.dp)
-                .align(Alignment.BottomEnd)
-                .offset(x = 70.dp, y = 40.dp),
+                .align(Alignment.BottomStart)
+                .fillMaxWidth(if (isExpandedWidth) 0.6f else 0.85f),
             contentScale = ContentScale.FillWidth
-        )
-
-        PrimaryButton(
-            text = stringResource(id = R.string.discover_journey),
-            onClick = onGetStartedClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 70.dp)
-                .align(Alignment.BottomCenter)
         )
     }
 }

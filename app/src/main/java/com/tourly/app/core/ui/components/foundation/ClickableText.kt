@@ -42,6 +42,6 @@ fun ClickableText(
         fontFamily = OutfitFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        color = MaterialTheme.colorScheme.onTertiary
+        color = MaterialTheme.colorScheme.onBackground
     )
 }
