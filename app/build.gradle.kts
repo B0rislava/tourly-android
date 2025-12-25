@@ -62,6 +62,15 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+    
+    // Ktor
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.logging)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
