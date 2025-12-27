@@ -9,6 +9,7 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
+import com.tourly.app.test.presentation.ui.TestConnectionScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
@@ -22,6 +23,7 @@ fun NavigationRoot() {
                     subclass(Route.Welcome::class, Route.Welcome.serializer())
                     subclass(Route.SignIn::class, Route.SignIn.serializer())
                     subclass(Route.SignUp::class, Route.SignUp.serializer())
+                    subclass(Route.TestConnection::class, Route.TestConnection.serializer())
                 }
             }
         },
@@ -36,6 +38,9 @@ fun NavigationRoot() {
                         WelcomeScreen(
                             onGetStartedClick = {
                                 backStack.add(Route.SignUp)
+                            },
+                            onTestConnectionClick = {
+                                backStack.add(Route.TestConnection)
                             }
                         )
                     }
@@ -60,6 +65,15 @@ fun NavigationRoot() {
                             },
                             onSignUpSuccess = {
                                 // TODO: Navigate to Home
+                            }
+                        )
+                    }
+                }
+                is Route.TestConnection -> {
+                    NavEntry(key) {
+                        TestConnectionScreen(
+                            onNavigateBack = {
+                                backStack.removeLastOrNull()
                             }
                         )
                     }

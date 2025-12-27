@@ -32,7 +32,8 @@ import com.tourly.app.core.ui.theme.OutfitFamily
 
 @Composable
 fun WelcomeContent(
-    onGetStartedClick: () -> Unit
+    onGetStartedClick: () -> Unit,
+    onTestConnectionClick: () -> Unit = {}
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -93,7 +94,8 @@ fun WelcomeContent(
             imageSpacing = imageSpacing,
             imageWidth = imageWidth,
             isTablet = isTablet,
-            onGetStartedClick = onGetStartedClick
+            onGetStartedClick = onGetStartedClick,
+            onTestConnectionClick = onTestConnectionClick
         )
     }
 }
@@ -108,7 +110,8 @@ private fun WelcomeContentLayout(
     imageSpacing: Dp,
     imageWidth: Float,
     isTablet: Boolean,
-    onGetStartedClick: () -> Unit
+    onGetStartedClick: () -> Unit,
+    onTestConnectionClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -149,6 +152,14 @@ private fun WelcomeContentLayout(
             OutlinedPillButton(
                 text = "Start Now",
                 onClick = onGetStartedClick,
+                modifier = Modifier.wrapContentWidth()
+            )
+            
+            Spacer(modifier = Modifier.height(height = 12.dp))
+            
+            OutlinedPillButton(
+                text = "Test Connection",
+                onClick = onTestConnectionClick,
                 modifier = Modifier.wrapContentWidth()
             )
 

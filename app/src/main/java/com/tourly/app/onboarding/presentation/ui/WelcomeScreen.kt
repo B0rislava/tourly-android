@@ -35,9 +35,13 @@ import android.content.res.Configuration
 annotation class DevicePreviews
 
 @Composable
-fun WelcomeScreen(onGetStartedClick: () -> Unit = {}) {
+fun WelcomeScreen(
+    onGetStartedClick: () -> Unit = {},
+    onTestConnectionClick: () -> Unit = {}
+) {
     WelcomeContent(
-        onGetStartedClick = onGetStartedClick
+        onGetStartedClick = onGetStartedClick,
+        onTestConnectionClick = onTestConnectionClick
     )
 }
 
