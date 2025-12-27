@@ -13,18 +13,38 @@ import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
 import com.tourly.app.test.presentation.ui.TestConnectionScreen
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.tourly.app.MainActivityUiState
+import com.tourly.app.MainViewModel
+import com.tourly.app.core.ui.SplashScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun NavigationRoot() {
+fun NavigationRoot(
+    viewModel: MainViewModel = hiltViewModel()
+) {
     val windowSizeState = rememberWindowSizeState()
-    val backStack = rememberNavBackStack(Route.Welcome)
+    val uiState by viewModel.uiState.collectAsState()
 
-    NavDisplay(
-        backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
-        entryProvider = { key ->
-            when(key) {
+    when (val state = uiState) {
+        is MainActivityUiState.Loading -> {
+            SplashScreen()
+        }
+        is MainActivityUiState.Success -> {
+            val startRoute = if (state.isUserLoggedIn) {
+                Route.Home(userId = "user_123", email = "connected@tourly.app") // TODO: get real user info
+            } else {
+                Route.Welcome
+            }
+            
+            val backStack = rememberNavBackStack(startRoute)
+
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                entryProvider = { key ->
+                    when(key) {
                 is Route.Welcome -> {
                     NavEntry(key) {
                         WelcomeScreen(
@@ -87,4 +107,6 @@ fun NavigationRoot() {
             }
         }
     )
+        }
+    }
 }
