@@ -7,7 +7,7 @@ data class SignUpUiState(
     val password: String = "",
     val firstName: String = "",
     val lastName: String = "",
-    val role: UserRole = UserRole.Traveler,
+    val role: UserRole = UserRole.TRAVELER,
 
     val emailError: String? = null,
     val passwordError: String? = null,

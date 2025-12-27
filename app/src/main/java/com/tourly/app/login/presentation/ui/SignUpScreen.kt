@@ -72,7 +72,7 @@ fun PreviewSignUpScreen() {
             onFirstNameChange = {},
             lastName = "Doe",
             onLastNameChange = {},
-            role = UserRole.Guide,
+            role = UserRole.GUIDE,
             onRoleChange = {},
             emailError = null,
             passwordError = null,

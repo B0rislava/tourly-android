@@ -29,7 +29,7 @@ fun RoleSelector(
     onRoleSelected: (UserRole) -> Unit
 ) {
     val indicatorProgress by animateFloatAsState(
-        targetValue = if (selectedRole == UserRole.Traveler) 0f else 1f,
+        targetValue = if (selectedRole == UserRole.TRAVELER) 0f else 1f,
         animationSpec = tween(durationMillis = 300),
         label = "indicator_offset"
     )
@@ -62,16 +62,16 @@ fun RoleSelector(
             RoleButton(
                 text = "Traveler",
                 icon = Icons.Outlined.Person,
-                isActive = selectedRole == UserRole.Traveler,
-                onClick = { onRoleSelected(UserRole.Traveler) },
+                isActive = selectedRole == UserRole.TRAVELER,
+                onClick = { onRoleSelected(UserRole.TRAVELER) },
                 modifier = Modifier.weight(1f)
             )
 
             RoleButton(
                 text = "Guide",
                 icon = Icons.Outlined.CardTravel,
-                isActive = selectedRole == UserRole.Guide,
-                onClick = { onRoleSelected(UserRole.Guide) },
+                isActive = selectedRole == UserRole.GUIDE,
+                onClick = { onRoleSelected(UserRole.GUIDE) },
                 modifier = Modifier.weight(1f)
             )
         }

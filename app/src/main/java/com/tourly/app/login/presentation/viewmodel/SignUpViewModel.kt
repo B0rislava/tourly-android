@@ -3,9 +3,9 @@ package com.tourly.app.login.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.login.domain.UserRole
+import com.tourly.app.login.domain.usecase.SignUpUseCase
 import com.tourly.app.login.presentation.state.SignUpUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    // TODO: inject AuthRepository when ready
+    private val signUpUseCase: SignUpUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUiState())
@@ -64,6 +64,8 @@ class SignUpViewModel @Inject constructor(
     fun signUp() {
         if (!validateFields()) return
 
+        val currentState = _uiState.value
+
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -72,32 +74,26 @@ class SignUpViewModel @Inject constructor(
                 )
             }
 
-            try {
-                // TODO: Replace with real API call
-                // val response = authRepository.signUp(
-                //     email = _uiState.value.email,
-                //     password = _uiState.value.password,
-                //     firstName = _uiState.value.firstName,
-                //     lastName = _uiState.value.lastName,
-                //     role = _uiState.value.role
-                // )
+            val result = signUpUseCase(
+                email = currentState.email,
+                password = currentState.password,
+                firstName = currentState.firstName,
+                lastName = currentState.lastName,
+                role = currentState.role
+            )
 
-                // Simulate network delay
-                delay(2000)
-
-                // Simulate success
-                _uiState.update {
-                    it.copy(
+            result.onSuccess {
+                _uiState.update { state ->
+                    state.copy(
                         isLoading = false,
                         isSuccess = true
                     )
                 }
-
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
+            }.onFailure { error ->
+                _uiState.update { state ->
+                    state.copy(
                         isLoading = false,
-                        signUpError = e.message ?: "Sign up failed"
+                        signUpError = error.message ?: "Sign up failed"
                     )
                 }
             }

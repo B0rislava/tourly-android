@@ -13,8 +13,6 @@ import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
 import com.tourly.app.test.presentation.ui.TestConnectionScreen
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -47,7 +45,8 @@ fun NavigationRoot() {
                                 backStack.add(Route.SignUp)
                             },
                             onLoginSuccess = {
-                                // TODO: Navigate to Home
+                                backStack.clear()
+                                backStack.add(Route.Home(userId = "user_123", email = "test@example.com"))
                             }
                         )
                     }
@@ -74,6 +73,8 @@ fun NavigationRoot() {
                                 backStack.removeLastOrNull()
                             }
                         )
+                    }
+                }
                 is Route.Home -> {
                     NavEntry(key) {
                         val viewModel = hiltViewModel<HomeViewModel, HomeViewModel.Factory> { factory ->

@@ -2,9 +2,9 @@ package com.tourly.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.login.domain.usecase.SignInUseCase
 import com.tourly.app.login.presentation.state.SignInUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    // TODO: Inject Repository
+    private val signInUseCase: SignInUseCase
 ) : ViewModel() {
 
     // functions that the ui would call for some kind of user action for example a button click
@@ -43,6 +43,8 @@ class SignInViewModel @Inject constructor(
     fun login() {
         if (!validateCredentials()) return
 
+        val currentState = _uiState.value
+
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -51,26 +53,20 @@ class SignInViewModel @Inject constructor(
                 )
             }
 
-            try {
-                // TODO: Replace with real API call
-                // val response = authRepository.signIn(email, password)
+            val result = signInUseCase(currentState.email, currentState.password)
 
-                // simulate network call
-                delay(2000)
-
-                // Simulate success
-                _uiState.update {
-                    it.copy(
+            result.onSuccess {
+                _uiState.update { state ->
+                    state.copy(
                         isLoading = false,
                         isSuccess = true
                     )
                 }
-
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
+            }.onFailure { error ->
+                _uiState.update { state ->
+                    state.copy(
                         isLoading = false,
-                        loginError = e.message ?: "Login failed"
+                        loginError = error.message ?: "Login failed"
                     )
                 }
             }
