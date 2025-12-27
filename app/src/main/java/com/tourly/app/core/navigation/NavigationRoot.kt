@@ -1,6 +1,5 @@
 package com.tourly.app.core.navigation
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import com.tourly.app.core.ui.utils.rememberWindowSizeState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -19,7 +18,6 @@ import com.tourly.app.MainActivityUiState
 import com.tourly.app.MainViewModel
 import com.tourly.app.core.ui.SplashScreen
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavigationRoot(
     viewModel: MainViewModel = hiltViewModel()
@@ -33,7 +31,7 @@ fun NavigationRoot(
         }
         is MainActivityUiState.Success -> {
             val startRoute = if (state.isUserLoggedIn) {
-                Route.Home(userId = "user_123", email = "connected@tourly.app") // TODO: get real user info
+                Route.Home(userId = "user_123", email = "test@example.com") // TODO: get real user info
             } else {
                 Route.Welcome
             }
@@ -100,7 +98,14 @@ fun NavigationRoot(
                         val viewModel = hiltViewModel<HomeViewModel, HomeViewModel.Factory> { factory ->
                             factory.create(key)
                         }
-                        HomeScreen(vm = viewModel, windowSizeState = windowSizeState)
+                        HomeScreen(
+                            vm = viewModel,
+                            windowSizeState = windowSizeState,
+                            onLogout = {
+                                backStack.clear()
+                                backStack.add(Route.Welcome)
+                            }
+                        )
                     }
                 }
                 else -> error("Unknown NavKey: $key")
