@@ -8,19 +8,23 @@ import com.tourly.app.core.network.model.RegisterRequest
 import com.tourly.app.core.network.model.RegisterResponse
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.domain.repository.AuthRepository
+import com.tourly.app.core.storage.TokenManager
 import io.ktor.client.call.body
 import io.ktor.http.isSuccess
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val apiService: AuthApiService
+    private val apiService: AuthApiService,
+    private val tokenManager: TokenManager
 ) : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<LoginResponse> {
         return try {
             val response = apiService.login(LoginRequest(email, password))
             if (response.status.isSuccess()) {
-                Result.success(response.body())
+                val loginResponse = response.body<LoginResponse>()
+                tokenManager.saveToken(loginResponse.token)
+                Result.success(loginResponse)
             } else {
                 val errorResponse = try {
                     response.body<ErrorResponse>()
