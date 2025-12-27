@@ -10,10 +10,18 @@ data class LoginRequest(
 )
 
 @Serializable
+data class UserDTO(
+    val id: Long? = null,
+    val email: String,
+    val firstName: String,
+    val lastName: String,
+    val role: UserRole
+)
+
+@Serializable
 data class LoginResponse(
     val token: String,
-    val email: String,
-    val role: UserRole
+    val user: UserDTO
 )
 
 @Serializable
