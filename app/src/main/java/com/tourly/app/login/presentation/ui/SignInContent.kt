@@ -54,7 +54,7 @@ fun SignInContent(
                 title = stringResource(id = R.string.welcome_back),
                 subtitle = stringResource(id = R.string.adventure_awaits)
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
             EmailTextField(
                 value = email,

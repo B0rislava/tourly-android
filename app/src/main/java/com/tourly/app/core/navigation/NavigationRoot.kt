@@ -1,11 +1,14 @@
 package com.tourly.app.core.navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import com.tourly.app.core.ui.utils.rememberWindowSizeState
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.serialization.SavedStateConfiguration
+import com.tourly.app.home.presentation.ui.HomeScreen
+import com.tourly.app.home.presentation.viewmodel.HomeViewModel
 import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
@@ -13,29 +16,21 @@ import com.tourly.app.test.presentation.ui.TestConnectionScreen
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavigationRoot() {
+    val windowSizeState = rememberWindowSizeState()
+    val backStack = rememberNavBackStack(Route.Welcome)
 
-    val backStack = rememberNavBackStack(
-        configuration = SavedStateConfiguration {
-            serializersModule = SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(Route.Welcome::class, Route.Welcome.serializer())
-                    subclass(Route.SignIn::class, Route.SignIn.serializer())
-                    subclass(Route.SignUp::class, Route.SignUp.serializer())
-                    subclass(Route.TestConnection::class, Route.TestConnection.serializer())
-                }
-            }
-        },
-        Route.Welcome
-    )
     NavDisplay(
         backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
         entryProvider = { key ->
             when(key) {
                 is Route.Welcome -> {
                     NavEntry(key) {
                         WelcomeScreen(
+                            windowSizeState = windowSizeState,
                             onGetStartedClick = {
                                 backStack.add(Route.SignUp)
                             },
@@ -64,7 +59,10 @@ fun NavigationRoot() {
                                 backStack.add(Route.SignIn)
                             },
                             onSignUpSuccess = {
-                                // TODO: Navigate to Home
+                                // Clear back stack so user can't go back to auth screens
+                                backStack.clear()
+                                // Dummy info for testing
+                                backStack.add(Route.Home(userId = "user_123", email = "test@example.com"))
                             }
                         )
                     }
@@ -76,6 +74,12 @@ fun NavigationRoot() {
                                 backStack.removeLastOrNull()
                             }
                         )
+                is Route.Home -> {
+                    NavEntry(key) {
+                        val viewModel = hiltViewModel<HomeViewModel, HomeViewModel.Factory> { factory ->
+                            factory.create(key)
+                        }
+                        HomeScreen(vm = viewModel, windowSizeState = windowSizeState)
                     }
                 }
                 else -> error("Unknown NavKey: $key")

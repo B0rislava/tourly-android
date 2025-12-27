@@ -17,4 +17,8 @@ sealed interface Route: NavKey {
 
     @Serializable
     data object TestConnection: Route, NavKey
+  
+    @Serializable
+    // TODO: Refactor to pass only userId. Email/User details should be fetched from Repository.
+    data class Home(val userId: String, val email: String) : Route, NavKey
 }

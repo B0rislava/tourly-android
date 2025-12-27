@@ -49,13 +49,15 @@ fun AuthCardHeader(
             fontFamily = OutfitFamily,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Text(
             text = subtitle,
             fontFamily = OutfitFamily,
             fontWeight = FontWeight.Normal,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
     }
 }

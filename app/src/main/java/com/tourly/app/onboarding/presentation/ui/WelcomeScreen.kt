@@ -5,6 +5,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.tourly.app.core.ui.theme.TourlyTheme
 import android.content.res.Configuration
+import com.tourly.app.core.ui.utils.WindowSizeState
 
 @Preview(
     name = "1. Small Phone (hdpi)",
@@ -36,10 +37,12 @@ annotation class DevicePreviews
 
 @Composable
 fun WelcomeScreen(
+    windowSizeState: WindowSizeState,
     onGetStartedClick: () -> Unit = {},
     onTestConnectionClick: () -> Unit = {}
 ) {
     WelcomeContent(
+        windowSizeState = windowSizeState,
         onGetStartedClick = onGetStartedClick,
         onTestConnectionClick = onTestConnectionClick
     )
@@ -48,8 +51,15 @@ fun WelcomeScreen(
 @DevicePreviews
 @Composable
 fun PreviewWelcomeScreen() {
+    val windowSizeState = WindowSizeState(
+        isWidthCompact = true,
+        isWidthMedium = false,
+        isWidthExpanded = false,
+        isHeightCompact = false
+    )
     TourlyTheme {
         WelcomeContent(
+            windowSizeState = windowSizeState,
             onGetStartedClick = {}
         )
     }

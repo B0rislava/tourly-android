@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,45 +22,55 @@ class SignUpViewModel @Inject constructor(
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
 
     fun onEmailChange(email: String) {
-        _uiState.value = _uiState.value.copy(
-            email = email,
-            emailError = null
-        )
+        _uiState.update {
+            it.copy(
+                email = email,
+                emailError = null
+            )
+        }
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.value = _uiState.value.copy(
-            password = password,
-            passwordError = null
-        )
+        _uiState.update {
+            it.copy(
+                password = password,
+                passwordError = null
+            )
+        }
     }
 
     fun onFirstNameChange(firstName: String) {
-        _uiState.value = _uiState.value.copy(
-            firstName = firstName,
-            firstNameError = null
-        )
+        _uiState.update {
+            it.copy(
+                firstName = firstName,
+                firstNameError = null
+            )
+        }
     }
 
     fun onLastNameChange(lastName: String) {
-        _uiState.value = _uiState.value.copy(
-            lastName = lastName,
-            lastNameError = null
-        )
+        _uiState.update {
+            it.copy(
+                lastName = lastName,
+                lastNameError = null
+            )
+        }
     }
 
     fun onRoleChange(role: UserRole) {
-        _uiState.value = _uiState.value.copy(role = role)
+        _uiState.update { it.copy(role = role) }
     }
 
     fun signUp() {
         if (!validateFields()) return
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                signUpError = null
-            )
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    signUpError = null
+                )
+            }
 
             try {
                 // TODO: Replace with real API call
@@ -75,16 +86,20 @@ class SignUpViewModel @Inject constructor(
                 delay(2000)
 
                 // Simulate success
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    isSuccess = true
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = true
+                    )
+                }
 
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    signUpError = e.message ?: "Sign up failed"
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        signUpError = e.message ?: "Sign up failed"
+                    )
+                }
             }
         }
     }
@@ -137,12 +152,14 @@ class SignUpViewModel @Inject constructor(
             isValid = false
         }
 
-        _uiState.value = state.copy(
-            emailError = emailError,
-            passwordError = passwordError,
-            firstNameError = firstNameError,
-            lastNameError = lastNameError
-        )
+        _uiState.update {
+            it.copy(
+                emailError = emailError,
+                passwordError = passwordError,
+                firstNameError = firstNameError,
+                lastNameError = lastNameError
+            )
+        }
 
         return isValid
     }

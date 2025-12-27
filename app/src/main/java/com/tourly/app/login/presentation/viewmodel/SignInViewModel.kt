@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,27 +23,33 @@ class SignInViewModel @Inject constructor(
     val uiState: StateFlow<SignInUiState> = _uiState.asStateFlow()
 
     fun onEmailChange(email: String) {
-        _uiState.value = _uiState.value.copy(
-            email = email,
-            emailError = null
-        )
+        _uiState.update {
+            it.copy(
+                email = email,
+                emailError = null
+            )
+        }
     }
 
     fun onPasswordChange(password: String) {
-        _uiState.value = _uiState.value.copy(
-            password = password, //FIXED!
-            passwordError = null
-        )
+        _uiState.update {
+            it.copy(
+                password = password, //FIXED!
+                passwordError = null
+            )
+        }
     }
 
     fun login() {
         if (!validateCredentials()) return
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                loginError = null
-            )
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    loginError = null
+                )
+            }
 
             try {
                 // TODO: Replace with real API call
@@ -52,16 +59,20 @@ class SignInViewModel @Inject constructor(
                 delay(2000)
 
                 // Simulate success
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    isSuccess = true
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = true
+                    )
+                }
 
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    loginError = e.message ?: "Login failed"
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        loginError = e.message ?: "Login failed"
+                    )
+                }
             }
         }
     }
@@ -88,10 +99,12 @@ class SignInViewModel @Inject constructor(
             isValid = false
         }
 
-        _uiState.value = state.copy(
-            emailError = emailError,
-            passwordError = passwordError
-        )
+        _uiState.update {
+            it.copy(
+                emailError = emailError,
+                passwordError = passwordError
+            )
+        }
 
         return isValid
     }
