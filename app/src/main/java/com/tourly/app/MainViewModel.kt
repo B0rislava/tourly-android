@@ -24,8 +24,12 @@ class MainViewModel @Inject constructor(
 
     private fun checkSession() {
         viewModelScope.launch {
-            val token = tokenManager.getToken()
-            _uiState.value = MainActivityUiState.Success(isUserLoggedIn = token != null)
+            tokenManager.getTokenFlow().collect { token ->
+                android.util.Log.d("MainViewModel", "checkSession: token=$token")
+                val isLoggedIn = token != null
+                android.util.Log.d("MainViewModel", "checkSession: Updating isUserLoggedIn to $isLoggedIn")
+                _uiState.value = MainActivityUiState.Success(isUserLoggedIn = isLoggedIn)
+            }
         }
     }
 }
