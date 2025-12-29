@@ -19,6 +19,8 @@ import com.tourly.app.R
 fun HomeContent(
     userId: String,
     email: String,
+    firstName: String,
+    lastName: String,
     onLogoutClick: () -> Unit
 ) {
     Column(
@@ -29,11 +31,15 @@ fun HomeContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Welcome, $email!",
+            text = "Welcome, $firstName $lastName!",
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
             text = "User ID: $userId",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = "email: $email",
             style = MaterialTheme.typography.bodyMedium
         )
         
