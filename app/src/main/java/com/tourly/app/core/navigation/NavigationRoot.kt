@@ -6,11 +6,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.tourly.app.home.presentation.ui.HomeScreen
-import com.tourly.app.home.presentation.viewmodel.HomeViewModel
+import com.tourly.app.core.ui.MainScreen
 import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
+import com.tourly.app.settings.presentation.ui.SettingsScreen
 import com.tourly.app.test.presentation.ui.TestConnectionScreen
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +31,7 @@ fun NavigationRoot(
         }
         is MainActivityUiState.Success -> {
             val startRoute = if (state.isUserLoggedIn) {
-                Route.Home(userId = "user_123", email = "test@example.com") // TODO: get real user info
+                Route.Home
             } else {
                 Route.Welcome
             }
@@ -64,7 +64,7 @@ fun NavigationRoot(
                             },
                             onLoginSuccess = {
                                 backStack.clear()
-                                backStack.add(Route.Home(userId = "user_123", email = "test@example.com"))
+                                backStack.add(Route.Home)
                             }
                         )
                     }
@@ -78,8 +78,7 @@ fun NavigationRoot(
                             onSignUpSuccess = {
                                 // Clear back stack so user can't go back to auth screens
                                 backStack.clear()
-                                // Dummy info for testing
-                                backStack.add(Route.Home(userId = "user_123", email = "test@example.com"))
+                                backStack.add(Route.Home)
                             }
                         )
                     }
@@ -95,15 +94,25 @@ fun NavigationRoot(
                 }
                 is Route.Home -> {
                     NavEntry(key) {
-                        val viewModel = hiltViewModel<HomeViewModel, HomeViewModel.Factory> { factory ->
-                            factory.create(key)
-                        }
-                        HomeScreen(
-                            vm = viewModel,
+                        MainScreen(
                             windowSizeState = windowSizeState,
                             onLogout = {
-                                backStack.clear()
-                                backStack.add(Route.Welcome)
+                                viewModel.logout {
+                                    backStack.clear()
+                                    backStack.add(Route.Welcome)
+                                }
+                            },
+                            onNavigateToSettings = {
+                                backStack.add(Route.Settings)
+                            }
+                        )
+                    }
+                }
+                is Route.Settings -> {
+                    NavEntry(key) {
+                        SettingsScreen(
+                            onNavigateBack = {
+                                backStack.removeLastOrNull()
                             }
                         )
                     }
