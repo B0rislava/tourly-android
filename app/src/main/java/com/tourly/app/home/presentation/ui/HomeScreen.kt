@@ -23,12 +23,14 @@ fun HomeScreen(
     val lastName = user?.lastName ?: ""
     val userId = user?.id?.toString() ?: ""
     val email = user?.email ?: ""
+    val profilePictureUrl = user?.profilePictureUrl
 
     HomeContent(
         userId = userId,
         email = email,
         firstName = firstName,
         lastName = lastName,
+        profilePictureUrl = profilePictureUrl,
         onLogoutClick = {
             vm.logout(onLogoutSuccess = onLogout)
         }
