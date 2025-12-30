@@ -9,5 +9,6 @@ data class UserDto(
     val email: String,
     val firstName: String,
     val lastName: String,
-    val role: UserRole
+    val role: UserRole,
+    val profilePictureUrl: String? = null
 )
