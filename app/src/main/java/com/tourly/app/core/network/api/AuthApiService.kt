@@ -12,7 +12,10 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import javax.inject.Inject
+import io.ktor.client.request.forms.submitFormWithBinaryData
+import io.ktor.client.request.forms.formData
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 
 class AuthApiService @Inject constructor(
@@ -44,6 +47,20 @@ class AuthApiService @Inject constructor(
             header(HttpHeaders.Authorization, "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(request)
+        }
+    }
+
+    suspend fun uploadProfilePicture(token: String, fileBytes: ByteArray): HttpResponse {
+        return client.submitFormWithBinaryData(
+            url = "users/me/picture",
+            formData = formData {
+                append("file", fileBytes, Headers.build {
+                    append(HttpHeaders.ContentType, "image/*")
+                    append(HttpHeaders.ContentDisposition, "filename=\"profile.jpg\"")
+                })
+            }
+        ) {
+            header(HttpHeaders.Authorization, "Bearer $token")
         }
     }
 }
