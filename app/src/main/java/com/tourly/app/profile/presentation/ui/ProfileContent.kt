@@ -21,14 +21,13 @@ import com.tourly.app.profile.presentation.ui.components.ProfileHeader
 
 @Composable
 fun ProfileContent(
+    modifier: Modifier = Modifier,
     firstName: String,
     lastName: String,
     email: String,
     profilePictureUrl: String?,
     onLogout: () -> Unit,
-    onNavigateToSettings: () -> Unit,
     onEditProfile: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier

@@ -106,7 +106,6 @@ fun MainScreen(
                 ProfileScreen(
                     snackbarHostState = snackbarHostState,
                     onLogout = onLogout,
-                    onNavigateToSettings = onNavigateToSettings,
                     onEditingStateChange = { isEditing, cancelCallback ->
                         isEditingProfile = isEditing
                         onCancelEdit = cancelCallback

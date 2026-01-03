@@ -25,7 +25,6 @@ fun ProfileScreen(
     userViewModel: UserViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit,
-    onNavigateToSettings: () -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
 ) {
     val userState by userViewModel.uiState.collectAsState()
@@ -75,6 +74,7 @@ fun ProfileScreen(
                         onLastNameChange = userViewModel::onLastNameChange,
                         onEmailChange = userViewModel::onEmailChange,
                         onPasswordChange = userViewModel::onPasswordChange,
+                        onProfilePictureSelected = userViewModel::onProfilePictureSelected,
                         onSaveClick = userViewModel::saveProfile
                     )
                 } else {
@@ -84,7 +84,6 @@ fun ProfileScreen(
                         email = state.user.email,
                         profilePictureUrl = state.user.profilePictureUrl,
                         onLogout = onLogout,
-                        onNavigateToSettings = onNavigateToSettings,
                         onEditProfile = userViewModel::startEditing
                     )
                 }
@@ -109,7 +108,6 @@ private fun ProfileContentPreview() {
         email = "ashley.watson@example.com",
         profilePictureUrl = null,
         onLogout = {},
-        onNavigateToSettings = {},
         onEditProfile = {}
     )
 }
