@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -258,7 +259,7 @@ fun ImageCropperContent(
                     color = Color.White,
                     radius = circleRadius,
                     center = center,
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx())
+                    style = Stroke(width = 2.dp.toPx())
                 )
             }
 
