@@ -1,5 +1,7 @@
 package com.tourly.app.profile.presentation.state
 
+import android.net.Uri
+
 data class EditProfileUiState(
     val firstName: String = "",
     val lastName: String = "",
@@ -10,5 +12,7 @@ data class EditProfileUiState(
     val emailError: String? = null,
     val passwordError: String? = null,
     val isSaving: Boolean = false,
-    val saveError: String? = null
+    val saveError: String? = null,
+    val profilePictureUrl: String? = null,
+    val profilePictureUri: Uri? = null
 )
