@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.theme
+package com.tourly.app.core.presentation.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme

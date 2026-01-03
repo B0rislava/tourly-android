@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components.foundation
+package com.tourly.app.core.presentation.ui.components.foundation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.tourly.app.R
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun AppLogoWithText(

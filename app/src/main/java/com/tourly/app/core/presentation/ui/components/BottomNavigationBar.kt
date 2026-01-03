@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.core.presentation.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
@@ -14,22 +14,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.filled.AddCircle
 
 enum class BottomNavDestination(
-    val route: String,
     val icon: ImageVector,
     val label: String
 ) {
-    HOME("home", Icons.Filled.Home, "Home"),
-    DASHBOARD("dashboard", Icons.Filled.Dashboard, "Dashboard"),
-    CHAT("chat", Icons.AutoMirrored.Filled.Chat, "Chat"),
-    PROFILE("profile", Icons.Filled.Person, "Profile")
+    TRAVELER_HOME(Icons.Filled.Home, "Home"),
+    GUIDE_HOME(Icons.Filled.Home, "Home"),
+    TRAVELER_DASHBOARD(Icons.Filled.Dashboard, "Dashboard"),
+    GUIDE_DASHBOARD(Icons.Filled.Dashboard, "Dashboard"),
+    CREATE_TOUR(Icons.Filled.AddCircle, "Create Tour"),
+    CHAT(Icons.AutoMirrored.Filled.Chat, "Chat"),
+    PROFILE(Icons.Filled.Person, "Profile");
+
+    companion object {
+        val travelerDestinations = listOf(TRAVELER_HOME, TRAVELER_DASHBOARD, CHAT, PROFILE)
+        val guideDestinations = listOf(GUIDE_HOME, GUIDE_DASHBOARD, CREATE_TOUR, CHAT, PROFILE)
+    }
 }
 
 @Composable
 fun BottomNavigationBar(
     selectedDestination: BottomNavDestination,
     onDestinationSelected: (BottomNavDestination) -> Unit,
+    destinations: List<BottomNavDestination>,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background
 ) {
@@ -37,7 +46,7 @@ fun BottomNavigationBar(
         modifier = modifier,
         containerColor = containerColor
     ) {
-        BottomNavDestination.entries.forEach { destination ->
+        destinations.forEach { destination ->
             NavigationBarItem(
                 icon = {
                     Icon(

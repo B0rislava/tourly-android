@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components.foundation
+package com.tourly.app.core.presentation.ui.components.foundation
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -9,7 +9,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.sp
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun ClickableText(

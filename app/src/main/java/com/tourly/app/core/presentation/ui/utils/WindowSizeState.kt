@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.utils
+package com.tourly.app.core.presentation.ui.utils
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi

@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.core.presentation.ui.components
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,7 +61,7 @@ fun ImageCropperDialog(
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     // Load bitmap with proper orientation handling
-    androidx.compose.runtime.LaunchedEffect(imageUri) {
+    LaunchedEffect(imageUri) {
         withContext(Dispatchers.IO) {
             try {
                 val originalBitmap = context.contentResolver.openInputStream(imageUri)?.use { inputStream ->

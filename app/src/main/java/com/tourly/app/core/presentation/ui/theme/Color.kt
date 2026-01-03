@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.theme
+package com.tourly.app.core.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components.foundation
+package com.tourly.app.core.presentation.ui.components.foundation
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

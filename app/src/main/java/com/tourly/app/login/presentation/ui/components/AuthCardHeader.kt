@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
-import com.tourly.app.core.ui.components.foundation.AppLogo
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.components.foundation.AppLogo
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun AuthCardHeader(

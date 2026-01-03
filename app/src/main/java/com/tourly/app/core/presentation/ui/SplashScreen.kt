@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui
+package com.tourly.app.core.presentation.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

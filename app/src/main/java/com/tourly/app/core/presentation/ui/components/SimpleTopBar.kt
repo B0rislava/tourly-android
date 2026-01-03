@@ -1,4 +1,4 @@
-package com.tourly.app.core.ui.components
+package com.tourly.app.core.presentation.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
