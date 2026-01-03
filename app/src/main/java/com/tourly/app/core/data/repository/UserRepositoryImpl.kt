@@ -43,7 +43,28 @@ class UserRepositoryImpl @Inject constructor(
                 Result.success(loginResponse.user)
             } else {
                 val errorBody = response.bodyAsText()
-                Result.failure(APIException(response.status.value, "Profile update failed: $errorBody"))
+                Result.failure(
+                    APIException(
+                        response.status.value,
+                        "Profile update failed: $errorBody"
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    override suspend fun uploadProfilePicture(token: String, fileBytes: ByteArray): Result<UserDto> {
+        return try {
+            val response = authApiService.uploadProfilePicture(token, fileBytes)
+            if (response.status.isSuccess()) {
+                val user = response.body<UserDto>()
+                Result.success(user)
+            } else {
+                val errorBody = response.bodyAsText()
+                Result.failure(APIException(response.status.value, "Profile picture upload failed: $errorBody"))
             }
         } catch (e: Exception) {
             Result.failure(e)

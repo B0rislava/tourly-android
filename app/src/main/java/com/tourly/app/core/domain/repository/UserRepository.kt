@@ -6,4 +6,5 @@ import com.tourly.app.core.network.model.UserDto
 interface UserRepository {
     suspend fun getUserProfile(token: String): Result<UserDto>
     suspend fun updateUserProfile(token: String, request: UpdateProfileRequestDto): Result<UserDto>
+    suspend fun uploadProfilePicture(token: String, fileBytes: ByteArray): Result<UserDto>
 }
