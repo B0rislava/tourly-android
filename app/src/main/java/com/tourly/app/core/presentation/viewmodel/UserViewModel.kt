@@ -1,14 +1,17 @@
 package com.tourly.app.core.presentation.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
+import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.storage.TokenManager
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +25,9 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
-    private val tokenManager: TokenManager
+    private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
+    private val tokenManager: TokenManager,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UserUiState>(UserUiState.Idle)
@@ -67,7 +72,8 @@ class UserViewModel @Inject constructor(
                 editState = EditProfileUiState(
                     firstName = currentState.user.firstName,
                     lastName = currentState.user.lastName,
-                    email = currentState.user.email
+                    email = currentState.user.email,
+                    profilePictureUrl = currentState.user.profilePictureUrl
                 )
             )
         }
@@ -108,6 +114,10 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    fun onProfilePictureSelected(uri: android.net.Uri) {
+        updateEditState { it.copy(profilePictureUri = uri) }
+    }
+
     fun saveProfile() {
         val currentState = _uiState.value
         if (currentState !is UserUiState.Success) return
@@ -123,6 +133,36 @@ class UserViewModel @Inject constructor(
             val token = tokenManager.getToken()
             if (token == null) {
                 _uiState.value = UserUiState.Idle
+                return@launch
+            }
+
+            // Upload profile picture if changed
+            var uploadError: String? = null
+            if (currentState.editState.profilePictureUri != null) {
+                try {
+                    val inputStream = context.contentResolver.openInputStream(currentState.editState.profilePictureUri)
+                    val bytes = inputStream?.use { it.readBytes() }
+                    
+                    if (bytes != null) {
+                        updateProfilePictureUseCase(token, bytes)
+                            .onFailure { error ->
+                                uploadError = "Failed to upload image: ${error.message}"
+                            }
+                    } else {
+                        uploadError = "Failed to read image file"
+                    }
+                } catch (e: Exception) {
+                    uploadError = "Error processing image: ${e.message}"
+                }
+            }
+
+            if (uploadError != null) {
+                _uiState.value = currentState.copy(
+                    editState = currentState.editState.copy(
+                        isSaving = false,
+                        saveError = uploadError
+                    )
+                )
                 return@launch
             }
 
