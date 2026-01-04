@@ -21,13 +21,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.tourly.app.R
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import com.tourly.app.login.domain.UserRole
 
 @Composable
 fun ProfileHeader(
     firstName: String,
     lastName: String,
     email: String,
+    role: UserRole,
     profilePictureUrl: String?,
     modifier: Modifier = Modifier
 ) {
@@ -57,6 +59,10 @@ fun ProfileHeader(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+        
+        RoleBadge(role = role)
+        
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "$firstName $lastName",
@@ -81,6 +87,7 @@ private fun ProfileHeaderPreview() {
         firstName = "Ashley",
         lastName = "Watson",
         email = "ashley.watson@example.com",
-        profilePictureUrl = null
+        profilePictureUrl = null,
+        role = UserRole.TRAVELER
     )
 }

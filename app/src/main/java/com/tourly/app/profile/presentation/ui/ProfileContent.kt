@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -16,8 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tourly.app.R
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
+import com.tourly.app.login.domain.UserRole
 
 @Composable
 fun ProfileContent(
@@ -25,6 +32,7 @@ fun ProfileContent(
     firstName: String,
     lastName: String,
     email: String,
+    role: UserRole,
     profilePictureUrl: String?,
     onLogout: () -> Unit,
     onEditProfile: () -> Unit,
@@ -39,6 +47,7 @@ fun ProfileContent(
             firstName = firstName,
             lastName = lastName,
             email = email,
+            role = role,
             profilePictureUrl = profilePictureUrl
         )
 
@@ -46,8 +55,18 @@ fun ProfileContent(
 
         Button(
             onClick = onEditProfile,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = androidx.compose.ui.graphics.Color.White
+            )
         ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(id = R.string.edit_profile),
                 fontFamily = OutfitFamily
@@ -60,10 +79,16 @@ fun ProfileContent(
             onClick = onLogout,
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                contentColor = MaterialTheme.colorScheme.primary
             )
         ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.Logout,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(id = R.string.logout),
                 fontFamily = OutfitFamily

@@ -17,7 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import com.tourly.app.login.domain.UserRole
 
 @Composable
 fun ProfileScreen(
@@ -82,6 +83,7 @@ fun ProfileScreen(
                         firstName = state.user.firstName,
                         lastName = state.user.lastName,
                         email = state.user.email,
+                        role = state.user.role,
                         profilePictureUrl = state.user.profilePictureUrl,
                         onLogout = onLogout,
                         onEditProfile = userViewModel::startEditing
@@ -106,6 +108,7 @@ private fun ProfileContentPreview() {
         firstName = "Ashley",
         lastName = "Watson",
         email = "ashley.watson@example.com",
+        role = UserRole.GUIDE,
         profilePictureUrl = null,
         onLogout = {},
         onEditProfile = {}
