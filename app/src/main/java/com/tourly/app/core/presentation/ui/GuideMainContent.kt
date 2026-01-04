@@ -1,6 +1,5 @@
 package com.tourly.app.core.presentation.ui
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -10,9 +9,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
@@ -24,6 +21,7 @@ import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.dashboard.presentation.ui.DashboardScreen
 import com.tourly.app.profile.presentation.ui.ProfileScreen
 import com.tourly.app.home.presentation.ui.GuideHomeScreen
+import com.tourly.app.create_tour.presentation.ui.CreateTourScreen
 
 @Composable
 fun GuideMainContent(
@@ -47,8 +45,16 @@ fun GuideMainContent(
                     selectedDestination.label
                 },
                 navigationIcon = {
-                    if (isEditingProfile) {
-                        IconButton(onClick = onCancelEdit) {
+                    val onBack: (() -> Unit)? = when {
+                        isEditingProfile -> onCancelEdit
+                        selectedDestination == BottomNavDestination.CREATE_TOUR -> {
+                            { onDestinationSelected(BottomNavDestination.GUIDE_HOME) }
+                        }
+                        else -> null
+                    }
+
+                    if (onBack != null) {
+                        IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back"
@@ -91,12 +97,9 @@ fun GuideMainContent(
                 )
             }
             BottomNavDestination.CREATE_TOUR -> {
-                Box(
-                    modifier = Modifier.padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Create Tour Screen - Coming Soon")
-                }
+                CreateTourScreen(
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
             BottomNavDestination.CHAT -> {
                 ChatScreen(
