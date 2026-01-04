@@ -1,4 +1,4 @@
-package com.tourly.app.create_tour.presentation.ui.components
+package com.tourly.app.create_tour.presentation.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +38,12 @@ import androidx.compose.ui.unit.sp
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.create_tour.domain.TourType
 import com.tourly.app.create_tour.presentation.state.CreateTourUiState
+import com.tourly.app.create_tour.presentation.ui.components.AddPhotoPlaceholder
+import com.tourly.app.create_tour.presentation.ui.components.CustomTextField
+import com.tourly.app.create_tour.presentation.ui.components.DayInputCard
+import com.tourly.app.create_tour.presentation.ui.components.PricingRow
+import com.tourly.app.create_tour.presentation.ui.components.SectionTitle
+import com.tourly.app.create_tour.presentation.ui.components.TourTypeCard
 
 @Composable
 fun CreateTourContent(
@@ -160,13 +166,13 @@ fun CreateTourContent(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 SectionTitle(
-                    title = if(state.type == TourType.MULTI_DAY) "Total Days" else "Duration",
+                    title = if (state.type == TourType.MULTI_DAY) "Total Days" else "Duration",
                     icon = Icons.Outlined.AccessTime
                 )
                 CustomTextField(
                     value = state.duration,
                     onValueChange = onDurationChanged,
-                    placeholder = if(state.type == TourType.MULTI_DAY) "2 days" else "e.g., 3 hours",
+                    placeholder = if (state.type == TourType.MULTI_DAY) "2 days" else "e.g., 3 hours",
                     keyboardType = if (state.type == TourType.MULTI_DAY) KeyboardType.Number else KeyboardType.Text
                 )
             }

@@ -5,7 +5,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.tourly.app.create_tour.presentation.ui.components.CreateTourContent
 import com.tourly.app.create_tour.presentation.viewmodel.CreateTourViewModel
 
 @Composable
