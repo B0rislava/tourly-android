@@ -44,8 +44,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.tourly.app.R
-import com.tourly.app.core.ui.components.ImageCropperDialog
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.components.ImageCropperDialog
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import com.tourly.app.profile.presentation.ui.components.EditProfileTextField
 

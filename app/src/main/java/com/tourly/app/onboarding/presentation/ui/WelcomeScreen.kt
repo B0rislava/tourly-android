@@ -3,9 +3,9 @@ package com.tourly.app.onboarding.presentation.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import com.tourly.app.core.ui.theme.TourlyTheme
+import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import android.content.res.Configuration
-import com.tourly.app.core.ui.utils.WindowSizeState
+import com.tourly.app.core.presentation.ui.utils.WindowSizeState
 
 @Preview(
     name = "1. Small Phone (hdpi)",

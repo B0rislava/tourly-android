@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.tourly.app.R
-import com.tourly.app.core.ui.components.SimpleTopBar
+import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 
 @Composable
 fun SettingsScreen(

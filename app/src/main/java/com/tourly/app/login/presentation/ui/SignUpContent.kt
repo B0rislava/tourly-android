@@ -22,9 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tourly.app.R
-import com.tourly.app.core.ui.components.foundation.ClickableText
-import com.tourly.app.core.ui.components.foundation.PrimaryButton
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.components.foundation.ClickableText
+import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.ui.components.RoleSelector
 import com.tourly.app.login.presentation.ui.components.FirstNameTextField

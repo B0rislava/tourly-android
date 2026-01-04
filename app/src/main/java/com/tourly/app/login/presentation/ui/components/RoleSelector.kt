@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CardTravel
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,7 +61,7 @@ fun RoleSelector(
         Row(modifier = Modifier.fillMaxSize()) {
             RoleButton(
                 text = "Traveler",
-                icon = Icons.Outlined.Person,
+                icon = Icons.Outlined.CardTravel,
                 isActive = selectedRole == UserRole.TRAVELER,
                 onClick = { onRoleSelected(UserRole.TRAVELER) },
                 modifier = Modifier.weight(1f)
@@ -69,7 +69,7 @@ fun RoleSelector(
 
             RoleButton(
                 text = "Guide",
-                icon = Icons.Outlined.CardTravel,
+                icon = Icons.Outlined.Explore,
                 isActive = selectedRole == UserRole.GUIDE,
                 onClick = { onRoleSelected(UserRole.GUIDE) },
                 modifier = Modifier.weight(1f)

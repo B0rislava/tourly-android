@@ -18,10 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tourly.app.R
 import com.tourly.app.login.presentation.ui.components.AuthCardHeader
-import com.tourly.app.core.ui.components.foundation.ClickableText
+import com.tourly.app.core.presentation.ui.components.foundation.ClickableText
 import com.tourly.app.login.presentation.ui.components.EmailTextField
 import com.tourly.app.login.presentation.ui.components.PasswordTextField
-import com.tourly.app.core.ui.components.foundation.PrimaryButton
+import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
 
 @Composable
 fun SignInContent(

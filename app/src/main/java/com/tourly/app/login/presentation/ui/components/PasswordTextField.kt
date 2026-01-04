@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.tourly.app.R
-import com.tourly.app.core.ui.components.foundation.AppTextField
+import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 
 @Composable
 fun PasswordTextField(

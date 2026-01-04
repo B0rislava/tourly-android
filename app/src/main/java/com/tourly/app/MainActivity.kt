@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.tourly.app.core.ui.theme.TourlyTheme
+import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

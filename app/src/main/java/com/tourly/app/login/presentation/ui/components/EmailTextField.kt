@@ -6,7 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
-import com.tourly.app.core.ui.components.foundation.AppTextField
+import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 
 @Composable
 fun EmailTextField(

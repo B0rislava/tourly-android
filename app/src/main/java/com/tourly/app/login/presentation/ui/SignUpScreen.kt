@@ -7,7 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.tourly.app.core.ui.theme.TourlyTheme
+import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.viewmodel.SignUpViewModel
 

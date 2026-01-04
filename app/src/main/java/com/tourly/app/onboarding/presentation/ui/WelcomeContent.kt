@@ -1,6 +1,6 @@
 package com.tourly.app.onboarding.presentation.ui
 
-import com.tourly.app.core.ui.utils.WindowSizeState
+import com.tourly.app.core.presentation.ui.utils.WindowSizeState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,9 +24,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tourly.app.R
-import com.tourly.app.core.ui.components.foundation.AppLogoWithText
-import com.tourly.app.core.ui.components.foundation.OutlinedPillButton
-import com.tourly.app.core.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.components.foundation.AppLogoWithText
+import com.tourly.app.core.presentation.ui.components.foundation.OutlinedPillButton
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun WelcomeContent(
