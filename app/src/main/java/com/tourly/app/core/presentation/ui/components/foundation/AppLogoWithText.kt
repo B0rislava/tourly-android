@@ -31,7 +31,7 @@ fun AppLogoWithText(
             fontFamily = OutfitFamily,
             fontWeight = FontWeight.ExtraBold,
             fontSize = fontSize,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.tertiary
         )
     }
 }

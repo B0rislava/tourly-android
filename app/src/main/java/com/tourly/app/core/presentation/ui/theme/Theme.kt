@@ -20,14 +20,22 @@ fun ThemeColors.toColorScheme(darkTheme: Boolean): ColorScheme {
             surface = surface,
             onSurface = primary,
 
+            surfaceVariant = cardBackground,
+            onSurfaceVariant = text,
+
             primary = primary,
             onPrimary = background,
 
-            secondary = accent,
-            onSecondary = background,
+            secondary = secondary,
+
+            tertiary = tertiary,
+            onTertiary = secondaryText,
 
             error = error,
-            onError = background
+            onError = background,
+
+            surfaceContainer = cardBackground,
+            outline = cardBorder
         )
     } else {
         lightColorScheme(
@@ -37,14 +45,22 @@ fun ThemeColors.toColorScheme(darkTheme: Boolean): ColorScheme {
             surface = surface,
             onSurface = primary,
 
+            surfaceVariant = cardBackground,
+            onSurfaceVariant = text,
+
             primary = primary,
             onPrimary = background,
 
-            secondary = accent,
-            onSecondary = background,
+            secondary = secondary,
+
+            tertiary = tertiary,
+            onTertiary = secondaryText,
 
             error = error,
-            onError = background
+            onError = background,
+
+            surfaceContainer = cardBackground,
+            outline = cardBorder
         )
     }
 }

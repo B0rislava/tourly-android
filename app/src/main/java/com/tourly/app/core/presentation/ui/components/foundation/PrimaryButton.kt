@@ -1,9 +1,11 @@
 package com.tourly.app.core.presentation.ui.components.foundation
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,24 +21,34 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     containerColor: Color,
-    contentColor: Color
+    contentColor: Color,
+    isLoading: Boolean = false
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
+        enabled = enabled && !isLoading,
         shape = RoundedCornerShape(size = 12.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,
-            disabledContainerColor = containerColor.copy(alpha = 0.5f),
-            disabledContentColor = contentColor.copy(alpha = 0.5f)
+            disabledContainerColor = if (isLoading) containerColor else containerColor.copy(alpha = 0.5f),
+            disabledContentColor = if (isLoading) contentColor else contentColor.copy(alpha = 0.5f)
         ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
     ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = contentColor,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

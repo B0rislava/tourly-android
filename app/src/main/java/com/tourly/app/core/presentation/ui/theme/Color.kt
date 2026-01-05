@@ -5,27 +5,51 @@ import androidx.compose.ui.graphics.Color
 sealed class ThemeColors(
     val background: Color,
     val surface: Color,
+
     val primary: Color,
-    val accent: Color,
+    val secondary: Color,
+    val tertiary: Color,
+
     val text: Color,
-    val error: Color
+    val secondaryText: Color,
+
+    val error: Color,
+
+    val cardBackground: Color,
+    val cardBorder: Color
 ) {
 
     object LightColors : ThemeColors(
         background = Color(0xFFFAF7FF),
         surface = Color(0xFFF5ECFD),
-        primary = Color(0xFFF18F66),
-        accent = Color(0xFF9B6B9E),
+
+        primary = Color(0xFFF59466),
+        secondary = Color(0xFFFFB789),
+        tertiary = Color(0xFFB16DB4),
+
         text = Color(0xFF3D2645),
-        error = Color(0xFFDB211C)
+        secondaryText = Color(0xFFFFFFFF),
+
+        error = Color(0xFFE55B4D),
+
+        cardBackground = Color(0xFFFFFFFF),
+        cardBorder = Color(0xFFF5ECFD),
     )
 
     object DarkColors : ThemeColors(
-        background = Color(0xFF1A0E2E),
-        surface = Color(0xFF2D1B3D),
-        primary = Color(0xFFC77A5B),
-        accent = Color(0xFFC89FCA),
+        background = Color(0xFF230E2E),
+        surface = Color(0xFF381B3D),
+
+        primary = Color(0xFFC7745B),
+        secondary = Color(0xFFEAAC82),
+        tertiary = Color(0xFFB885B0),
+
         text = Color(0xFFFFF5ED),
+        secondaryText = Color(0xFFAC91BF),
+
         error = Color(0xFFFF6B6B),
+
+        cardBackground = Color(0xFF3F204C),
+        cardBorder = Color(0xFF673778),
     )
 }
