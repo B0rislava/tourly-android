@@ -1,150 +1,140 @@
 package com.tourly.app.create_tour.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.tourly.app.create_tour.domain.TourType
+import androidx.lifecycle.viewModelScope
+import com.tourly.app.create_tour.domain.exception.CreateTourException
+import com.tourly.app.create_tour.domain.model.CreateTourParams
 import com.tourly.app.create_tour.domain.usecase.CreateTourUseCase
 import com.tourly.app.create_tour.presentation.state.CreateTourUiState
-import com.tourly.app.create_tour.presentation.state.DayProgramme
+import com.tourly.app.create_tour.presentation.util.CreateTourEvent
+import com.tourly.app.create_tour.presentation.util.InputFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateTourViewModel @Inject constructor(
-    private val createTourUseCase: CreateTourUseCase
+    private val createTourUseCase: CreateTourUseCase,
+    private val inputFormatter: InputFormatter
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CreateTourUiState(
-        days = listOf(DayProgramme(1, ""), DayProgramme(2, "")) // Default 2 days
-    ))
+    private val _uiState = MutableStateFlow(CreateTourUiState())
     val uiState: StateFlow<CreateTourUiState> = _uiState.asStateFlow()
 
-    fun onTourTypeChanged(type: TourType) {
-        _uiState.update {
-            it.copy(type = type)
-        }
-    }
+    private val _events = Channel<CreateTourEvent>()
+    val events = _events.receiveAsFlow()
 
     fun onTitleChanged(title: String) {
-        _uiState.update { it.copy(title = title) }
+        _uiState.update { it.copy(title = title, titleError = null) }
     }
 
     fun onDescriptionChanged(description: String) {
-        _uiState.update { it.copy(description = description) }
+        _uiState.update { it.copy(description = description, descriptionError = null) }
     }
 
     fun onDurationChanged(duration: String) {
-        val isValid = if (_uiState.value.type == TourType.SINGLE_DAY) {
-            // Regex for positive integer or decimal (e.g., "3", "3.5")
-            // Empty allowed while typing
-            duration.isEmpty() || duration.matches(Regex("^\\d*\\.?\\d*$"))
-        } else {
-            // For Multi-Day, user might type manually, standard is integer
-            duration.isEmpty() || duration.all { char -> char.isDigit() }
-        }
-
-        if (isValid) {
-            _uiState.update { it.copy(duration = duration) }
-            
-            // Sync days if Multi-Day and valid number
-            if (_uiState.value.type == TourType.MULTI_DAY && duration.isNotEmpty()) {
-                onTotalDaysChanged(duration)
-            }
-        }
+        val formatted = inputFormatter.formatDuration(duration)
+        _uiState.update { it.copy(duration = formatted, durationError = null) }
     }
 
     fun onLocationChanged(location: String) {
-        _uiState.update { it.copy(location = location) }
+        _uiState.update { it.copy(location = location, locationError = null) }
     }
 
     fun onMaxGroupSizeChanged(sizeStr: String) {
-         // Allow only numbers
-         if (sizeStr.isEmpty() || sizeStr.all { it.isDigit() }) {
-             _uiState.update { 
-                 it.copy(maxGroupSize = sizeStr.toIntOrNull() ?: 0) 
-             }
-         }
+        val formatted = inputFormatter.formatGroupSize(sizeStr)
+        _uiState.update { it.copy(maxGroupSize = formatted, maxGroupSizeError = null) }
     }
 
-    fun onPriceChanged(price: Double) {
-        _uiState.update { it.copy(pricePerPerson = price) }
+    fun onPriceChanged(priceStr: String) {
+        val formatted = inputFormatter.formatPrice(priceStr)
+        _uiState.update { it.copy(pricePerPerson = formatted, priceError = null) }
     }
 
     fun onWhatsIncludedChanged(included: String) {
         _uiState.update { it.copy(whatsIncluded = included) }
     }
 
+    fun onScheduledDateChanged(date: Long?) {
+        _uiState.update { it.copy(scheduledDate = date, dateError = null) }
+    }
 
-    fun onAddDay() {
-        _uiState.update { currentState ->
-            val currentDays = currentState.days ?: emptyList()
-            val newDays = currentDays.toMutableList().apply {
-                add(DayProgramme(dayNumber = size + 1, description = ""))
-            }
-            currentState.copy(
-                days = newDays,
-                duration = newDays.size.toString()
-            )
+    fun onCreateTour() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            val params = mapToParams(_uiState.value)
+
+            createTourUseCase(params)
+                .onSuccess {
+                    _uiState.update { state -> state.copy(isLoading = false) }
+                    resetState()
+                    _events.send(CreateTourEvent.Success)
+                }
+                .onFailure { error ->
+                    handleError(error)
+                    _events.send(CreateTourEvent.Error(error.message ?: "Failed to create tour"))
+                }
         }
     }
 
-    fun onRemoveDay(index: Int) {
-        _uiState.update { currentState ->
-            val currentDays = currentState.days ?: emptyList()
-            if (currentDays.size > 2) {
-                val newDays = currentDays.toMutableList().apply {
-                   removeAt(index)
-                }
-                // Renumber days
-                val renumberedDays = newDays.mapIndexed { i, day ->
-                    day.copy(dayNumber = i + 1)
-                }
-                currentState.copy(
-                    days = renumberedDays,
-                    duration = renumberedDays.size.toString()
-                )
-            } else {
-                currentState
+    private fun mapToParams(state: CreateTourUiState): CreateTourParams {
+        return CreateTourParams(
+            title = state.title,
+            description = state.description,
+            location = state.location,
+            duration = formatDurationToHHmm(state.duration),
+            maxGroupSize = state.maxGroupSize.toIntOrNull() ?: 0,
+            pricePerPerson = state.pricePerPerson.toDoubleOrNull() ?: 0.0,
+            whatsIncluded = state.whatsIncluded.ifBlank { null },
+            scheduledDate = state.scheduledDate?.let {
+                Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
+            }
+        )
+    }
+
+    private fun handleError(error: Throwable) {
+        _uiState.update { state ->
+            when (error) {
+                is CreateTourException.InvalidTitle ->
+                    state.copy(isLoading = false, titleError = error.message)
+                is CreateTourException.InvalidDescription ->
+                    state.copy(isLoading = false, descriptionError = error.message)
+                is CreateTourException.InvalidLocation ->
+                    state.copy(isLoading = false, locationError = error.message)
+                is CreateTourException.InvalidDuration,
+                is CreateTourException.InvalidDurationRange ->
+                    state.copy(isLoading = false, durationError = error.message)
+                is CreateTourException.InvalidGroupSize ->
+                    state.copy(isLoading = false, maxGroupSizeError = error.message)
+                is CreateTourException.InvalidPrice ->
+                    state.copy(isLoading = false, priceError = error.message)
+                is CreateTourException.DateRequired,
+                is CreateTourException.DateInPast ->
+                    state.copy(isLoading = false, dateError = error.message)
+                else ->
+                    state.copy(isLoading = false, createTourError = error.message)
             }
         }
     }
 
-    fun onDayDescriptionChanged(index: Int, description: String) {
-        _uiState.update { currentState ->
-            val currentDays = currentState.days ?: emptyList()
-            if (index in currentDays.indices) {
-                val newDays = currentDays.toMutableList().apply {
-                    this[index] = this[index].copy(description = description)
-                }
-                currentState.copy(days = newDays)
-            } else {
-                currentState
-            }
-        }
+    private fun formatDurationToHHmm(digits: String): String {
+        val padded = digits.padStart(4, '0')
+        return "${padded.take(2)}:${padded.substring(2)}"
     }
 
-    private fun onTotalDaysChanged(totalDaysStr: String) {
-        val totalDays = totalDaysStr.toIntOrNull()
-        if (totalDays != null && totalDays >= 2) {
-             _uiState.update { currentState ->
-                 val currentDays = currentState.days ?: emptyList()
-                 val newDays = currentDays.toMutableList()
-                 
-                 if (totalDays > currentDays.size) {
-                     repeat(totalDays - currentDays.size) {
-                         newDays.add(DayProgramme(dayNumber = newDays.size + 1, description = ""))
-                     }
-                 } else if (totalDays < currentDays.size) {
-                     repeat(currentDays.size - totalDays) {
-                         newDays.removeAt(newDays.lastIndex)
-                     }
-                 }
-                 
-                 currentState.copy(days = newDays)
-             }
-        }
+    fun resetState() {
+        _uiState.update { CreateTourUiState() }
     }
 }
+
+
+

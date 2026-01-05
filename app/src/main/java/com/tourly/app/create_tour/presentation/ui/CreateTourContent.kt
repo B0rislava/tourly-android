@@ -1,6 +1,5 @@
 package com.tourly.app.create_tour.presentation.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,57 +8,55 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.AttachMoney
-import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.tourly.app.core.presentation.ui.theme.OutfitFamily
-import com.tourly.app.create_tour.domain.TourType
+import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
 import com.tourly.app.create_tour.presentation.state.CreateTourUiState
 import com.tourly.app.create_tour.presentation.ui.components.AddPhotoPlaceholder
 import com.tourly.app.create_tour.presentation.ui.components.CustomTextField
-import com.tourly.app.create_tour.presentation.ui.components.DayInputCard
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
+import com.tourly.app.create_tour.presentation.ui.components.DurationVisualTransformation
 import com.tourly.app.create_tour.presentation.ui.components.PricingRow
-import com.tourly.app.create_tour.presentation.ui.components.SectionTitle
-import com.tourly.app.create_tour.presentation.ui.components.TourTypeCard
+import com.tourly.app.create_tour.presentation.ui.components.TourDatePickerDialog
+import com.tourly.app.home.presentation.ui.components.SectionTitle
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
 fun CreateTourContent(
     modifier: Modifier = Modifier,
     state: CreateTourUiState,
-    onTourTypeChanged: (TourType) -> Unit,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onLocationChanged: (String) -> Unit,
     onDurationChanged: (String) -> Unit,
     onMaxGroupSizeChanged: (String) -> Unit,
-    onPriceChanged: (Double) -> Unit,
+    onPriceChanged: (String) -> Unit,
     onWhatsIncludedChanged: (String) -> Unit,
-    onAddDay: () -> Unit,
-    onRemoveDay: (Int) -> Unit,
-    onDayDescriptionChanged: (Int, String) -> Unit,
+    onScheduledDateChanged: (Long?) -> Unit,
     onCreateTour: () -> Unit
 ) {
     Column(
@@ -69,94 +66,90 @@ fun CreateTourContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        SectionTitle(title = "Tour Type")
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            TourTypeCard(
-                title = "Single Day",
-                subtitle = "One day tour",
-                selected = state.type == TourType.SINGLE_DAY,
-                onClick = { onTourTypeChanged(TourType.SINGLE_DAY) },
-                modifier = Modifier.weight(1f)
-            )
-            TourTypeCard(
-                title = "Multi-Day",
-                subtitle = "Multiple days",
-                selected = state.type == TourType.MULTI_DAY,
-                onClick = { onTourTypeChanged(TourType.MULTI_DAY) },
-                modifier = Modifier.weight(1f)
-            )
-        }
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_images),
+            icon = Icons.Outlined.Image
+        )
+        AddPhotoPlaceholder()
 
-        // Single Day: Images first
-        if (state.type == TourType.SINGLE_DAY) {
-            SectionTitle(title = "Tour Images")
-            AddPhotoPlaceholder()
-            Text(
-                "Add up to 5 photos of your tour",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
-                fontFamily = OutfitFamily
-            )
-        }
-
-        // Title & Description
-        SectionTitle(title = "Tour Title")
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_title),
+            icon = Icons.Outlined.BookmarkBorder
+        )
         CustomTextField(
             value = state.title,
             onValueChange = onTitleChanged,
-            placeholder = "e.g., Hidden Gems of Old Town"
+            placeholder = stringResource(id = R.string.tour_title_example),
+            error = state.titleError
         )
 
-        SectionTitle(title = "Description")
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_description),
+            icon = Icons.Outlined.BookmarkBorder
+        )
         CustomTextField(
             value = state.description,
             onValueChange = onDescriptionChanged,
-            placeholder = "Describe your tour experience, what travelers will see and do...",
+            placeholder = stringResource(id = R.string.tour_description_example),
             singleLine = false,
-            minLines = 4
+            minLines = 4,
+            error = state.descriptionError
         )
 
         // TODO: Map location
 
-        SectionTitle(title = "Location", icon = Icons.Outlined.LocationOn)
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_location),
+            icon = Icons.Outlined.LocationOn
+        )
         CustomTextField(
             value = state.location,
             onValueChange = onLocationChanged,
-            placeholder = "e.g., Barcelona, Spain"
+            placeholder = stringResource(id = R.string.tour_location_example),
+            error = state.locationError
         )
 
-        // Day-by-Day Programme (Multi-Day)
-        if (state.type == TourType.MULTI_DAY) {
-            SectionTitle(title = "Day-by-Day Programme", icon = Icons.Outlined.CalendarToday)
 
-            state.days?.forEachIndexed { index, day ->
-                DayInputCard(
-                    dayNumber = day.dayNumber,
-                    description = day.description,
-                    onDescriptionChange = { onDayDescriptionChanged(index, it) },
-                    canRemove = (state.days.size) > 2,
-                    onRemove = { onRemoveDay(index) }
-                )
+        var showDatePicker by remember { mutableStateOf(false) }
+
+        TourDatePickerDialog(
+            show = showDatePicker,
+            selectedDateMillis = state.scheduledDate,
+            onConfirm = {
+                onScheduledDateChanged(it)
+                showDatePicker = false
+            },
+            onDismiss = {
+                showDatePicker = false
             }
+        )
 
-            OutlinedButton(
-                onClick = onAddDay,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFFE0E0E0))
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, tint = Color.Black)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Day", color = Color.Black, fontFamily = OutfitFamily)
-            }
-
-            // Images AFTER days for Multi-Day
-            Spacer(modifier = Modifier.height(8.dp))
-            SectionTitle(title = "Tour Images")
-            AddPhotoPlaceholder()
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_date),
+            icon = Icons.Outlined.CalendarToday
+        )
+        Box {
+            CustomTextField(
+                value = state.scheduledDate?.let {
+                    Instant.ofEpochMilli(it)
+                        .atZone(ZoneId.of("UTC"))
+                        .toLocalDate()
+                        .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+                } ?: "",
+                onValueChange = {},
+                placeholder = stringResource(id = R.string.tour_date_example),
+                error = state.dateError
+            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable { showDatePicker = true }
+            )
         }
 
         // Duration / Group / Pricing
@@ -166,69 +159,77 @@ fun CreateTourContent(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 SectionTitle(
-                    title = if (state.type == TourType.MULTI_DAY) "Total Days" else "Duration",
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.tour_duration),
                     icon = Icons.Outlined.AccessTime
                 )
+                Spacer(Modifier.height(10.dp))
+
                 CustomTextField(
                     value = state.duration,
                     onValueChange = onDurationChanged,
-                    placeholder = if (state.type == TourType.MULTI_DAY) "2 days" else "e.g., 3 hours",
-                    keyboardType = if (state.type == TourType.MULTI_DAY) KeyboardType.Number else KeyboardType.Text
+                    placeholder = stringResource(id = R.string.tour_duration_example),
+                    keyboardType = KeyboardType.Number,
+                    visualTransformation = DurationVisualTransformation(),
+                    error = state.durationError
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
-                SectionTitle(title = "Max Group", icon = Icons.Outlined.Group)
+                SectionTitle(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.tour_max_group),
+                    icon = Icons.Outlined.Group
+                )
+                Spacer(Modifier.height(10.dp))
+
                 CustomTextField(
-                    value = state.maxGroupSize.toString(),
+                    value = state.maxGroupSize,
                     onValueChange = onMaxGroupSizeChanged,
-                    placeholder = "e.g., 10",
-                    keyboardType = KeyboardType.Number
+                    placeholder = stringResource(id = R.string.tour_max_group_example),
+                    keyboardType = KeyboardType.Number,
+                    error = state.maxGroupSizeError
                 )
             }
         }
 
-        SectionTitle(title = "Pricing", icon = Icons.Outlined.AttachMoney)
-        Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color(0xFFF0F0F0))
-        ) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                PricingRow(
-                    label = "Price per person",
-                    value = state.pricePerPerson.toString(),
-                    onValueChange = { onPriceChanged(it.toDoubleOrNull() ?: 0.0) }
-                )
-            }
-        }
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_price),
+            icon = Icons.Outlined.AttachMoney
+        )
 
-        SectionTitle(title = "What's Included")
+        PricingRow(
+            label = stringResource(id = R.string.tour_price_per_person),
+            value = state.pricePerPerson,
+            onValueChange = onPriceChanged,
+            isError = state.priceError != null,
+            errorMessage = state.priceError
+        )
+
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_included),
+            icon = Icons.Outlined.Add
+        )
         CustomTextField(
             value = state.whatsIncluded,
             onValueChange = onWhatsIncludedChanged,
-            placeholder = "e.g., Local snacks, transportation, entrance fees...",
+            placeholder = stringResource(id = R.string.tour_included_example),
             singleLine = false,
             minLines = 3
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
+        PrimaryButton(
+            text = stringResource(id = R.string.create_tour),
             onClick = onCreateTour,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Text(
-                "Create Tour Listing",
-                fontSize = 18.sp,
-                fontFamily = OutfitFamily,
-                fontWeight = FontWeight.Bold
-            )
-        }
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            isLoading = state.isLoading
+        )
     }
 }
