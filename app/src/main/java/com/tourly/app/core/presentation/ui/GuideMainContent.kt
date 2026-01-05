@@ -98,6 +98,7 @@ fun GuideMainContent(
             }
             BottomNavDestination.CREATE_TOUR -> {
                 CreateTourScreen(
+                    snackbarHostState = snackbarHostState,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
