@@ -3,11 +3,12 @@ package com.tourly.app.core.domain.usecase
 import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.network.model.UserDto
 import javax.inject.Inject
+import com.tourly.app.core.network.Result
 
 class UpdateProfilePictureUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val repository: UserRepository
 ) {
     suspend operator fun invoke(fileBytes: ByteArray): Result<UserDto> {
-        return userRepository.uploadProfilePicture(fileBytes)
+        return repository.uploadProfilePicture(fileBytes)
     }
 }

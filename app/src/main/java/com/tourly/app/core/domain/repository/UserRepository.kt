@@ -2,6 +2,7 @@ package com.tourly.app.core.domain.repository
 
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import com.tourly.app.core.network.model.UserDto
+import com.tourly.app.core.network.Result
 
 interface UserRepository {
     suspend fun getUserProfile(): Result<UserDto>
