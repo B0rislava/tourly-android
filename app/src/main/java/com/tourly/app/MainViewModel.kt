@@ -34,7 +34,7 @@ class MainViewModel @Inject constructor(
                 var userRole: UserRole? = null
 
                 if (isLoggedIn && token != null) {
-                    val result = userRepository.getUserProfile(token)
+                    val result = userRepository.getUserProfile()
                     result.onSuccess { userDto ->
                         userRole = userDto.role
                     }.onFailure {
@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(
 
     fun logout(onLogoutComplete: () -> Unit) {
         viewModelScope.launch {
-            tokenManager.clearToken()
+            userRepository.logout()
             onLogoutComplete()
         }
     }

@@ -55,7 +55,7 @@ class UserViewModel @Inject constructor(
     private suspend fun fetchUserProfile(token: String) {
         _uiState.value = UserUiState.Loading
         
-        getUserProfileUseCase(token)
+        getUserProfileUseCase()
             .onSuccess { user ->
                 _uiState.value = UserUiState.Success(user)
             }
@@ -144,7 +144,7 @@ class UserViewModel @Inject constructor(
                     val bytes = inputStream?.use { it.readBytes() }
                     
                     if (bytes != null) {
-                        updateProfilePictureUseCase(token, bytes)
+                        updateProfilePictureUseCase(bytes)
                             .onFailure { error ->
                                 uploadError = "Failed to upload image: ${error.message}"
                             }
@@ -173,7 +173,7 @@ class UserViewModel @Inject constructor(
                 password = currentState.editState.password.ifBlank { null }
             )
 
-            updateUserProfileUseCase(token, request)
+            updateUserProfileUseCase(request)
                 .onSuccess { updatedUser ->
                     _uiState.value = UserUiState.Success(
                         user = updatedUser,

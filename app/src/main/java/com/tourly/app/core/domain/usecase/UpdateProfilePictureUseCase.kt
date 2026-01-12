@@ -7,7 +7,7 @@ import javax.inject.Inject
 class UpdateProfilePictureUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(token: String, fileBytes: ByteArray): Result<UserDto> {
-        return userRepository.uploadProfilePicture(token, fileBytes)
+    suspend operator fun invoke(fileBytes: ByteArray): Result<UserDto> {
+        return userRepository.uploadProfilePicture(fileBytes)
     }
 }
