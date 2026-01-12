@@ -8,6 +8,7 @@ import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import com.tourly.app.core.presentation.state.UserUiState
+import com.tourly.app.core.network.Result
 import com.tourly.app.core.storage.TokenManager
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +45,7 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             tokenManager.getTokenFlow().collectLatest { token ->
                 if (token != null) {
-                    fetchUserProfile(token)
+                    fetchUserProfile()
                 } else {
                     _uiState.value = UserUiState.Idle
                 }
@@ -52,16 +53,17 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchUserProfile(token: String) {
+    private suspend fun fetchUserProfile() {
         _uiState.value = UserUiState.Loading
         
-        getUserProfileUseCase()
-            .onSuccess { user ->
-                _uiState.value = UserUiState.Success(user)
+        when (val result = getUserProfileUseCase()) {
+            is Result.Success -> {
+                _uiState.value = UserUiState.Success(result.data)
             }
-            .onFailure { error ->
-                _uiState.value = UserUiState.Error(error.message ?: "Failed to load profile")
+            is Result.Error -> {
+                _uiState.value = UserUiState.Error(result.message)
             }
+        }
     }
 
     fun startEditing() {
@@ -144,10 +146,10 @@ class UserViewModel @Inject constructor(
                     val bytes = inputStream?.use { it.readBytes() }
                     
                     if (bytes != null) {
-                        updateProfilePictureUseCase(bytes)
-                            .onFailure { error ->
-                                uploadError = "Failed to upload image: ${error.message}"
-                            }
+                        val result = updateProfilePictureUseCase(bytes)
+                        if (result is Result.Error) {
+                            uploadError = "Failed to upload image: ${result.message}"
+                        }
                     } else {
                         uploadError = "Failed to read image file"
                     }
@@ -173,22 +175,23 @@ class UserViewModel @Inject constructor(
                 password = currentState.editState.password.ifBlank { null }
             )
 
-            updateUserProfileUseCase(request)
-                .onSuccess { updatedUser ->
+            when (val result = updateUserProfileUseCase(request)) {
+                is Result.Success -> {
                     _uiState.value = UserUiState.Success(
-                        user = updatedUser,
+                        user = result.data,
                         isEditing = false
                     )
                     _events.send("Profile updated successfully")
                 }
-                .onFailure { error ->
+                is Result.Error -> {
                     _uiState.value = currentState.copy(
                         editState = currentState.editState.copy(
                             isSaving = false,
-                            saveError = error.message ?: "Failed to update profile"
+                            saveError = result.message
                         )
                     )
                 }
+            }
         }
     }
 

@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.repository.UserRepository
+import com.tourly.app.core.network.Result
 import com.tourly.app.core.storage.TokenManager
 import com.tourly.app.login.domain.UserRole
+import com.tourly.app.core.network.model.UserDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,13 +35,18 @@ class MainViewModel @Inject constructor(
                 val isLoggedIn = token != null
                 var userRole: UserRole? = null
 
-                if (isLoggedIn && token != null) {
-                    val result = userRepository.getUserProfile()
-                    result.onSuccess { userDto ->
-                        userRole = userDto.role
-                    }.onFailure {
-                        // TODO: Handle error
-                        Log.e("MainViewModel", "Failed to fetch user profile", it)
+                if (isLoggedIn) {
+                    when (val result = userRepository.getUserProfile()) {
+                         is Result.Success<UserDto> -> {
+                             userRole = result.data.role
+                         }
+                         is Result.Error -> {
+                             // Profile fetch failed - likely invalid/expired token
+                             // Clear tokens and treat as logged out
+                             Log.e("MainViewModel", "Failed to fetch user profile: ${result.message}")
+                             tokenManager.clearToken()
+                             tokenManager.clearRefreshToken()
+                         }
                     }
                 }
 

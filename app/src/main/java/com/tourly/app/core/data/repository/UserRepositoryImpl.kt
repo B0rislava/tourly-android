@@ -2,19 +2,17 @@ package com.tourly.app.core.data.repository
 
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.tourly.app.core.network.util.APIException
 import com.tourly.app.core.network.api.AuthApiService
 import com.tourly.app.core.network.model.UserDto
 import com.tourly.app.core.network.model.LoginResponseDto
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.storage.TokenManager
-import io.ktor.http.isSuccess
-import io.ktor.client.call.body
 import io.ktor.client.HttpClient
-import io.ktor.client.statement.bodyAsText
 import io.ktor.client.plugins.auth.authProvider
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import com.tourly.app.core.network.Result
+import com.tourly.app.core.network.NetworkResponseMapper
 
 @Singleton
 class UserRepositoryImpl @Inject constructor(
@@ -24,55 +22,25 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
 
     override suspend fun getUserProfile(): Result<UserDto> {
-        return try {
-            val response = authApiService.getProfile()
-            if (response.status.isSuccess()) {
-                val user = response.body<UserDto>()
-                Result.success(user)
-            } else {
-                val errorBody = response.bodyAsText()
-                Result.failure(APIException(response.status.value, "Profile fetch failed: $errorBody"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        val response = authApiService.getProfile()
+        return NetworkResponseMapper.map<UserDto>(response)
     }
 
     override suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<UserDto> {
-        return try {
-            val response = authApiService.updateProfile(request)
-            if (response.status.isSuccess()) {
-                val loginResponse = response.body<LoginResponseDto>()
-                tokenManager.saveToken(loginResponse.token)
-                Result.success(loginResponse.user)
-            } else {
-                val errorBody = response.bodyAsText()
-                Result.failure(
-                    APIException(
-                        response.status.value,
-                        "Profile update failed: $errorBody"
-                    )
-                )
+        val response = authApiService.updateProfile(request)
+        return when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
+            is Result.Success -> {
+                tokenManager.saveToken(result.data.token)
+                Result.Success(result.data.user)
             }
-        } catch (e: Exception) {
-            Result.failure(e)
+            is Result.Error -> result
         }
     }
 
 
     override suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<UserDto> {
-        return try {
-            val response = authApiService.uploadProfilePicture(fileBytes)
-            if (response.status.isSuccess()) {
-                val user = response.body<UserDto>()
-                Result.success(user)
-            } else {
-                val errorBody = response.bodyAsText()
-                Result.failure(APIException(response.status.value, "Profile picture upload failed: $errorBody"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        val response = authApiService.uploadProfilePicture(fileBytes)
+        return NetworkResponseMapper.map<UserDto>(response)
     }
 
     override suspend fun logout() {
