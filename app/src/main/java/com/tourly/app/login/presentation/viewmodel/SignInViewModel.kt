@@ -2,8 +2,9 @@ package com.tourly.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tourly.app.login.domain.usecase.SignInUseCase
 import com.tourly.app.login.presentation.state.SignInUiState
+import com.tourly.app.core.network.Result
+import com.tourly.app.login.domain.usecase.SignInUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,21 +62,22 @@ class SignInViewModel @Inject constructor(
                 )
             }
 
-            val result = signInUseCase(currentState.email, currentState.password)
-
-            result.onSuccess {
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        isSuccess = true
-                    )
+            when (val result = signInUseCase(currentState.email, currentState.password)) {
+                is Result.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            isSuccess = true
+                        )
+                    }
                 }
-            }.onFailure { error ->
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        loginError = error.message ?: "Login failed"
-                    )
+                is Result.Error -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            loginError = result.message
+                        )
+                    }
                 }
             }
         }

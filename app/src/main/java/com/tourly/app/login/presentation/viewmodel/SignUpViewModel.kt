@@ -6,6 +6,7 @@ import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.domain.usecase.SignUpUseCase
 import com.tourly.app.login.domain.usecase.SignInUseCase
 import com.tourly.app.login.presentation.state.SignUpUiState
+import com.tourly.app.core.network.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,39 +77,44 @@ class SignUpViewModel @Inject constructor(
                 )
             }
 
-            val result = signUpUseCase(
+
+            when (val result = signUpUseCase(
                 email = currentState.email,
                 password = currentState.password,
                 firstName = currentState.firstName,
                 lastName = currentState.lastName,
                 role = currentState.role
-            )
-
-            result.onSuccess {
-                // Auto-login after successful registration
-                val loginResult = signInUseCase(currentState.email, currentState.password)
-                
-                loginResult.onSuccess {
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            isSuccess = true
-                        )
-                    }
-                }.onFailure { error ->
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            signUpError = "Registration successful, but login failed: ${error.message}"
-                        )
+            )) {
+                is Result.Success -> {
+                    // Auto-login after successful registration
+                    val loginResult = signInUseCase(currentState.email, currentState.password)
+                    
+                    when (loginResult) {
+                        is Result.Success -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    isSuccess = true
+                                )
+                            }
+                        }
+                        is Result.Error -> {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    signUpError = "Registration successful, but login failed: ${loginResult.message}"
+                                )
+                            }
+                        }
                     }
                 }
-            }.onFailure { error ->
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        signUpError = error.message ?: "Sign up failed"
-                    )
+                is Result.Error -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            signUpError = result.message
+                        )
+                    }
                 }
             }
         }
