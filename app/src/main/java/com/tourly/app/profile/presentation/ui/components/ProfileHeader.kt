@@ -53,7 +53,7 @@ fun ProfileHeader(
                 .clip(CircleShape)
                 .border(
                     width = 3.dp,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     shape = CircleShape
                 )
         )

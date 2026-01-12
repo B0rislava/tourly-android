@@ -14,9 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
-import androidx.compose.ui.res.stringResource
-import com.tourly.app.R
-import com.tourly.app.core.presentation.ui.components.foundation.AppLogo
+import com.tourly.app.core.presentation.ui.components.foundation.AppLogoWithText
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
@@ -31,15 +29,7 @@ fun AuthCardHeader(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            AppLogo()
-
-            Text(
-                text = stringResource(id = R.string.app_name),
-                fontFamily = OutfitFamily,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 32.sp,
-                color = MaterialTheme.colorScheme.secondary
-            )
+            AppLogoWithText()
         }
 
         Spacer(modifier = Modifier.height(height = 12.dp))

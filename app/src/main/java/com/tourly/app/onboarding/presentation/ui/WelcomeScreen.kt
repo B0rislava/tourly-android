@@ -39,12 +39,10 @@ annotation class DevicePreviews
 fun WelcomeScreen(
     windowSizeState: WindowSizeState,
     onGetStartedClick: () -> Unit = {},
-    onTestConnectionClick: () -> Unit = {}
 ) {
     WelcomeContent(
         windowSizeState = windowSizeState,
         onGetStartedClick = onGetStartedClick,
-        onTestConnectionClick = onTestConnectionClick
     )
 }
 

@@ -14,7 +14,6 @@ import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
 import com.tourly.app.settings.presentation.ui.SettingsScreen
-import com.tourly.app.test.presentation.ui.TestConnectionScreen
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.tourly.app.MainActivityUiState
@@ -69,9 +68,6 @@ fun NavigationRoot(
                             windowSizeState = windowSizeState,
                             onGetStartedClick = {
                                 backStack.add(Route.SignUp)
-                            },
-                            onTestConnectionClick = {
-                                backStack.add(Route.TestConnection)
                             }
                         )
                     }
@@ -98,15 +94,6 @@ fun NavigationRoot(
                             onSignUpSuccess = {
                                 backStack.clear()
                                 backStack.add(Route.TravelerMain)
-                            }
-                        )
-                    }
-                }
-                is Route.TestConnection -> {
-                    NavEntry(key) {
-                        TestConnectionScreen(
-                            onNavigateBack = {
-                                backStack.removeLastOrNull()
                             }
                         )
                     }

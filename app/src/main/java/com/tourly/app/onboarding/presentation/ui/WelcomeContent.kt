@@ -32,7 +32,6 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 fun WelcomeContent(
     windowSizeState: WindowSizeState,
     onGetStartedClick: () -> Unit,
-    onTestConnectionClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -47,7 +46,6 @@ fun WelcomeContent(
             isCompactHeight = isCompactHeight,
             isExpandedWidth = isExpandedWidth,
             onGetStartedClick = onGetStartedClick,
-            onTestConnectionClick = onTestConnectionClick
         )
     }
 }
@@ -57,7 +55,6 @@ private fun WelcomeContentLayout(
     isCompactHeight: Boolean,
     isExpandedWidth: Boolean,
     onGetStartedClick: () -> Unit,
-    onTestConnectionClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -99,14 +96,6 @@ private fun WelcomeContentLayout(
             OutlinedPillButton(
                 text = "Start Now",
                 onClick = onGetStartedClick,
-                modifier = Modifier.wrapContentWidth()
-            )
-            
-            Spacer(modifier = Modifier.height(height = 12.dp))
-            
-            OutlinedPillButton(
-                text = "Test Connection",
-                onClick = onTestConnectionClick,
                 modifier = Modifier.wrapContentWidth()
             )
 

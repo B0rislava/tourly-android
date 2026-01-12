@@ -18,6 +18,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import java.security.KeyStore
+import androidx.core.content.edit
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tourly_secure_prefs")
 
@@ -32,6 +34,12 @@ abstract class StorageModule {
     ): TokenManager
 
     companion object {
+
+        private const val KEYSET_NAME = "master_keyset"
+        private const val KEYSET_PREF_NAME = "master_key_preference"
+        private const val MASTER_KEY_URI = "android-keystore://master_key"
+        private const val MASTER_KEY_ALIAS = "master_key"
+
         @Provides
         @Singleton
         fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
@@ -43,17 +51,48 @@ abstract class StorageModule {
         fun provideAead(@ApplicationContext context: Context): Aead {
             AeadConfig.register()
 
+            return try {
+                getAeadPrimitive(context)
+            } catch (e: Exception) {
+                // If the key is invalid (e.g. after reinstall), clear everything and recreate
+                clearCorruptedKeys(context)
+                getAeadPrimitive(context)
+            }
+        }
+
+        private fun getAeadPrimitive(context: Context): Aead {
             val keysetHandle = AndroidKeysetManager.Builder()
-                .withSharedPref(context, "master_keyset", "master_key_preference")
+                .withSharedPref(context, KEYSET_NAME, KEYSET_PREF_NAME)
                 .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
-                .withMasterKeyUri("android-keystore://master_key")
+                .withMasterKeyUri(MASTER_KEY_URI)
                 .build()
                 .keysetHandle
+
 
             return keysetHandle.getPrimitive(
                 RegistryConfiguration.get(),
                 Aead::class.java
             )
+        }
+
+        private fun clearCorruptedKeys(context: Context) {
+            try {
+                // Clear the SharedPreferences containing the keyset
+                context.getSharedPreferences(KEYSET_PREF_NAME, Context.MODE_PRIVATE)
+                    .edit {
+                        clear()
+                    }
+
+                // Delete the master key from Android Keystore
+                val keyStore = KeyStore.getInstance("AndroidKeyStore")
+                keyStore.load(null)
+                if (keyStore.containsAlias(MASTER_KEY_ALIAS)) {
+                    keyStore.deleteEntry(MASTER_KEY_ALIAS)
+                }
+            } catch (e: Exception) {
+                // Log the error but don't crash
+                e.printStackTrace()
+            }
         }
     }
 }

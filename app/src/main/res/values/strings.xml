@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name" translatable="false">Tourly</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="register">Register</string>
+
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="have_account">Already have an account?</string>
+
+    <string name="welcome_abroad">Welcome Abroad!</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="welcome_subtitle">Stay organized, connected, and ready for every adventure.</string>
+
+    <string name="adventure_awaits">Your next adventure awaits.</string>
+    <string name="journey_starts">Your journey starts here.</string>
+    <string name="discover_journey">Discover Your Next Journey</string>
+
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+
+    <string name="edit_profile">Edit Profile</string>
+    <string name="settings">Settings</string>
+
+    <string name="profile_title">Profile</string>
+    <string name="tour_images">Images</string>
+    <string name="tour_title">Title</string>
+    <string name="tour_title_example">e.g., Hidden Gems of Old Town</string>
+    <string name="tour_description">Description</string>
+    <string name="tour_description_example">Describe your tour experience, what travelers will see and do…</string>
+    <string name="tour_location">Location</string>
+    <string name="tour_location_example">e.g., Barcelona, Spain</string>
+    <string name="tour_date">Date</string>
+    <string name="tour_date_example">Select a date</string>
+    <string name="tour_duration">Duration</string>
+    <string name="tour_duration_example">e.g. 02:30</string>
+    <string name="tour_max_group">Max Group</string>
+    <string name="tour_max_group_example">e.g., 10</string>
+    <string name="tour_price">Pricing</string>
+    <string name="tour_price_per_person">Price per person</string>
+    <string name="tour_included">What\'s included</string>
+    <string name="tour_included_example">e.g., Local snacks, transportation, entrance fees…</string>
+    <string name="create_tour">Create Tour</string>
+
+
+</resources>

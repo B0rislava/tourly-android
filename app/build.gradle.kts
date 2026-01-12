@@ -1,3 +1,7 @@
+import java.io.FileInputStream
+import java.net.URI
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +10,20 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+val devBaseUrl: String =
+    localProperties.getProperty("DEV_BASE_URL")
+        ?: System.getenv("DEV_BASE_URL")
+        ?: "http://10.0.2.2:8080/api/"
+
+val devBaseHost: String = URI(devBaseUrl).host
+
 
 android {
     namespace = "com.tourly.app"
@@ -19,6 +37,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        buildConfigField("String", "BASE_URL", "\"$devBaseUrl\"")
+        buildConfigField("String", "BASE_HOST", "\"$devBaseHost\"")
     }
 
     buildTypes {
@@ -41,6 +62,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -77,6 +99,7 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.auth)
 
     implementation(libs.google.tink.android)
     implementation(libs.androidx.datastore.preferences)
