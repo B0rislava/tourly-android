@@ -7,7 +7,4 @@ sealed class Result<out T> {
         val message: String,
         val errors: Map<String, String>? = null
     ) : Result<Nothing>()
-    
-    val isSuccess: Boolean get() = this is Success
-    val isError: Boolean get() = this is Error
 }
