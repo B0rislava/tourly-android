@@ -79,7 +79,8 @@ fun MainContent(
         when (selectedDestination) {
             BottomNavDestination.TRAVELER_HOME -> {
                 HomeScreen(
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
+                    onSessionExpired = onLogout
                 )
             }
             BottomNavDestination.TRAVELER_DASHBOARD -> {
