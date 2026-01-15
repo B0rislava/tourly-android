@@ -122,6 +122,7 @@ object NetworkModule {
 
             defaultRequest {
                 url(BuildConfig.BASE_URL)
+                contentType(ContentType.Application.Json)
             }
         }
     }
