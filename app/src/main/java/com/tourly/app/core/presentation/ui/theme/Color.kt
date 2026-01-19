@@ -20,7 +20,7 @@ sealed class ThemeColors(
 ) {
 
     object LightColors : ThemeColors(
-        background = Color(0xFFFAF7FF),
+        background = Color(0xFFFFFFFF),
         surface = Color(0xFFF5ECFD),
 
         primary = Color(0xFFF59466),
@@ -32,7 +32,7 @@ sealed class ThemeColors(
 
         error = Color(0xFFE55B4D),
 
-        cardBackground = Color(0xFFFFFFFF),
+        cardBackground = Color(0xFFF6F3FA),
         cardBorder = Color(0xFFF5ECFD),
     )
 
