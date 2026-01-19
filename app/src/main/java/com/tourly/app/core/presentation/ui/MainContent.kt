@@ -37,33 +37,35 @@ fun MainContent(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            SimpleTopBar(
-                title = if (isEditingProfile) {
-                    stringResource(id = R.string.edit_profile)
-                } else {
-                    selectedDestination.label
-                },
-                navigationIcon = {
-                    if (isEditingProfile) {
-                        IconButton(onClick = onCancelEdit) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
+            if (selectedDestination != BottomNavDestination.TRAVELER_HOME) {
+                SimpleTopBar(
+                    title = if (isEditingProfile) {
+                        stringResource(id = R.string.edit_profile)
+                    } else {
+                        selectedDestination.label
+                    },
+                    navigationIcon = {
+                        if (isEditingProfile) {
+                            IconButton(onClick = onCancelEdit) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back"
+                                )
+                            }
+                        }
+                    },
+                    actions = {
+                        if (selectedDestination == BottomNavDestination.PROFILE && !isEditingProfile) {
+                            IconButton(onClick = onNavigateToSettings) {
+                                Icon(
+                                    imageVector = Icons.Filled.Settings,
+                                    contentDescription = stringResource(id = R.string.settings)
+                                )
+                            }
                         }
                     }
-                },
-                actions = {
-                    if (selectedDestination == BottomNavDestination.PROFILE && !isEditingProfile) {
-                        IconButton(onClick = onNavigateToSettings) {
-                            Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = stringResource(id = R.string.settings)
-                            )
-                        }
-                    }
-                }
-            )
+                )
+            }
         },
         bottomBar = {
             if (!isEditingProfile) {
@@ -78,8 +80,10 @@ fun MainContent(
     ) { paddingValues ->
         when (selectedDestination) {
             BottomNavDestination.TRAVELER_HOME -> {
+                // If TopBar is hidden, paddingValues top is 0. 
+                // We pass paddingValues to handle BottomBar.
                 HomeScreen(
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()), // Apply only bottom padding, let Home manage top
                     onSessionExpired = onLogout
                 )
             }
