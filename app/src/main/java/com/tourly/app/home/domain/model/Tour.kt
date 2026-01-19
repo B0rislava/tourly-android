@@ -1,9 +1,6 @@
-package com.tourly.app.core.network.model
+package com.tourly.app.home.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class CreateTourResponseDto(
+data class Tour(
     val id: Long,
     val tourGuideId: Long,
     val guideName: String,

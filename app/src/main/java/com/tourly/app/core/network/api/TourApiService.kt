@@ -20,4 +20,8 @@ class TourApiService @Inject constructor(
     suspend fun getMyTours(): HttpResponse {
         return client.get("tours/my")
     }
+
+    suspend fun getAllTours(): HttpResponse {
+        return client.get("tours")
+    }
 }
