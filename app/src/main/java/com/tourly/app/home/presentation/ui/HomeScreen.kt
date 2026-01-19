@@ -54,7 +54,7 @@ fun HomeScreen(
             onCategoryChange = viewModel::onCategoryChange,
             onRefresh = viewModel::refreshData,
             greeting = greeting,
-            userName = userProfile?.firstName ?: "Traveler", // Fallback name
+            userName = userProfile?.fullName ?: "Traveler", // Fallback name
             isDarkTheme = isDarkTheme,
             onThemeToggle = viewModel::toggleTheme,
             isRefreshing = isRefreshing,

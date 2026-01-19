@@ -14,6 +14,9 @@ import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.NetworkResponseMapper
 
+import com.tourly.app.core.domain.model.User
+import com.tourly.app.core.data.mapper.UserMapper
+
 @Singleton
 class UserRepositoryImpl @Inject constructor(
     private val authApiService: AuthApiService,
@@ -21,26 +24,32 @@ class UserRepositoryImpl @Inject constructor(
     private val client: HttpClient
 ) : UserRepository {
 
-    override suspend fun getUserProfile(): Result<UserDto> {
+    override suspend fun getUserProfile(): Result<User> {
         val response = authApiService.getProfile()
-        return NetworkResponseMapper.map<UserDto>(response)
+        return when (val result = NetworkResponseMapper.map<UserDto>(response)) {
+             is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
+             is Result.Error -> result
+        }
     }
 
-    override suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<UserDto> {
+    override suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<User> {
         val response = authApiService.updateProfile(request)
         return when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
             is Result.Success -> {
                 tokenManager.saveToken(result.data.token)
-                Result.Success(result.data.user)
+                Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> result
         }
     }
 
 
-    override suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<UserDto> {
+    override suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<User> {
         val response = authApiService.uploadProfilePicture(fileBytes)
-        return NetworkResponseMapper.map<UserDto>(response)
+        return when (val result = NetworkResponseMapper.map<UserDto>(response)) {
+            is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
+            is Result.Error -> result
+        }
     }
 
     override suspend fun logout() {

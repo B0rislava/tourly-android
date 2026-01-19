@@ -28,7 +28,7 @@ class UserViewModel @Inject constructor(
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
     private val tokenManager: TokenManager,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UserUiState>(UserUiState.Idle)
