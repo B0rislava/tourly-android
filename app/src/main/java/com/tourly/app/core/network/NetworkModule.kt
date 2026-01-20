@@ -49,13 +49,15 @@ object NetworkModule {
             install(Auth) {
                 bearer {
                     loadTokens {
+                        println("HTTP Client: loadTokens called - attempting to load from storage...")
                         val accessToken = tokenManager.getToken()
                         val refreshToken = tokenManager.getRefreshToken()
                         println("HTTP Client: loadTokens - Access: ${accessToken?.take(10)}..., Refresh: ${refreshToken?.take(10)}...")
                         if (accessToken != null && refreshToken != null) {
+                            println("HTTP Client: loadTokens - Returning valid tokens")
                             BearerTokens(accessToken, refreshToken)
                         } else {
-                            println("HTTP Client: loadTokens - Returning NULL tokens due to missing token(s)")
+                            println("HTTP Client: loadTokens - Returning NULL tokens (Access=${accessToken != null}, Refresh=${refreshToken != null})")
                             null
                         }
                     }

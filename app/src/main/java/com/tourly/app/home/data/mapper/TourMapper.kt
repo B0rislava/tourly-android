@@ -17,7 +17,17 @@ object TourMapper {
             pricePerPerson = dto.pricePerPerson,
             scheduledDate = dto.scheduledDate,
             createdAt = dto.createdAt,
-            status = dto.status
+            status = dto.status,
+            rating = dto.rating,
+            reviewsCount = dto.reviewsCount,
+            meetingPoint = dto.meetingPoint,
+            imageUrl = dto.imageUrl,
+            cancellationPolicy = dto.cancellationPolicy,
+            whatsIncluded = dto.whatsIncluded,
+            guideBio = dto.guideBio,
+            guideRating = dto.guideRating,
+            guideToursCompleted = dto.guideToursCompleted,
+            guideImageUrl = dto.guideImageUrl
         )
     }
 
