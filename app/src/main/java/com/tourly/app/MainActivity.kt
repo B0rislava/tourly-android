@@ -7,6 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @AndroidEntryPoint
 
@@ -15,8 +18,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TourlyTheme() {
-                NavigationRoot()
+            val viewModel: MainViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsState()
+            
+            val isDarkTheme = when(val state = uiState) {
+                is MainActivityUiState.Success -> state.isDarkTheme
+                else -> false
+            }
+
+            TourlyTheme(darkTheme = isDarkTheme) {
+                NavigationRoot(viewModel = viewModel)
             }
         }
     }

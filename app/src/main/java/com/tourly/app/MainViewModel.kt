@@ -3,26 +3,47 @@ package com.tourly.app
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.core.domain.repository.ThemeRepository
 import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.storage.TokenManager
 import com.tourly.app.login.domain.UserRole
-import com.tourly.app.core.network.model.UserDto
+import com.tourly.app.core.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val tokenManager: TokenManager,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val themeRepository: ThemeRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<MainActivityUiState>(MainActivityUiState.Loading)
-    val uiState: StateFlow<MainActivityUiState> = _uiState.asStateFlow()
+    private val _sessionState = MutableStateFlow<SessionState>(SessionState.Loading)
+    
+    val uiState: StateFlow<MainActivityUiState> = combine(
+        _sessionState,
+        themeRepository.isDarkTheme
+    ) { session, isDark ->
+        when (session) {
+            is SessionState.Loading -> MainActivityUiState.Loading
+            is SessionState.Success -> MainActivityUiState.Success(
+                isUserLoggedIn = session.isLoggedIn,
+                userRole = session.userRole,
+                isDarkTheme = isDark
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = MainActivityUiState.Loading
+    )
 
     init {
         checkSession()
@@ -37,7 +58,7 @@ class MainViewModel @Inject constructor(
 
                 if (isLoggedIn) {
                     when (val result = userRepository.getUserProfile()) {
-                         is Result.Success<UserDto> -> {
+                         is Result.Success<User> -> {
                              userRole = result.data.role
                          }
                          is Result.Error -> {
@@ -49,12 +70,7 @@ class MainViewModel @Inject constructor(
                          }
                     }
                 }
-
-                Log.d("MainViewModel", "checkSession: Updating isUserLoggedIn to $isLoggedIn, role=$userRole")
-                _uiState.value = MainActivityUiState.Success(
-                    isUserLoggedIn = isLoggedIn,
-                    userRole = userRole
-                )
+                _sessionState.value = SessionState.Success(isLoggedIn, userRole)
             }
         }
     }

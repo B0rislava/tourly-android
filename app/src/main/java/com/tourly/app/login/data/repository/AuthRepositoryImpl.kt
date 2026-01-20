@@ -51,8 +51,9 @@ class AuthRepositoryImpl @Inject constructor(
         val result = NetworkResponseMapper.map<RegisterResponseDto>(response)
         
         if (result is Result.Success) {
-            tokenManager.saveToken(result.data.token)
-            tokenManager.saveRefreshToken(result.data.refreshToken)
+            println("AuthRepository: Registration successful, saving tokens atomically...")
+            tokenManager.saveTokens(result.data.token, result.data.refreshToken)
+            println("AuthRepository: Tokens saved successfully")
         }
 
         return result

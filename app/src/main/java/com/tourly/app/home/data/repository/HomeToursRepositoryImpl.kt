@@ -25,4 +25,17 @@ class HomeToursRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getTourDetails(id: Long): Result<Tour> {
+        return try {
+            val result = NetworkResponseMapper.map<CreateTourResponseDto>(apiService.getTour(id))
+
+            when (result) {
+                is NetworkResult.Success -> Result.success(TourMapper.toDomain(result.data))
+                is NetworkResult.Error -> Result.failure(Exception(result.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

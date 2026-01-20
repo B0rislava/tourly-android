@@ -24,4 +24,8 @@ class TourApiService @Inject constructor(
     suspend fun getAllTours(): HttpResponse {
         return client.get("tours")
     }
+
+    suspend fun getTour(id: Long): HttpResponse {
+        return client.get("tours/$id")
+    }
 }

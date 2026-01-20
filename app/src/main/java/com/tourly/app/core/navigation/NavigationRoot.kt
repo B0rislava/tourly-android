@@ -3,6 +3,8 @@ package com.tourly.app.core.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.tourly.app.core.presentation.ui.GuideMainScreen
+import com.tourly.app.home.presentation.ui.TourDetailsScreen
+import com.tourly.app.home.presentation.viewmodel.TourDetailsViewModel
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.core.presentation.ui.utils.rememberWindowSizeState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -110,6 +112,9 @@ fun NavigationRoot(
                             },
                             onNavigateToSettings = {
                                 backStack.add(Route.Settings)
+                            },
+                            onTourClick = { tourId ->
+                                backStack.add(Route.TourDetails(tourId))
                             }
                         )
                     }
@@ -126,6 +131,9 @@ fun NavigationRoot(
                             },
                             onNavigateToSettings = {
                                 backStack.add(Route.Settings)
+                            },
+                                onTourClick = { tourId ->
+                                backStack.add(Route.TourDetails(tourId))
                             }
                         )
                     }
@@ -134,6 +142,22 @@ fun NavigationRoot(
                     NavEntry(key) {
                         SettingsScreen(
                             onNavigateBack = {
+                                backStack.removeLastOrNull()
+                            }
+                        )
+                    }
+                }
+                is Route.TourDetails -> {
+                    NavEntry(key) {
+                        val viewModel = hiltViewModel<TourDetailsViewModel>()
+                        val tourId = key.tourId
+                        LaunchedEffect(tourId) {
+                            viewModel.loadTour(tourId)
+                        }
+                        
+                        TourDetailsScreen(
+                            viewModel = viewModel,
+                            onBackClick = {
                                 backStack.removeLastOrNull()
                             }
                         )

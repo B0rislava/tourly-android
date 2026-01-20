@@ -20,7 +20,7 @@ import com.tourly.app.core.presentation.ui.components.BottomNavigationBar
 import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.dashboard.presentation.ui.DashboardScreen
 import com.tourly.app.profile.presentation.ui.ProfileScreen
-import com.tourly.app.home.presentation.ui.GuideHomeScreen
+import com.tourly.app.home.presentation.ui.HomeScreen
 import com.tourly.app.create_tour.presentation.ui.CreateTourScreen
 
 @Composable
@@ -38,41 +38,44 @@ fun GuideMainContent(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            SimpleTopBar(
-                title = if (isEditingProfile) {
-                    stringResource(id = R.string.edit_profile)
-                } else {
-                    selectedDestination.label
-                },
-                navigationIcon = {
-                    val onBack: (() -> Unit)? = when {
-                        isEditingProfile -> onCancelEdit
-                        selectedDestination == BottomNavDestination.CREATE_TOUR -> {
-                            { onDestinationSelected(BottomNavDestination.GUIDE_HOME) }
-                        }
-                        else -> null
-                    }
 
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
+            if (selectedDestination != BottomNavDestination.GUIDE_HOME) {
+                SimpleTopBar(
+                    title = if (isEditingProfile) {
+                        stringResource(id = R.string.edit_profile)
+                    } else {
+                        selectedDestination.label
+                    },
+                    navigationIcon = {
+                        val onBack: (() -> Unit)? = when {
+                            isEditingProfile -> onCancelEdit
+                            selectedDestination == BottomNavDestination.CREATE_TOUR -> {
+                                { onDestinationSelected(BottomNavDestination.GUIDE_HOME) }
+                            }
+                            else -> null
+                        }
+
+                        if (onBack != null) {
+                            IconButton(onClick = onBack) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back"
+                                )
+                            }
+                        }
+                    },
+                    actions = {
+                        if (selectedDestination == BottomNavDestination.PROFILE && !isEditingProfile) {
+                            IconButton(onClick = onNavigateToSettings) {
+                                Icon(
+                                    imageVector = Icons.Filled.Settings,
+                                    contentDescription = stringResource(id = R.string.settings)
+                                )
+                            }
                         }
                     }
-                },
-                actions = {
-                    if (selectedDestination == BottomNavDestination.PROFILE && !isEditingProfile) {
-                        IconButton(onClick = onNavigateToSettings) {
-                            Icon(
-                                imageVector = Icons.Filled.Settings,
-                                contentDescription = stringResource(id = R.string.settings)
-                            )
-                        }
-                    }
-                }
-            )
+                )
+            }
         },
         bottomBar = {
             if (!isEditingProfile) {
@@ -87,8 +90,9 @@ fun GuideMainContent(
     ) { paddingValues ->
         when (selectedDestination) {
             BottomNavDestination.GUIDE_HOME -> {
-                GuideHomeScreen(
-                    modifier = Modifier.padding(paddingValues)
+                HomeScreen(
+                    onSessionExpired = onLogout,
+                    modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
                 )
             }
             BottomNavDestination.GUIDE_DASHBOARD -> {
