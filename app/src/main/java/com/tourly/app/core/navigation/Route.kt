@@ -20,6 +20,9 @@ sealed interface Route: NavKey {
 
     @Serializable
     data object GuideMain : Route, NavKey
+
+    @Serializable
+    data class TourDetails(val tourId: Long) : Route, NavKey
     
     // Bottom Navigation Routes
     @Serializable
