@@ -38,6 +38,7 @@ fun HomeContent(
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit,
     isRefreshing: Boolean,
+    onTourClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -113,7 +114,10 @@ fun HomeContent(
                     } else {
                         items(uiState.tours, key = { it.id }) { tour ->
                             Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                TourItemCard(tour = tour)
+                                TourItemCard(
+                                    tour = tour,
+                                    onClick = { onTourClick(tour.id) }
+                                )
                             }
                         }
                     }

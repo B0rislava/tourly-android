@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.Clock
 import java.time.LocalTime
@@ -93,8 +94,24 @@ class HomeViewModel @Inject constructor(
     val events = _events.receiveAsFlow()
 
     init {
-        loadUserProfile()
+        observeTokenChanges()
         updateGreeting()
+    }
+    
+    private fun observeTokenChanges() {
+        viewModelScope.launch {
+            userRepository.getTokenFlow().collectLatest { hasToken ->
+                if (hasToken) {
+                    loadUserProfile()
+                } else {
+                    _userProfile.value = null
+                    _allTours.value = emptyList()
+                    _isLoading.value = false
+                    _isRefreshing.value = false
+                    _error.value = null
+                }
+            }
+        }
     }
 
     fun onSearchQueryChange(query: String) {

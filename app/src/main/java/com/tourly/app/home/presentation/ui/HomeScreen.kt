@@ -18,7 +18,8 @@ import com.tourly.app.home.presentation.viewmodel.HomeViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
-    onSessionExpired: () -> Unit
+    onSessionExpired: () -> Unit,
+    onTourClick: (Long) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -58,6 +59,7 @@ fun HomeScreen(
             isDarkTheme = isDarkTheme,
             onThemeToggle = viewModel::toggleTheme,
             isRefreshing = isRefreshing,
+            onTourClick = onTourClick,
             modifier = Modifier.padding(paddingValues)
         )
     }
