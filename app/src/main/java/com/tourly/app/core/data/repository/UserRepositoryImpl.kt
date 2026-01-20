@@ -13,9 +13,11 @@ import io.ktor.client.plugins.auth.authProvider
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.NetworkResponseMapper
+import kotlinx.coroutines.flow.map
 
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.data.mapper.UserMapper
+import kotlinx.coroutines.flow.Flow
 
 @Singleton
 class UserRepositoryImpl @Inject constructor(
@@ -60,5 +62,9 @@ class UserRepositoryImpl @Inject constructor(
         tokenManager.clearRefreshToken()
         client.authProvider<BearerAuthProvider>()?.clearToken()
         println("UserRepository: Token cleared via Standard Ktor Auth Clear - logout complete")
+    }
+    
+    override fun getTokenFlow(): Flow<Boolean> {
+        return tokenManager.getTokenFlow().map { it != null }
     }
 }
