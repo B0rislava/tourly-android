@@ -57,6 +57,7 @@ fun CreateTourContent(
     onPriceChanged: (String) -> Unit,
     onWhatsIncludedChanged: (String) -> Unit,
     onScheduledDateChanged: (Long?) -> Unit,
+    onImageSelected: () -> Unit,
     onCreateTour: () -> Unit
 ) {
     Column(
@@ -71,7 +72,10 @@ fun CreateTourContent(
             title = stringResource(id = R.string.tour_images),
             icon = Icons.Outlined.Image
         )
-        AddPhotoPlaceholder()
+        AddPhotoPlaceholder(
+            selectedImageUri = state.imageUri,
+            onClick = onImageSelected
+        )
 
         SectionTitle(
             modifier = Modifier,

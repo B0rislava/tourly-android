@@ -1,5 +1,8 @@
 package com.tourly.app.create_tour.presentation.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -20,6 +23,12 @@ fun CreateTourScreen(
     viewModel: CreateTourViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { viewModel.onImageSelected(it) }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { event ->
@@ -54,6 +63,11 @@ fun CreateTourScreen(
         onPriceChanged = viewModel::onPriceChanged,
         onWhatsIncludedChanged = viewModel::onWhatsIncludedChanged,
         onScheduledDateChanged = viewModel::onScheduledDateChanged,
+        onImageSelected = {
+            imagePickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        },
         onCreateTour = viewModel::onCreateTour
     )
 }
