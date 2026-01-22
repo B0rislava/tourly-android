@@ -1,6 +1,8 @@
 package com.tourly.app.home.presentation.ui.components
 
-import androidx.compose.foundation.Image
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,9 +62,15 @@ fun TourItemCard(
                     .fillMaxWidth()
                     .height(200.dp)
             ) {
-                // Placeholder tour image
-                Image(
-                    painter = painterResource(id = R.drawable.tour_placeholder),
+                // Tour image
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(tour.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(id = R.drawable.tour_placeholder),
+                    error = painterResource(id = R.drawable.tour_placeholder),
+                    fallback = painterResource(id = R.drawable.tour_placeholder),
                     contentDescription = "Tour image",
                     modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.Crop
