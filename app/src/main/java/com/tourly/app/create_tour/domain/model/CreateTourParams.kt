@@ -1,5 +1,6 @@
 package com.tourly.app.create_tour.domain.model
 
+import android.net.Uri
 import java.time.LocalDate
 
 data class CreateTourParams(
@@ -10,5 +11,6 @@ data class CreateTourParams(
     val maxGroupSize: Int,
     val pricePerPerson: Double,
     val whatsIncluded: String?,
-    val scheduledDate: LocalDate?
+    val scheduledDate: LocalDate?,
+    val imageUri: Uri? = null
 )
