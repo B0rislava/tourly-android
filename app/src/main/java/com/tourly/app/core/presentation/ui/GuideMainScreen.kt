@@ -16,6 +16,7 @@ fun GuideMainScreen(
     windowSizeState: WindowSizeState,
     onLogout: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onTourClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedDestination by rememberSaveable {
@@ -38,6 +39,7 @@ fun GuideMainScreen(
         },
         onNavigateToSettings = onNavigateToSettings,
         onLogout = onLogout,
+        onTourClick = onTourClick,
         onEditingStateChange = { isEditing, cancelCallback ->
             isEditingProfile = isEditing
             onCancelEdit = cancelCallback
