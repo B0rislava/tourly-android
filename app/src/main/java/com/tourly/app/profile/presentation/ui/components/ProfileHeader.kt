@@ -14,13 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.tourly.app.R
+import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
 
@@ -33,7 +29,6 @@ fun ProfileHeader(
     profilePictureUrl: String?,
     modifier: Modifier = Modifier
 ) {
-    val defaultPainter = painterResource(id = R.drawable.ic_default_avatar)
 
     Column(
         modifier = modifier
@@ -42,20 +37,17 @@ fun ProfileHeader(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        AsyncImage(
-            model = profilePictureUrl,
-            contentDescription = "Profile Picture",
-            contentScale = ContentScale.Crop,
-            placeholder = defaultPainter,
-            error = defaultPainter,
+        UserAvatar(
+            imageUrl = profilePictureUrl,
+            name = "$firstName $lastName",
             modifier = Modifier
                 .size(120.dp)
-                .clip(CircleShape)
                 .border(
                     width = 3.dp,
                     color = MaterialTheme.colorScheme.tertiary,
                     shape = CircleShape
-                )
+                ),
+            textStyle = MaterialTheme.typography.displayMedium
         )
 
         Spacer(modifier = Modifier.height(16.dp))

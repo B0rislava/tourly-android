@@ -105,11 +105,22 @@ fun HomeContent(
                     // 4. Tour List
                     if (uiState.tours.isEmpty()) {
                         item {
-                            EmptyState(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 32.dp)
-                            )
+                            if (searchQuery.isNotEmpty()) {
+                                EmptyState(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp),
+                                    // TODO: Strings.xml
+                                    title = "No results found",
+                                    description = "We couldn't find any tours matching \"$searchQuery\". Try adjusting your search."
+                                )
+                            } else {
+                                EmptyState(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp)
+                                )
+                            }
                         }
                     } else {
                         items(uiState.tours, key = { it.id }) { tour ->
