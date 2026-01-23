@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.presentation.ui.components.UserAvatar
+import com.tourly.app.core.presentation.util.Formatters
 
 @Composable
 fun TourItemCard(
@@ -160,7 +162,7 @@ fun TourItemCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = tour.scheduledDate,
+                        text = Formatters.formatDate(tour.scheduledDate),
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = OutfitFamily,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -186,7 +188,7 @@ fun TourItemCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = tour.duration,
+                            text = Formatters.formatDuration(tour.duration),
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = OutfitFamily,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -222,12 +224,21 @@ fun TourItemCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Guide Info
-                    Text(
-                        text = tour.guideName,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontFamily = OutfitFamily,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        UserAvatar(
+                            imageUrl = tour.guideImageUrl,
+                            name = tour.guideName,
+                            modifier = Modifier.size(24.dp),
+                            textStyle = MaterialTheme.typography.labelSmall
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(
+                            text = tour.guideName,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontFamily = OutfitFamily,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
 
                     // Price
                     Text(

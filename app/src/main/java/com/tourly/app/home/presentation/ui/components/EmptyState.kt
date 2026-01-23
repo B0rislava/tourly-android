@@ -15,7 +15,11 @@ import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
-fun EmptyState(modifier: Modifier = Modifier) {
+fun EmptyState(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    description: String? = null
+) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -25,13 +29,13 @@ fun EmptyState(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.empty_heading),
+                text = title ?: stringResource(id = R.string.empty_heading),
                 style = MaterialTheme.typography.titleLarge,
                 fontFamily = OutfitFamily,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = stringResource(id = R.string.empty_subheading),
+                text = description ?: stringResource(id = R.string.empty_subheading),
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = OutfitFamily,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
