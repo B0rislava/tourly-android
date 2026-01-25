@@ -27,30 +27,42 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
 
     override suspend fun getUserProfile(): Result<User> {
-        val response = authApiService.getProfile()
-        return when (val result = NetworkResponseMapper.map<UserDto>(response)) {
-             is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
-             is Result.Error -> result
+        return try {
+            val response = authApiService.getProfile()
+            when (val result = NetworkResponseMapper.map<UserDto>(response)) {
+                 is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
+                 is Result.Error -> result
+            }
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
         }
     }
 
     override suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<User> {
-        val response = authApiService.updateProfile(request)
-        return when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
-            is Result.Success -> {
-                tokenManager.saveToken(result.data.token)
-                Result.Success(UserMapper.mapToDomain(result.data.user))
+        return try {
+            val response = authApiService.updateProfile(request)
+            when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
+                is Result.Success -> {
+                    tokenManager.saveToken(result.data.token)
+                    Result.Success(UserMapper.mapToDomain(result.data.user))
+                }
+                is Result.Error -> result
             }
-            is Result.Error -> result
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
         }
     }
 
 
     override suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<User> {
-        val response = authApiService.uploadProfilePicture(fileBytes)
-        return when (val result = NetworkResponseMapper.map<UserDto>(response)) {
-            is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
-            is Result.Error -> result
+        return try {
+            val response = authApiService.uploadProfilePicture(fileBytes)
+            when (val result = NetworkResponseMapper.map<UserDto>(response)) {
+                is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
+                is Result.Error -> result
+            }
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
         }
     }
 
