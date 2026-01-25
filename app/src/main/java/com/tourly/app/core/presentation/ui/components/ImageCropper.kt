@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.Rect as ComposeRect
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Color
@@ -51,11 +52,18 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 
+enum class CropShape {
+    Circle, Rectangle
+}
+
 @Composable
 fun ImageCropperDialog(
     imageUri: Uri,
     onCrop: (Uri) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    cropShape: CropShape = CropShape.Circle,
+    aspectRatio: Float = 1f,
+    title: String = if (cropShape == CropShape.Circle) "Set Profile Picture" else "Crop Image"
 ) {
     val context = LocalContext.current
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -117,10 +125,14 @@ fun ImageCropperDialog(
                 bitmap?.let { btm ->
                     ImageCropperContent(
                         bitmap = btm,
+                        cropShape = cropShape,
+                        aspectRatio = aspectRatio,
+                        buttonTitle = title,
                         onCrop = { croppedBitmap ->
                             // Save cropped bitmap to file
                             try {
-                                val file = File(context.cacheDir, "cropped_profile_${System.currentTimeMillis()}.jpg")
+                                val prefix = if (cropShape == CropShape.Circle) "cropped_profile_" else "cropped_image_"
+                                val file = File(context.cacheDir, "${prefix}${System.currentTimeMillis()}.jpg")
                                 val out = FileOutputStream(file)
                                 croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
                                 out.flush()
@@ -165,6 +177,9 @@ private fun flipBitmap(source: Bitmap, horizontal: Boolean): Bitmap {
 @Composable
 fun ImageCropperContent(
     bitmap: Bitmap,
+    cropShape: CropShape,
+    aspectRatio: Float, // width / height
+    buttonTitle: String,
     onCrop: (Bitmap) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -173,21 +188,25 @@ fun ImageCropperContent(
 
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
 
-    // Circle constraints
+    // Crop Area Calculation
     val density = LocalDensity.current
-    val circleRadius = with(density) { 150.dp.toPx() }
-
-    // Calculate minimum scale to ensure crop circle is always covered
+    val baseSize = with(density) { 300.dp.toPx() } // Base width for the crop area
+    
+    val cropWidth = baseSize
+    val cropHeight = if (cropShape == CropShape.Circle) baseSize else baseSize / aspectRatio
+    
     val imageWidth = bitmap.width.toFloat()
     val imageHeight = bitmap.height.toFloat()
-    val circleDiameter = circleRadius * 2f
-    val minScale = circleDiameter / min(imageWidth, imageHeight)
+
+    val minScaleX = cropWidth / imageWidth
+    val minScaleY = cropHeight / imageHeight
+    val minScale = max(minScaleX, minScaleY)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .onSizeChanged { containerSize = it }
-            .pointerInput(bitmap, circleRadius) {
+            .pointerInput(bitmap, cropWidth, cropHeight) {
                 detectTransformGestures { _, pan, zoom, _ ->
                     // Apply zoom with constraints
                     val newScale = (scale * zoom).coerceIn(minScale, 5f)
@@ -195,13 +214,14 @@ fun ImageCropperContent(
                     // Apply pan
                     val newOffset = offset + pan
 
-                    // Calculate constraints for pan
+                    // Calculate constraints for pan based on current scale
                     val scaledWidth = imageWidth * newScale
                     val scaledHeight = imageHeight * newScale
 
-                    // Maximum offset to keep crop circle within image bounds
-                    val maxOffsetX = ((scaledWidth - circleDiameter) / 2f).coerceAtLeast(0f)
-                    val maxOffsetY = ((scaledHeight - circleDiameter) / 2f).coerceAtLeast(0f)
+
+                    
+                    val maxOffsetX = ((scaledWidth - cropWidth) / 2f).coerceAtLeast(0f)
+                    val maxOffsetY = ((scaledHeight - cropHeight) / 2f).coerceAtLeast(0f)
 
                     // Constrain offset
                     val constrainedOffset = Offset(
@@ -241,27 +261,49 @@ fun ImageCropperContent(
                 val path = Path().apply {
                     addRect(ComposeRect(0f, 0f, size.width, size.height))
 
-                    val circlePath = Path().apply {
-                        addOval(ComposeRect(
-                            center.x - circleRadius,
-                            center.y - circleRadius,
-                            center.x + circleRadius,
-                            center.y + circleRadius
-                        ))
+                    val holePath = Path().apply {
+                        val left = center.x - cropWidth / 2f
+                        val top = center.y - cropHeight / 2f
+                        val right = center.x + cropWidth / 2f
+                        val bottom = center.y + cropHeight / 2f
+                        
+                        val rect = ComposeRect(left, top, right, bottom)
+                        
+                        if (cropShape == CropShape.Circle) {
+                            addOval(rect)
+                        } else {
+                            addRect(rect)
+                        }
                     }
 
-                    op(this, circlePath, PathOperation.Difference)
+                    op(this, holePath, PathOperation.Difference)
                 }
 
                 drawPath(path, Color.Black.copy(alpha = 0.7f))
 
-                // Draw circle border
-                drawCircle(
-                    color = Color.White,
-                    radius = circleRadius,
-                    center = center,
-                    style = Stroke(width = 2.dp.toPx())
+                // Draw border
+                val borderRect = ComposeRect(
+                    center.x - cropWidth / 2f,
+                    center.y - cropHeight / 2f,
+                    center.x + cropWidth / 2f,
+                    center.y + cropHeight / 2f
                 )
+                
+                if (cropShape == CropShape.Circle) {
+                    drawOval(
+                        color = Color.White,
+                        topLeft = Offset(borderRect.left, borderRect.top),
+                        size = Size(borderRect.width, borderRect.height),
+                        style = Stroke(width = 2.dp.toPx())
+                    )
+                } else {
+                    drawRect(
+                        color = Color.White,
+                        topLeft = Offset(borderRect.left, borderRect.top),
+                        size = Size(borderRect.width, borderRect.height),
+                        style = Stroke(width = 2.dp.toPx())
+                    )
+                }
             }
 
             // Buttons
@@ -274,27 +316,29 @@ fun ImageCropperContent(
             ) {
                 Button(
                     onClick = {
-                        val imageWidth = bitmap.width.toFloat()
-                        val imageHeight = bitmap.height.toFloat()
-                        val scaledWidth = imageWidth * scale
-                        val scaledHeight = imageHeight * scale
+                        val imgW = bitmap.width.toFloat()
+                        val imgH = bitmap.height.toFloat()
+                        val scaledWidth = imgW * scale
+                        // val scaledHeight = imgH * scale
 
-                        val topLeftX = center.x - (scaledWidth / 2f) + offset.x
-                        val topLeftY = center.y - (scaledHeight / 2f) + offset.y
+                        val imgTopLeftX = center.x - (scaledWidth / 2f) + offset.x
+                        val imgTopLeftY = center.y - (imgH * scale / 2f) + offset.y
 
-                        val circleX = center.x - circleRadius
-                        val circleY = center.y - circleRadius
-                        val circleDiam = circleRadius * 2
+                        val cropLeft = center.x - cropWidth / 2f
+                        val cropTop = center.y - cropHeight / 2f
+                        
+                        val relativeCropX = cropLeft - imgTopLeftX
+                        val relativeCropY = cropTop - imgTopLeftY
+                        
+                        val originalCropX = relativeCropX / scale
+                        val originalCropY = relativeCropY / scale
+                        val originalCropWidth = cropWidth / scale
+                        val originalCropHeight = cropHeight / scale
 
-                        val cropX = (circleX - topLeftX) / scale
-                        val cropY = (circleY - topLeftY) / scale
-                        val cropWidth = circleDiam / scale
-                        val cropHeight = circleDiam / scale
-
-                        val finalX = max(0, cropX.toInt())
-                        val finalY = max(0, cropY.toInt())
-                        val finalW = min(bitmap.width - finalX, cropWidth.toInt())
-                        val finalH = min(bitmap.height - finalY, cropHeight.toInt())
+                        val finalX = max(0, originalCropX.toInt())
+                        val finalY = max(0, originalCropY.toInt())
+                        val finalW = min(bitmap.width - finalX, originalCropWidth.toInt())
+                        val finalH = min(bitmap.height - finalY, originalCropHeight.toInt())
 
                         if (finalW > 0 && finalH > 0) {
                             val cropped = Bitmap.createBitmap(bitmap, finalX, finalY, finalW, finalH)
@@ -302,7 +346,7 @@ fun ImageCropperContent(
                         }
                     }
                 ) {
-                    Text("Set Profile Picture")
+                    Text(buttonTitle)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
