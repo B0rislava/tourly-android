@@ -1,19 +1,20 @@
 package com.tourly.app.core.network.api
 
-import android.content.Context
 import android.net.Uri
+import android.content.Context
+import android.provider.OpenableColumns.DISPLAY_NAME
+import com.tourly.app.home.domain.model.TourFilters
 import com.tourly.app.core.network.model.CreateTourRequestDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
-import io.ktor.utils.io.core.buildPacket
-import io.ktor.utils.io.core.writeFully
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -32,10 +33,9 @@ class TourApiService @Inject constructor(
                         // Add tour data as JSON part
                         append(
                             key = "data",
-                            value = Json.encodeToString(request),
+                            value = Json.encodeToString(CreateTourRequestDto.serializer(), request),
                             headers = Headers.build {
                                 append(HttpHeaders.ContentType, "application/json")
-                                append(HttpHeaders.ContentDisposition, "form-data; name=\"data\"")
                             }
                         )
 
@@ -45,16 +45,14 @@ class TourApiService @Inject constructor(
                                 val bytes = inputStream.readBytes()
                                 val filename = getFileName(context, uri) ?: "tour_image.jpg"
 
-                                appendInput(
+                                append(
                                     key = "image",
+                                    value = bytes,
                                     headers = Headers.build {
-                                        append(HttpHeaders.ContentDisposition, "form-data; name=\"image\"; filename=\"$filename\"")
+                                        append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
                                         append(HttpHeaders.ContentType, "image/jpeg")
-                                    },
-                                    size = bytes.size.toLong()
-                                ) {
-                                    buildPacket { writeFully(bytes) }
-                                }
+                                    }
+                                )
                             }
                         }
                     }
@@ -67,8 +65,27 @@ class TourApiService @Inject constructor(
         return client.get("tours/my")
     }
 
-    suspend fun getAllTours(): HttpResponse {
-        return client.get("tours")
+    suspend fun getAllTags(): HttpResponse {
+        return client.get("tags")
+    }
+
+    suspend fun getAllTours(filters: TourFilters): HttpResponse {
+        return client.get("tours") {
+            // Add each tag as separate parameter
+            filters.tags.forEach { tag -> parameter("tags", tag) }
+            
+            // Add optional filters
+            filters.location?.let { parameter("location", it) }
+            filters.minPrice?.let { parameter("minPrice", it) }
+            filters.maxPrice?.let { parameter("maxPrice", it) }
+            filters.minRating?.let { parameter("minRating", it) }
+            filters.scheduledAfter?.let { parameter("scheduledAfter", it) }
+            filters.scheduledBefore?.let { parameter("scheduledBefore", it) }
+            
+            // Add sorting
+            parameter("sortBy", filters.sortBy.name.lowercase())
+            parameter("sortOrder", filters.sortOrder.name.lowercase())
+        }
     }
 
     suspend fun getTour(id: Long): HttpResponse {
@@ -77,7 +94,7 @@ class TourApiService @Inject constructor(
 
     private fun getFileName(context: Context, uri: Uri): String? {
         return context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            val nameIndex = cursor.getColumnIndex(DISPLAY_NAME)
             cursor.moveToFirst()
             cursor.getString(nameIndex)
         }

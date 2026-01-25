@@ -6,11 +6,12 @@ import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.domain.repository.ThemeRepository
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.network.Result
-import com.tourly.app.create_tour.domain.repository.TourRepository
 import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.home.domain.model.Tag
+import com.tourly.app.home.domain.model.TourFilters
+import com.tourly.app.home.domain.usecase.GetAllTagsUseCase
 import com.tourly.app.home.domain.usecase.GetAllToursUseCase
 import com.tourly.app.home.presentation.state.HomeUiState
-import com.tourly.app.login.domain.UserRole
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.Clock
+import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -34,10 +36,10 @@ sealed interface HomeEvent {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getAllToursUseCase: GetAllToursUseCase,
+    private val getAllTagsUseCase: GetAllTagsUseCase,
     private val userRepository: UserRepository,
     private val clock: Clock,
     private val themeRepository: ThemeRepository,
-    private val tourRepository: TourRepository
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -50,8 +52,13 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    private val _selectedCategory = MutableStateFlow("All")
-    val selectedCategory = _selectedCategory.asStateFlow()
+    // Available tags from backend
+    private val _availableTags = MutableStateFlow<List<Tag>>(emptyList())
+    val availableTags = _availableTags.asStateFlow()
+
+    // Current filter state
+    private val _filters = MutableStateFlow(TourFilters())
+    val filters = _filters.asStateFlow()
 
     private val _userProfile = MutableStateFlow<User?>(null)
     val userProfile = _userProfile.asStateFlow()
@@ -65,21 +72,20 @@ class HomeViewModel @Inject constructor(
         _isLoading,
         _error,
         _allTours,
-        _searchQuery,
-        _selectedCategory
-    ) { isLoading, error, tours, query, category ->
+        _searchQuery
+    ) { isLoading, error, tours, query ->
         when {
             isLoading -> HomeUiState.Loading
             error != null -> HomeUiState.Error(error)
             else -> {
-                val filteredTours = tours.filter { tour ->
-                    val matchesQuery = tour.title.contains(query, ignoreCase = true) || 
-                                       tour.location.contains(query, ignoreCase = true)
-                    val matchesCategory = if (category == "All") true else {
-                        // TODO: Add category field to Tour model. For now, mock strict matching.
-                        true 
+                // Only filter by search query client-side
+                val filteredTours = if (query.isBlank()) {
+                    tours
+                } else {
+                    tours.filter { tour ->
+                        tour.title.contains(query, ignoreCase = true) || 
+                        tour.location.contains(query, ignoreCase = true)
                     }
-                    matchesQuery && matchesCategory
                 }
                 HomeUiState.Success(filteredTours)
             }
@@ -96,6 +102,7 @@ class HomeViewModel @Inject constructor(
     init {
         observeTokenChanges()
         updateGreeting()
+        loadTags()
     }
     
     private fun observeTokenChanges() {
@@ -118,8 +125,47 @@ class HomeViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
-    fun onCategoryChange(category: String) {
-        _selectedCategory.value = category
+    private fun loadTags() {
+        viewModelScope.launch {
+            getAllTagsUseCase().onSuccess { tags ->
+                _availableTags.value = tags
+            }.onFailure { _ ->
+                _events.send(HomeEvent.ShowSnackbar("Failed to load filters"))
+            }
+        }
+    }
+
+    fun updateFilters(update: (TourFilters) -> TourFilters) {
+        _filters.value = update(_filters.value)
+        _isLoading.value = true
+        loadTours()
+    }
+
+    fun updateSort(field: TourFilters.SortField, order: TourFilters.SortOrder) {
+        updateFilters { it.copy(sortBy = field, sortOrder = order) }
+    }
+
+    fun updatePriceRange(min: Double, max: Double) {
+        updateFilters { it.copy(minPrice = min, maxPrice = max) }
+    }
+    
+    fun updateDate(date: LocalDate?) {
+        updateFilters { it.copy(scheduledAfter = date, scheduledBefore = date) } 
+    }
+
+    fun toggleTag(tagName: String) {
+        updateFilters { filters ->
+            val newTags = if (tagName in filters.tags) {
+                filters.tags - tagName
+            } else {
+                filters.tags + tagName
+            }
+            filters.copy(tags = newTags)
+        }
+    }
+
+    fun clearFilters() {
+        updateFilters { it.reset() }
     }
 
     fun refreshData() {
@@ -154,7 +200,7 @@ class HomeViewModel @Inject constructor(
             when (val result = userRepository.getUserProfile()) {
                 is Result.Success -> {
                     _userProfile.value = result.data
-                    loadTours() // Chain: now that we know the role, load tours
+                    loadTours()
                 }
                 is Result.Error -> {
                     _isLoading.value = false
@@ -169,18 +215,14 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _error.value = null
             
-            // Check if user is a guide or traveler
-            val currentUser = _userProfile.value
-            val isGuide = currentUser?.role == UserRole.GUIDE
-            
-            if (isGuide) {
-                // Guide: Fetch "my tours"
-                val result = tourRepository.getMyTours()
-                result.onSuccess { tours ->
+            val result = getAllToursUseCase(_filters.value)
+            result.fold(
+                onSuccess = { tours -> 
                     _allTours.value = tours
                     _isLoading.value = false
                     _isRefreshing.value = false
-                }.onFailure { exception ->
+                },
+                onFailure = { exception -> 
                     val message = exception.message ?: "Failed to load tours"
                     if (message.contains("403") || message.contains("401")) {
                         _events.send(HomeEvent.SessionExpired)
@@ -189,26 +231,7 @@ class HomeViewModel @Inject constructor(
                     _isLoading.value = false
                     _isRefreshing.value = false
                 }
-            } else {
-                // Traveler: Fetch all tours
-                val result = getAllToursUseCase()
-                result.fold(
-                    onSuccess = { tours -> 
-                        _allTours.value = tours
-                        _isLoading.value = false
-                        _isRefreshing.value = false
-                    },
-                    onFailure = { exception -> 
-                        val message = exception.message ?: "Failed to load tours"
-                        if (message.contains("403") || message.contains("401")) {
-                            _events.send(HomeEvent.SessionExpired)
-                        }
-                        _error.value = message
-                        _isLoading.value = false
-                        _isRefreshing.value = false
-                    }
-                )
-            }
+            )
         }
     }
 }

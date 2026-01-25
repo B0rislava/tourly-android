@@ -13,27 +13,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.tourly.app.home.domain.model.Tag
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryRow(
-    categories: List<String>,
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    tags: List<Tag>,
+    selectedTags: List<String>,
+    onTagToggle: (String) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(categories) { category ->
-            val isSelected = category == selectedCategory
+        items(tags) { tag ->
+            val isSelected = tag.name in selectedTags
             FilterChip(
                 selected = isSelected,
-                onClick = { onCategorySelected(category) },
+                onClick = { onTagToggle(tag.name) },
                 label = {
                     Text(
-                        text = category,
+                        text = tag.displayName,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 4.dp)
                     )
