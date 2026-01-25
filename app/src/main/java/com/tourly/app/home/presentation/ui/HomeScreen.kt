@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.tourly.app.home.presentation.state.FilterUiState
 import com.tourly.app.home.presentation.viewmodel.HomeEvent
 import com.tourly.app.home.presentation.viewmodel.HomeViewModel
 
@@ -23,7 +24,8 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val selectedCategory by viewModel.selectedCategory.collectAsState()
+    val availableTags by viewModel.availableTags.collectAsState()
+    val filters by viewModel.filters.collectAsState()
     
     val userProfile by viewModel.userProfile.collectAsState()
     val greeting by viewModel.greeting.collectAsState()
@@ -51,8 +53,20 @@ fun HomeScreen(
             uiState = uiState,
             searchQuery = searchQuery,
             onSearchQueryChange = viewModel::onSearchQueryChange,
-            selectedCategory = selectedCategory,
-            onCategoryChange = viewModel::onCategoryChange,
+            filterUiState = FilterUiState(
+                availableTags = availableTags,
+                selectedTags = filters.tags,
+                sortBy = filters.sortBy,
+                sortOrder = filters.sortOrder,
+                minPrice = filters.minPrice,
+                maxPrice = filters.maxPrice,
+                selectedDate = filters.scheduledAfter // Using scheduledAfter as the single date
+            ),
+            onTagToggle = viewModel::toggleTag,
+            onSortSelected = viewModel::updateSort,
+            onPriceRangeChanged = { range -> viewModel.updatePriceRange(range.start.toDouble(), range.endInclusive.toDouble()) },
+            onDateSelected = viewModel::updateDate,
+            onClearFilters = viewModel::clearFilters,
             onRefresh = viewModel::refreshData,
             greeting = greeting,
             userName = userProfile?.fullName ?: "Traveler", // Fallback name

@@ -1,7 +1,16 @@
 package com.tourly.app.home.presentation.ui.components
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.ui.platform.LocalContext
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,8 +39,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,18 +78,38 @@ fun TourItemCard(
                     .height(200.dp)
             ) {
                 // Tour image
-                AsyncImage(
+                // Tour image with Shimmer loading state
+                SubcomposeAsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(tour.imageUrl)
                         .crossfade(true)
                         .build(),
-                    placeholder = painterResource(id = R.drawable.tour_placeholder),
-                    error = painterResource(id = R.drawable.tour_placeholder),
-                    fallback = painterResource(id = R.drawable.tour_placeholder),
                     contentDescription = "Tour image",
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(200.dp),
                     contentScale = ContentScale.Crop
-                )
+                ) {
+                    val state = painter.state
+                    when (state) {
+                        is AsyncImagePainter.State.Loading, is AsyncImagePainter.State.Empty -> {
+                            ShimmerBox(
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                        is AsyncImagePainter.State.Error -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.tour_placeholder),
+                                contentDescription = "Error",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                        else -> {
+                            SubcomposeAsyncImageContent()
+                        }
+                    }
+                }
 
                 // Rating Badge (top-right)
                 Surface(
@@ -254,4 +287,37 @@ fun TourItemCard(
             }
         }
     }
+}
+
+@Composable
+fun ShimmerBox(modifier: Modifier = Modifier) {
+    val shimmerColors = listOf(
+        Color.LightGray.copy(alpha = 0.6f),
+        Color.LightGray.copy(alpha = 0.2f),
+        Color.LightGray.copy(alpha = 0.6f),
+    )
+
+    val transition = rememberInfiniteTransition(label = "shimmer")
+    val translateAnim = transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1000,
+                easing = FastOutSlowInEasing
+            ),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmer"
+    )
+
+    val brush = Brush.linearGradient(
+        colors = shimmerColors,
+        start = Offset.Zero,
+        end = Offset(x = translateAnim.value, y = translateAnim.value)
+    )
+
+    Box(
+        modifier = modifier.background(brush)
+    )
 }
