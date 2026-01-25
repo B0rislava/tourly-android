@@ -63,6 +63,7 @@ fun CreateTourScreen(
         onPriceChanged = viewModel::onPriceChanged,
         onWhatsIncludedChanged = viewModel::onWhatsIncludedChanged,
         onScheduledDateChanged = viewModel::onScheduledDateChanged,
+        onTagToggled = viewModel::onTagToggled,
         onImageSelected = {
             imagePickerLauncher.launch(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)

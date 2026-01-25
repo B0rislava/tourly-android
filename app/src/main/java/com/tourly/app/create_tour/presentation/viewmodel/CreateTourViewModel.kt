@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tourly.app.create_tour.domain.exception.CreateTourException
 import com.tourly.app.create_tour.domain.model.CreateTourParams
 import com.tourly.app.create_tour.domain.usecase.CreateTourUseCase
+import com.tourly.app.home.domain.usecase.GetAllTagsUseCase
 import com.tourly.app.create_tour.presentation.state.CreateTourUiState
 import com.tourly.app.create_tour.presentation.util.CreateTourEvent
 import com.tourly.app.create_tour.presentation.util.InputFormatter
@@ -23,8 +24,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateTourViewModel @Inject constructor(
     private val createTourUseCase: CreateTourUseCase,
+    private val getAllTagsUseCase: GetAllTagsUseCase,
     private val inputFormatter: InputFormatter
 ) : ViewModel() {
+
+    init {
+        loadTags()
+    }
 
     private val _uiState = MutableStateFlow(CreateTourUiState())
     val uiState: StateFlow<CreateTourUiState> = _uiState.asStateFlow()
@@ -71,6 +77,30 @@ class CreateTourViewModel @Inject constructor(
         _uiState.update { it.copy(imageUri = uri) }
     }
 
+    fun onTagToggled(tagId: Long) {
+        _uiState.update { state ->
+            val currentIds = state.selectedTagIds
+            val newIds = if (tagId in currentIds) {
+                currentIds - tagId
+            } else {
+                currentIds + tagId
+            }
+            state.copy(selectedTagIds = newIds)
+        }
+    }
+
+    private fun loadTags() {
+        viewModelScope.launch {
+            getAllTagsUseCase().onSuccess { tags ->
+                println("CreateTourVM: Loaded ${tags.size} tags: ${tags.map { it.displayName }}")
+                _uiState.update { it.copy(availableTags = tags) }
+            }.onFailure { e ->
+                println("CreateTourVM: Failed to load tags: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun onCreateTour() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -102,7 +132,8 @@ class CreateTourViewModel @Inject constructor(
             scheduledDate = state.scheduledDate?.let {
                 Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
             },
-            imageUri = state.imageUri
+            imageUri = state.imageUri,
+            tagIds = state.selectedTagIds.toList()
         )
     }
 
@@ -137,7 +168,9 @@ class CreateTourViewModel @Inject constructor(
     }
 
     fun resetState() {
-        _uiState.update { CreateTourUiState() }
+        _uiState.update { state -> 
+            CreateTourUiState(availableTags = state.availableTags) 
+        }
     }
 }
 

@@ -25,5 +25,6 @@ data class CreateTourResponseDto(
     val guideBio: String? = null,
     val guideRating: Double = 0.0,
     val guideToursCompleted: Int = 0,
-    val guideImageUrl: String? = null
+    val guideImageUrl: String? = null,
+    val tags: List<TagDto> = emptyList()
 )
