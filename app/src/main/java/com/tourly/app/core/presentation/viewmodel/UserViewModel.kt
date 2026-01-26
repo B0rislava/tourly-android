@@ -3,6 +3,7 @@ package com.tourly.app.core.presentation.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.core.domain.usecase.GetMyBookingsUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
@@ -10,6 +11,7 @@ import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.storage.TokenManager
+import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,6 +30,7 @@ class UserViewModel @Inject constructor(
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
     private val tokenManager: TokenManager,
+    private val getMyBookingsUseCase: GetMyBookingsUseCase,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -54,14 +57,48 @@ class UserViewModel @Inject constructor(
     }
 
     private suspend fun fetchUserProfile() {
-        _uiState.value = UserUiState.Loading
+        val currentState = _uiState.value
+        if (currentState !is UserUiState.Success) {
+            _uiState.value = UserUiState.Loading
+        }
         
         when (val result = getUserProfileUseCase()) {
             is Result.Success -> {
-                _uiState.value = UserUiState.Success(result.data)
+                val newSuccess = if (currentState is UserUiState.Success) {
+                    currentState.copy(user = result.data)
+                } else {
+                    UserUiState.Success(result.data)
+                }
+                _uiState.value = newSuccess
+                
+                if (result.data.role == UserRole.TRAVELER) {
+                    fetchBookings()
+                }
             }
             is Result.Error -> {
                 _uiState.value = UserUiState.Error(result.message)
+            }
+        }
+    }
+
+    fun refreshBookings() {
+        viewModelScope.launch {
+            if (_uiState.value is UserUiState.Success) {
+                fetchBookings()
+            }
+        }
+    }
+
+    private suspend fun fetchBookings() {
+        val currentState = _uiState.value
+        if (currentState is UserUiState.Success) {
+            when (val result = getMyBookingsUseCase()) {
+                is Result.Success -> {
+                    _uiState.value = currentState.copy(bookings = result.data)
+                }
+                is Result.Error -> {
+                    // TODO: Handle error
+                }
             }
         }
     }

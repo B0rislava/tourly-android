@@ -2,7 +2,7 @@ package com.tourly.app.create_tour.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tourly.app.create_tour.domain.exception.CreateTourException
+import com.tourly.app.core.network.Result
 import com.tourly.app.create_tour.domain.model.CreateTourParams
 import com.tourly.app.create_tour.domain.usecase.CreateTourUseCase
 import com.tourly.app.home.domain.usecase.GetAllTagsUseCase
@@ -91,12 +91,16 @@ class CreateTourViewModel @Inject constructor(
 
     private fun loadTags() {
         viewModelScope.launch {
-            getAllTagsUseCase().onSuccess { tags ->
-                println("CreateTourVM: Loaded ${tags.size} tags: ${tags.map { it.displayName }}")
-                _uiState.update { it.copy(availableTags = tags) }
-            }.onFailure { e ->
-                println("CreateTourVM: Failed to load tags: ${e.message}")
-                e.printStackTrace()
+            when (val result = getAllTagsUseCase()) {
+                is Result.Success -> {
+                    val tags = result.data
+                    println("CreateTourVM: Loaded ${tags.size} tags: ${tags.map { it.displayName }}")
+                    _uiState.update { it.copy(availableTags = tags) }
+                }
+                is Result.Error -> {
+                    println("CreateTourVM: Failed to load tags: ${result.message}")
+                    _events.send(CreateTourEvent.Error("Failed to load filters"))
+                }
             }
         }
     }
@@ -107,16 +111,17 @@ class CreateTourViewModel @Inject constructor(
 
             val params = mapToParams(_uiState.value)
 
-            createTourUseCase(params)
-                .onSuccess {
+            when (val result = createTourUseCase(params)) {
+                is Result.Success -> {
                     _uiState.update { state -> state.copy(isLoading = false) }
                     resetState()
                     _events.send(CreateTourEvent.Success)
                 }
-                .onFailure { error ->
-                    handleError(error)
-                    _events.send(CreateTourEvent.Error(error.message ?: "Failed to create tour"))
+                is Result.Error -> {
+                    handleError(result)
+                    _events.send(CreateTourEvent.Error(result.message))
                 }
+            }
         }
     }
 
@@ -137,27 +142,26 @@ class CreateTourViewModel @Inject constructor(
         )
     }
 
-    private fun handleError(error: Throwable) {
+    private fun handleError(error: Result.Error) {
         _uiState.update { state ->
-            when (error) {
-                is CreateTourException.InvalidTitle ->
-                    state.copy(isLoading = false, titleError = error.message)
-                is CreateTourException.InvalidDescription ->
-                    state.copy(isLoading = false, descriptionError = error.message)
-                is CreateTourException.InvalidLocation ->
-                    state.copy(isLoading = false, locationError = error.message)
-                is CreateTourException.InvalidDuration,
-                is CreateTourException.InvalidDurationRange ->
-                    state.copy(isLoading = false, durationError = error.message)
-                is CreateTourException.InvalidGroupSize ->
-                    state.copy(isLoading = false, maxGroupSizeError = error.message)
-                is CreateTourException.InvalidPrice ->
-                    state.copy(isLoading = false, priceError = error.message)
-                is CreateTourException.DateRequired,
-                is CreateTourException.DateInPast ->
-                    state.copy(isLoading = false, dateError = error.message)
+            val message = error.message
+            when {
+                message.contains("Title") ->
+                    state.copy(isLoading = false, titleError = message)
+                message.contains("Description") ->
+                    state.copy(isLoading = false, descriptionError = message)
+                message.contains("Location") ->
+                    state.copy(isLoading = false, locationError = message)
+                message.contains("Duration") ->
+                    state.copy(isLoading = false, durationError = message)
+                message.contains("group size") ->
+                    state.copy(isLoading = false, maxGroupSizeError = message)
+                message.contains("Price") ->
+                    state.copy(isLoading = false, priceError = message)
+                message.contains("Date") ->
+                    state.copy(isLoading = false, dateError = message)
                 else ->
-                    state.copy(isLoading = false, createTourError = error.message)
+                    state.copy(isLoading = false, createTourError = message)
             }
         }
     }

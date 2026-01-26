@@ -127,10 +127,13 @@ class HomeViewModel @Inject constructor(
 
     private fun loadTags() {
         viewModelScope.launch {
-            getAllTagsUseCase().onSuccess { tags ->
-                _availableTags.value = tags
-            }.onFailure { _ ->
-                _events.send(HomeEvent.ShowSnackbar("Failed to load filters"))
+            when (val result = getAllTagsUseCase()) {
+                is Result.Success -> {
+                    _availableTags.value = result.data
+                }
+                is Result.Error -> {
+                    _events.send(HomeEvent.ShowSnackbar("Failed to load filters"))
+                }
             }
         }
     }
@@ -215,23 +218,21 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _error.value = null
             
-            val result = getAllToursUseCase(_filters.value)
-            result.fold(
-                onSuccess = { tours -> 
-                    _allTours.value = tours
-                    _isLoading.value = false
-                    _isRefreshing.value = false
-                },
-                onFailure = { exception -> 
-                    val message = exception.message ?: "Failed to load tours"
-                    if (message.contains("403") || message.contains("401")) {
-                        _events.send(HomeEvent.SessionExpired)
-                    }
-                    _error.value = message
+            when (val result = getAllToursUseCase(_filters.value)) {
+                is Result.Success -> {
+                    _allTours.value = result.data
                     _isLoading.value = false
                     _isRefreshing.value = false
                 }
-            )
+                is Result.Error -> {
+                    if (result.code == "FORBIDDEN" || result.code == "UNAUTHORIZED") {
+                        _events.send(HomeEvent.SessionExpired)
+                    }
+                    _error.value = result.message
+                    _isLoading.value = false
+                    _isRefreshing.value = false
+                }
+            }
         }
     }
 }

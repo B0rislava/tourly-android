@@ -42,6 +42,10 @@ fun ProfileScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        userViewModel.refreshBookings()
+    }
+
     LaunchedEffect(key1 = true) {
         userViewModel.events.collect { message ->
             snackbarHostState.showSnackbar(message)
@@ -86,7 +90,8 @@ fun ProfileScreen(
                         role = state.user.role,
                         profilePictureUrl = state.user.profilePictureUrl,
                         onLogout = onLogout,
-                        onEditProfile = userViewModel::startEditing
+                        onEditProfile = userViewModel::startEditing,
+                        bookings = state.bookings
                     )
                 }
             }
