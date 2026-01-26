@@ -11,5 +11,6 @@ data class CreateTourRequestDto(
     val maxGroupSize: Int,
     val pricePerPerson: Double,
     val whatsIncluded: String?,
-    val scheduledDate: String?
+    val scheduledDate: String?,
+    val tagIds: List<Long> = emptyList()
 )

@@ -33,6 +33,7 @@ fun GuideMainContent(
     onDestinationSelected: (BottomNavDestination) -> Unit,
     onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
+    onTourClick: (Long) -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
 ) {
     Scaffold(
@@ -92,6 +93,7 @@ fun GuideMainContent(
             BottomNavDestination.GUIDE_HOME -> {
                 HomeScreen(
                     onSessionExpired = onLogout,
+                    onTourClick = onTourClick,
                     modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
                 )
             }

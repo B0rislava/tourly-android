@@ -26,6 +26,7 @@ import com.tourly.app.create_tour.presentation.ui.components.AddPhotoPlaceholder
 import com.tourly.app.create_tour.presentation.ui.components.CustomTextField
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.CalendarToday
@@ -40,6 +41,7 @@ import com.tourly.app.create_tour.presentation.ui.components.DurationVisualTrans
 import com.tourly.app.create_tour.presentation.ui.components.PricingRow
 import com.tourly.app.create_tour.presentation.ui.components.TourDatePickerDialog
 import com.tourly.app.home.presentation.ui.components.SectionTitle
+import com.tourly.app.create_tour.presentation.ui.components.TagSelector
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -57,6 +59,8 @@ fun CreateTourContent(
     onPriceChanged: (String) -> Unit,
     onWhatsIncludedChanged: (String) -> Unit,
     onScheduledDateChanged: (Long?) -> Unit,
+    onTagToggled: (Long) -> Unit,
+    onImageSelected: () -> Unit,
     onCreateTour: () -> Unit
 ) {
     Column(
@@ -71,7 +75,10 @@ fun CreateTourContent(
             title = stringResource(id = R.string.tour_images),
             icon = Icons.Outlined.Image
         )
-        AddPhotoPlaceholder()
+        AddPhotoPlaceholder(
+            selectedImageUri = state.imageUri,
+            onClick = onImageSelected
+        )
 
         SectionTitle(
             modifier = Modifier,
@@ -217,6 +224,18 @@ fun CreateTourContent(
             placeholder = stringResource(id = R.string.tour_included_example),
             singleLine = false,
             minLines = 3
+        )
+
+        SectionTitle(
+            modifier = Modifier,
+            title = stringResource(id = R.string.tour_tags),
+            icon = Icons.AutoMirrored.Outlined.Label
+        )
+        
+        TagSelector(
+            availableTags = state.availableTags,
+            selectedTagIds = state.selectedTagIds,
+            onTagToggled = onTagToggled
         )
 
         Spacer(modifier = Modifier.height(16.dp))

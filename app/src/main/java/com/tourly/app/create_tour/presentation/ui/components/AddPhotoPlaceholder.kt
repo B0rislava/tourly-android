@@ -19,11 +19,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
-fun AddPhotoPlaceholder(modifier: Modifier = Modifier) {
+fun AddPhotoPlaceholder(
+    modifier: Modifier = Modifier,
+    selectedImageUri: android.net.Uri? = null,
+    onClick: () -> Unit
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -35,25 +41,34 @@ fun AddPhotoPlaceholder(modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(16.dp)
             )
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .clickable { /* TODO: Upload images */ },
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Default.AddAPhoto,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.size(35.dp)
+        if (selectedImageUri != null) {
+            AsyncImage(
+                model = selectedImageUri,
+                contentDescription = "Selected tour image",
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop
             )
-            Text(
-                text = "Add cover photo",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.tertiary,
-                fontFamily = OutfitFamily,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AddAPhoto,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.size(35.dp)
+                )
+                Text(
+                    text = "Add cover photo",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontFamily = OutfitFamily,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
         }
     }
 }

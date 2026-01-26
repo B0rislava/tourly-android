@@ -36,15 +36,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.components.ImageCropperDialog
+import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import com.tourly.app.profile.presentation.ui.components.EditProfileTextField
@@ -60,9 +58,6 @@ fun EditProfileContent(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    val defaultPainter = painterResource(id = R.drawable.ic_default_avatar)
-
 
     var pendingImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -107,15 +102,12 @@ fun EditProfileContent(
                 )
             }
         ) {
-            AsyncImage(
-                model = state.profilePictureUri ?: state.profilePictureUrl,
-                contentDescription = "Profile Picture",
-                contentScale = ContentScale.Crop,
-                placeholder = defaultPainter,
-                error = defaultPainter,
+            UserAvatar(
+                imageUrl = (state.profilePictureUri ?: state.profilePictureUrl)?.toString(),
+                name = "${state.firstName} ${state.lastName}",
+                textStyle = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .size(120.dp)
-                    .clip(CircleShape)
                     .border(
                         width = 3.dp,
                         color = MaterialTheme.colorScheme.secondary,

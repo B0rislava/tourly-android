@@ -14,7 +14,8 @@ class CreateTourMapper @Inject constructor() {
             maxGroupSize = params.maxGroupSize,
             pricePerPerson = params.pricePerPerson,
             whatsIncluded = params.whatsIncluded,
-            scheduledDate = params.scheduledDate?.toString()
+            scheduledDate = params.scheduledDate?.toString(),
+            tagIds = params.tagIds
         )
     }
 }

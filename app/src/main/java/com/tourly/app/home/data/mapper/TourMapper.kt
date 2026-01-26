@@ -1,5 +1,6 @@
 package com.tourly.app.home.data.mapper
 
+import com.tourly.app.core.network.mapper.TagMapper
 import com.tourly.app.core.network.model.CreateTourResponseDto
 import com.tourly.app.home.domain.model.Tour
 
@@ -27,7 +28,8 @@ object TourMapper {
             guideBio = dto.guideBio,
             guideRating = dto.guideRating,
             guideToursCompleted = dto.guideToursCompleted,
-            guideImageUrl = dto.guideImageUrl
+            guideImageUrl = dto.guideImageUrl,
+            tags = dto.tags.map { TagMapper.toDomain(it) }
         )
     }
 

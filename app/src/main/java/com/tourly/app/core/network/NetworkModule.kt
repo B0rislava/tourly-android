@@ -113,13 +113,13 @@ object NetworkModule {
                         println("HTTP Client: $message")
                     }
                 }
-                level = LogLevel.ALL
+                level = LogLevel.INFO
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 30000
-                connectTimeoutMillis = 15000
-                socketTimeoutMillis = 15000
+                requestTimeoutMillis = 120000  // 2 minutes for full request (includes image upload to Cloudinary)
+                connectTimeoutMillis = 60000   // 1 minute to establish connection
+                socketTimeoutMillis = 60000    // 1 minute for socket read/write operations
             }
 
             defaultRequest {

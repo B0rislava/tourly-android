@@ -1,5 +1,7 @@
 package com.tourly.app.create_tour.data.repository
 
+import android.content.Context
+import android.net.Uri
 import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.network.Result as NetworkResult
 import com.tourly.app.core.network.api.TourApiService
@@ -14,9 +16,15 @@ class TourRepositoryImpl @Inject constructor(
     private val apiService: TourApiService
 ) : TourRepository {
 
-    override suspend fun createTour(request: CreateTourRequestDto): Result<Tour> {
+    override suspend fun createTour(
+        context: Context,
+        request: CreateTourRequestDto,
+        imageUri: Uri?
+    ): Result<Tour> {
         return try {
-            val result = NetworkResponseMapper.map<CreateTourResponseDto>(apiService.createTour(request))
+            val result = NetworkResponseMapper.map<CreateTourResponseDto>(
+                apiService.createTour(context, request, imageUri)
+            )
             
             when (result) {
                 is NetworkResult.Success -> Result.success(TourMapper.toDomain(result.data))

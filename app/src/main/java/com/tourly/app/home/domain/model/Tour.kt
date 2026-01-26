@@ -22,5 +22,6 @@ data class Tour(
     val guideBio: String?,
     val guideRating: Double,
     val guideToursCompleted: Int,
-    val guideImageUrl: String?
+    val guideImageUrl: String?,
+    val tags: List<Tag> = emptyList()
 )

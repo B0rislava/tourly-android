@@ -44,6 +44,7 @@
     <string name="tour_price_per_person">Price per person</string>
     <string name="tour_included">What\'s included</string>
     <string name="tour_included_example">e.g., Local snacks, transportation, entrance fees…</string>
+    <string name="tour_tags">Tags</string>
     <string name="create_tour">Create Tour</string>
     <string name="empty_heading">No Tours Available</string>
     <string name="empty_subheading">Check back later for new tours</string>
