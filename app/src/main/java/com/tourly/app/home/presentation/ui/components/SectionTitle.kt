@@ -16,7 +16,7 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun SectionTitle(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector? = null
 ) {

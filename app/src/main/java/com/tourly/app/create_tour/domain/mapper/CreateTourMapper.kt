@@ -15,6 +15,9 @@ class CreateTourMapper @Inject constructor() {
             pricePerPerson = params.pricePerPerson,
             whatsIncluded = params.whatsIncluded,
             scheduledDate = params.scheduledDate?.toString(),
+            latitude = params.latitude,
+            longitude = params.longitude,
+            meetingPoint = params.meetingPoint,
             tagIds = params.tagIds
         )
     }

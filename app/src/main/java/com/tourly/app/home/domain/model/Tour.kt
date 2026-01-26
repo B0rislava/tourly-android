@@ -24,5 +24,7 @@ data class Tour(
     val guideRating: Double,
     val guideToursCompleted: Int,
     val guideImageUrl: String?,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val tags: List<Tag> = emptyList()
 )

@@ -12,6 +12,9 @@ data class CreateTourParams(
     val pricePerPerson: Double,
     val whatsIncluded: String?,
     val scheduledDate: LocalDate?,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val meetingPoint: String? = null,
     val imageUri: Uri? = null,
     val tagIds: List<Long> = emptyList()
 )

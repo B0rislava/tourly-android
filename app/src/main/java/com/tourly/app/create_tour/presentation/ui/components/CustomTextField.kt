@@ -18,6 +18,7 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun CustomTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
@@ -25,14 +26,14 @@ fun CustomTextField(
     minLines: Int = 1,
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    error: String? = null
+    error: String? = null,
 ) {
     Column {
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f), fontFamily = OutfitFamily) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
