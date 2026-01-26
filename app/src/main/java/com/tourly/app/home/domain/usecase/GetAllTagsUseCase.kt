@@ -1,5 +1,6 @@
 package com.tourly.app.home.domain.usecase
 
+import com.tourly.app.core.network.Result
 import com.tourly.app.home.domain.model.Tag
 import com.tourly.app.home.domain.repository.HomeToursRepository
 import javax.inject.Inject

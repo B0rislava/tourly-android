@@ -3,7 +3,7 @@ package com.tourly.app.create_tour.data.repository
 import android.content.Context
 import android.net.Uri
 import com.tourly.app.core.network.NetworkResponseMapper
-import com.tourly.app.core.network.Result as NetworkResult
+import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.api.TourApiService
 import com.tourly.app.core.network.model.CreateTourRequestDto
 import com.tourly.app.core.network.model.CreateTourResponseDto
@@ -21,30 +21,18 @@ class TourRepositoryImpl @Inject constructor(
         request: CreateTourRequestDto,
         imageUri: Uri?
     ): Result<Tour> {
-        return try {
-            val result = NetworkResponseMapper.map<CreateTourResponseDto>(
-                apiService.createTour(context, request, imageUri)
-            )
-            
-            when (result) {
-                is NetworkResult.Success -> Result.success(TourMapper.toDomain(result.data))
-                is NetworkResult.Error -> Result.failure(Exception(result.message))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
+        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto>(
+            apiService.createTour(context, request, imageUri)
+        )) {
+            is Result.Success -> Result.Success(TourMapper.toDomain(result.data))
+            is Result.Error -> result
         }
     }
 
     override suspend fun getMyTours(): Result<List<Tour>> {
-        return try {
-            val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getMyTours())
-
-            when (result) {
-                is NetworkResult.Success -> Result.success(TourMapper.toDomainList(result.data))
-                is NetworkResult.Error -> Result.failure(Exception(result.message))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
+        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getMyTours())) {
+            is Result.Success -> Result.Success(TourMapper.toDomainList(result.data))
+            is Result.Error -> result
         }
     }
 }
