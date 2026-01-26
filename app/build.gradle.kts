@@ -24,6 +24,7 @@ val devBaseUrl: String =
 
 val devBaseHost: String = URI(devBaseUrl).host
 
+val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
 
 android {
     namespace = "com.tourly.app"
@@ -37,9 +38,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
+
         buildConfigField("String", "BASE_URL", "\"$devBaseUrl\"")
         buildConfigField("String", "BASE_HOST", "\"$devBaseHost\"")
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
@@ -89,9 +92,14 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.exifinterface)
+
+    implementation(libs.google.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.google.places)
+
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    
+
     // Ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.android)

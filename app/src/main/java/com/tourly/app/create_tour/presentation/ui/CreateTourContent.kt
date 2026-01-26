@@ -1,6 +1,8 @@
 package com.tourly.app.create_tour.presentation.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,37 +13,44 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AttachMoney
+import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
-import com.tourly.app.create_tour.presentation.state.CreateTourUiState
-import com.tourly.app.create_tour.presentation.ui.components.AddPhotoPlaceholder
-import com.tourly.app.create_tour.presentation.ui.components.CustomTextField
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material.icons.outlined.CalendarToday
-import androidx.compose.material.icons.outlined.Image
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.tourly.app.R
+import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
+import com.tourly.app.create_tour.presentation.state.CreateTourUiState
+import com.tourly.app.create_tour.presentation.ui.components.AddPhotoPlaceholder
+import com.tourly.app.create_tour.presentation.ui.components.CustomTextField
 import com.tourly.app.create_tour.presentation.ui.components.DurationVisualTransformation
+import com.tourly.app.create_tour.presentation.ui.components.LocationSearchField
 import com.tourly.app.create_tour.presentation.ui.components.PricingRow
+import com.tourly.app.create_tour.presentation.ui.components.TagSelector
 import com.tourly.app.create_tour.presentation.ui.components.TourDatePickerDialog
 import com.tourly.app.home.presentation.ui.components.SectionTitle
-import com.tourly.app.create_tour.presentation.ui.components.TagSelector
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -53,7 +62,6 @@ fun CreateTourContent(
     state: CreateTourUiState,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
-    onLocationChanged: (String) -> Unit,
     onDurationChanged: (String) -> Unit,
     onMaxGroupSizeChanged: (String) -> Unit,
     onPriceChanged: (String) -> Unit,
@@ -61,6 +69,10 @@ fun CreateTourContent(
     onScheduledDateChanged: (Long?) -> Unit,
     onTagToggled: (Long) -> Unit,
     onImageSelected: () -> Unit,
+    onLocationPredictionClick: (AutocompletePrediction) -> Unit,
+    addressPredictions: List<AutocompletePrediction>,
+    onMeetingPointAddressChanged: (String) -> Unit,
+    onMeetingPointSelected: (Double, Double) -> Unit,
     onCreateTour: () -> Unit
 ) {
     Column(
@@ -71,7 +83,6 @@ fun CreateTourContent(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_images),
             icon = Icons.Outlined.Image
         )
@@ -81,7 +92,6 @@ fun CreateTourContent(
         )
 
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_title),
             icon = Icons.Outlined.BookmarkBorder
         )
@@ -93,7 +103,6 @@ fun CreateTourContent(
         )
 
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_description),
             icon = Icons.Outlined.BookmarkBorder
         )
@@ -106,20 +115,65 @@ fun CreateTourContent(
             error = state.descriptionError
         )
 
-        // TODO: Map location
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(
+                LatLng(state.latitude ?: 42.6977, state.longitude ?: 23.3219),
+                15f
+            )
+        }
+
+        LaunchedEffect(state.latitude, state.longitude) {
+            if (state.latitude != null && state.longitude != null) {
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                    LatLng(state.latitude, state.longitude),
+                    15f
+                )
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        val markerState = rememberMarkerState()
+
+        LaunchedEffect(state.latitude, state.longitude) {
+            if (state.latitude != null && state.longitude != null) {
+                markerState.position = LatLng(state.latitude, state.longitude)
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+        ) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                onMapClick = { latLng ->
+                    onMeetingPointSelected(latLng.latitude, latLng.longitude)
+                }
+            ) {
+                if (state.latitude != null && state.longitude != null) {
+                    Marker(
+                        state = markerState,
+                        title = "Meeting Point",
+                        draggable = true
+                    )
+                }
+            }
+        }
 
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_location),
             icon = Icons.Outlined.LocationOn
         )
-        CustomTextField(
-            value = state.location,
-            onValueChange = onLocationChanged,
-            placeholder = stringResource(id = R.string.tour_location_example),
+        LocationSearchField(
+            value = state.meetingPointAddress,
+            onValueChange = onMeetingPointAddressChanged,
+            predictions = addressPredictions,
+            onPredictionClick = onLocationPredictionClick,
+            placeholder = "Enter meeting address (e.g. Varba 10, Sofia)",
             error = state.locationError
         )
-
 
         var showDatePicker by remember { mutableStateOf(false) }
 
@@ -136,7 +190,6 @@ fun CreateTourContent(
         )
 
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_date),
             icon = Icons.Outlined.CalendarToday
         )
@@ -159,19 +212,15 @@ fun CreateTourContent(
             )
         }
 
-        // Duration / Group / Pricing
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 SectionTitle(
-                    modifier = Modifier,
                     title = stringResource(id = R.string.tour_duration),
                     icon = Icons.Outlined.AccessTime
                 )
-                Spacer(Modifier.height(10.dp))
-
                 CustomTextField(
                     value = state.duration,
                     onValueChange = onDurationChanged,
@@ -183,12 +232,9 @@ fun CreateTourContent(
             }
             Column(modifier = Modifier.weight(1f)) {
                 SectionTitle(
-                    modifier = Modifier,
                     title = stringResource(id = R.string.tour_max_group),
                     icon = Icons.Outlined.Group
                 )
-                Spacer(Modifier.height(10.dp))
-
                 CustomTextField(
                     value = state.maxGroupSize,
                     onValueChange = onMaxGroupSizeChanged,
@@ -200,7 +246,6 @@ fun CreateTourContent(
         }
 
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_price),
             icon = Icons.Outlined.AttachMoney
         )
@@ -214,7 +259,6 @@ fun CreateTourContent(
         )
 
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_included),
             icon = Icons.Outlined.Add
         )
@@ -227,7 +271,6 @@ fun CreateTourContent(
         )
 
         SectionTitle(
-            modifier = Modifier,
             title = stringResource(id = R.string.tour_tags),
             icon = Icons.AutoMirrored.Outlined.Label
         )

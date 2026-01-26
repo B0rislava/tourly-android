@@ -1,6 +1,8 @@
 package com.tourly.app.core.di
 
 import android.content.Context
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,4 +22,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideApplicationContext(@ApplicationContext context: Context): Context = context
+
+    @Provides
+    @Singleton
+    fun providePlacesClient(@ApplicationContext context: Context): PlacesClient {
+        return Places.createClient(context)
+    }
 }
