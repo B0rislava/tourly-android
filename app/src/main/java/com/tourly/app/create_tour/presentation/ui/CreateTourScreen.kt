@@ -29,6 +29,7 @@ fun CreateTourScreen(
     viewModel: CreateTourViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val addressPredictions by viewModel.addressPredictions.collectAsState()
 
     var pendingImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -65,8 +66,6 @@ fun CreateTourScreen(
                         duration = SnackbarDuration.Short
                     )
                     onNavigateBack()
-
-                    // TODO: Navigate
                 }
                 is CreateTourEvent.Error -> {
                     snackbarHostState.showSnackbar(
@@ -83,7 +82,6 @@ fun CreateTourScreen(
         state = uiState,
         onTitleChanged = viewModel::onTitleChanged,
         onDescriptionChanged = viewModel::onDescriptionChanged,
-        onLocationChanged = viewModel::onLocationChanged,
         onDurationChanged = viewModel::onDurationChanged,
         onMaxGroupSizeChanged = viewModel::onMaxGroupSizeChanged,
         onPriceChanged = viewModel::onPriceChanged,
@@ -95,6 +93,10 @@ fun CreateTourScreen(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
         },
+        onLocationPredictionClick = viewModel::onLocationSelected,
+        addressPredictions = addressPredictions,
+        onMeetingPointAddressChanged = viewModel::onMeetingPointAddressChanged,
+        onMeetingPointSelected = viewModel::onMeetingPointSelected,
         onCreateTour = viewModel::onCreateTour
     )
 }
