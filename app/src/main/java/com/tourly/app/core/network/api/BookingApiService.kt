@@ -23,4 +23,8 @@ class BookingApiService @Inject constructor(
     suspend fun getMyBookings(): HttpResponse {
         return client.get("bookings/my")
     }
+
+    suspend fun cancelBooking(id: Long): HttpResponse {
+        return client.post("bookings/$id/cancel")
+    }
 }

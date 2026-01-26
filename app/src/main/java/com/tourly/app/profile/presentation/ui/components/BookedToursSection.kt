@@ -19,9 +19,12 @@ import androidx.compose.ui.unit.dp
 import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
+import androidx.compose.material3.TextButton
+
 @Composable
 fun BookedToursSection(
-    bookings: List<Booking>
+    bookings: List<Booking>,
+    onCancelBooking: (Long) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -42,7 +45,10 @@ fun BookedToursSection(
             )
         } else {
             bookings.forEach { booking ->
-                BookingCard(booking = booking)
+                BookingCard(
+                    booking = booking,
+                    onCancelClick = { onCancelBooking(booking.id) }
+                )
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
@@ -50,7 +56,10 @@ fun BookedToursSection(
 }
 
 @Composable
-fun BookingCard(booking: Booking) {
+fun BookingCard(
+    booking: Booking,
+    onCancelClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -61,12 +70,29 @@ fun BookingCard(booking: Booking) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(
-                text = booking.tourTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontFamily = OutfitFamily,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Text(
+                    text = booking.tourTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontFamily = OutfitFamily,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+
+                if (booking.status == "CONFIRMED") {
+                    TextButton(onClick = onCancelClick) {
+                        Text(
+                            text = "Cancel",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+            }
             
             Spacer(modifier = Modifier.height(4.dp))
             

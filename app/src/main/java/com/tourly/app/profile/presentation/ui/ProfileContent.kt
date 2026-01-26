@@ -40,6 +40,7 @@ fun ProfileContent(
     profilePictureUrl: String?,
     onLogout: () -> Unit,
     onEditProfile: () -> Unit,
+    onCancelBooking: (Long) -> Unit = {},
     bookings: List<Booking> = emptyList()
 ) {
     val scrollState = rememberScrollState()
@@ -105,7 +106,10 @@ fun ProfileContent(
 
         if (role == UserRole.TRAVELER) {
             Spacer(modifier = Modifier.height(24.dp))
-            BookedToursSection(bookings = bookings)
+            BookedToursSection(
+                bookings = bookings,
+                onCancelBooking = onCancelBooking
+            )
         }
     }
 }

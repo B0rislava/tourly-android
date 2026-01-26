@@ -91,6 +91,7 @@ fun ProfileScreen(
                         profilePictureUrl = state.user.profilePictureUrl,
                         onLogout = onLogout,
                         onEditProfile = userViewModel::startEditing,
+                        onCancelBooking = userViewModel::cancelBooking,
                         bookings = state.bookings
                     )
                 }

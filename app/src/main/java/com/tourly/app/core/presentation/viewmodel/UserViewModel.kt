@@ -3,6 +3,7 @@ package com.tourly.app.core.presentation.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.core.domain.usecase.CancelBookingUseCase
 import com.tourly.app.core.domain.usecase.GetMyBookingsUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
@@ -31,6 +32,7 @@ class UserViewModel @Inject constructor(
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
     private val tokenManager: TokenManager,
     private val getMyBookingsUseCase: GetMyBookingsUseCase,
+    private val cancelBookingUseCase: CancelBookingUseCase,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -98,6 +100,20 @@ class UserViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     // TODO: Handle error
+                }
+            }
+        }
+    }
+
+    fun cancelBooking(id: Long) {
+        viewModelScope.launch {
+            when (val result = cancelBookingUseCase(id)) {
+                is Result.Success -> {
+                    _events.send("Booking cancelled successfully")
+                    fetchBookings()
+                }
+                is Result.Error -> {
+                    _events.send(result.message)
                 }
             }
         }
