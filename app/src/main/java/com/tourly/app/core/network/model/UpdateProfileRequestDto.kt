@@ -7,5 +7,7 @@ data class UpdateProfileRequestDto(
     val email: String,
     val firstName: String,
     val lastName: String,
+    val bio: String? = null,
+    val certifications: String? = null,
     val password: String? = null
 )

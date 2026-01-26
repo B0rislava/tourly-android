@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
@@ -26,7 +27,8 @@ fun ProfileScreen(
     userViewModel: UserViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit,
-    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
+    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
+    onEditTour: (Long) -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
 
@@ -78,21 +80,22 @@ fun ProfileScreen(
                         onFirstNameChange = userViewModel::onFirstNameChange,
                         onLastNameChange = userViewModel::onLastNameChange,
                         onEmailChange = userViewModel::onEmailChange,
+                        onBioChange = userViewModel::onBioChange,
+                        onCertificationsChange = userViewModel::onCertificationsChange,
                         onPasswordChange = userViewModel::onPasswordChange,
                         onProfilePictureSelected = userViewModel::onProfilePictureSelected,
                         onSaveClick = userViewModel::saveProfile
                     )
                 } else {
                     ProfileContent(
-                        firstName = state.user.firstName,
-                        lastName = state.user.lastName,
-                        email = state.user.email,
-                        role = state.user.role,
-                        profilePictureUrl = state.user.profilePictureUrl,
+                        user = state.user,
                         onLogout = onLogout,
                         onEditProfile = userViewModel::startEditing,
+                        onEditTour = onEditTour,
+                        onDeleteTour = userViewModel::deleteTour,
                         onCancelBooking = userViewModel::cancelBooking,
-                        bookings = state.bookings
+                        bookings = state.bookings,
+                        tours = state.tours
                     )
                 }
             }
@@ -109,13 +112,38 @@ fun ProfileScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun ProfileContentPreview() {
+private fun GuideProfileContentPreview() {
     ProfileContent(
-        firstName = "Ashley",
-        lastName = "Watson",
-        email = "ashley.watson@example.com",
-        role = UserRole.GUIDE,
-        profilePictureUrl = null,
+        user = User(
+            id = 1,
+            email = "guide@example.com",
+            firstName = "John",
+            lastName = "Guide",
+            role = UserRole.GUIDE,
+            profilePictureUrl = null,
+            bio = "Experienced tour guide in Sofia.",
+            rating = 4.8,
+            reviewsCount = 120,
+            followerCount = 450,
+            toursCompleted = 85
+        ),
+        onLogout = {},
+        onEditProfile = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TravelerProfileContentPreview() {
+    ProfileContent(
+        user = User(
+            id = 2,
+            email = "traveler@example.com",
+            firstName = "Jane",
+            lastName = "Traveler",
+            role = UserRole.TRAVELER,
+            profilePictureUrl = null
+        ),
         onLogout = {},
         onEditProfile = {}
     )
