@@ -177,7 +177,11 @@ fun TourDetailsContent(
 
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     InfoRow(icon = Icons.Default.AccessTime, text = tour.duration)
-                    InfoRow(icon = Icons.Default.Groups, text = "Max ${tour.maxGroupSize} people")
+                    InfoRow(
+                        icon = Icons.Default.Groups, 
+                        text = "Places: ${tour.availableSpots} / ${tour.maxGroupSize}",
+                        textColor = if (tour.availableSpots > 0) Color.Gray else MaterialTheme.colorScheme.error
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))

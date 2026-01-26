@@ -234,16 +234,17 @@ fun TourItemCard(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
+                            // TODO: Extract text
                             imageVector = Icons.Outlined.Person,
-                            contentDescription = "Group size",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = "Available spots",
+                            tint = if (tour.availableSpots > 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "Up to ${tour.maxGroupSize}",
+                            text = if (tour.availableSpots > 0) "${tour.availableSpots} spots left" else "Fully Booked",
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = OutfitFamily,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (tour.availableSpots > 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
                         )
                     }
                 }

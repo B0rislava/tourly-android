@@ -15,10 +15,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InfoRow(icon: ImageVector, text: String) {
+fun InfoRow(
+    icon: ImageVector,
+    text: String,
+    textColor: Color = Color.Gray
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = textColor,
+            modifier = Modifier.size(18.dp)
+        )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, color = Color.Gray, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = text,
+            color = textColor,
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
