@@ -113,6 +113,8 @@ class HomeViewModel @Inject constructor(
                 } else {
                     _userProfile.value = null
                     _allTours.value = emptyList()
+                    _filters.value = TourFilters()
+                    _searchQuery.value = ""
                     _isLoading.value = false
                     _isRefreshing.value = false
                     _error.value = null
