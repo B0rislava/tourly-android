@@ -11,6 +11,9 @@ data class CreateTourUiState(
     val pricePerPerson: String = "",
     val whatsIncluded: String = "",
     val scheduledDate: Long? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val meetingPointAddress: String = "",
     val imageUri: android.net.Uri? = null,
 
     val availableTags: List<Tag> = emptyList(),
@@ -23,6 +26,7 @@ data class CreateTourUiState(
     val maxGroupSizeError: String? = null,
     val priceError: String? = null,
     val dateError: String? = null,
+    val meetingPointAddressError: String? = null,
 
     val isLoading: Boolean = false,
     val createTourError: String? = null,

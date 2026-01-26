@@ -157,6 +157,7 @@ fun NavigationRoot(
                         
                         TourDetailsScreen(
                             viewModel = viewModel,
+                            userRole = state.userRole,
                             onBackClick = {
                                 backStack.removeLastOrNull()
                             }

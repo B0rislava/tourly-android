@@ -1,6 +1,15 @@
 package com.tourly.app.home.presentation.ui
 
-import androidx.compose.foundation.Image
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberUpdatedMarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,11 +53,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import androidx.compose.ui.res.painterResource
 import com.tourly.app.R
 import com.tourly.app.home.domain.model.Tour
 import com.tourly.app.home.presentation.ui.components.GuideCard
 import com.tourly.app.home.presentation.ui.components.InfoRow
+import androidx.core.net.toUri
 
 @Composable
 fun TourDetailsContent(
@@ -220,27 +229,51 @@ fun TourDetailsContent(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                // Placeholder image for map
-                Image(
-                    painter = painterResource(id = R.drawable.map_placeholder),
-                    contentDescription = "Map",
+                val tourLocation = LatLng(tour.latitude ?: 42.6977, tour.longitude ?: 23.3219)
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(tourLocation, 15f)
+                }
+                
+                val markerState = rememberUpdatedMarkerState(position = tourLocation)
+
+                GoogleMap(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.LightGray),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = tour.meetingPoint ?: tour.location,
-                        style = MaterialTheme.typography.bodyMedium
+                        .clip(RoundedCornerShape(16.dp)),
+                    cameraPositionState = cameraPositionState,
+                    uiSettings = MapUiSettings(
+                        zoomControlsEnabled = false,
+                        myLocationButtonEnabled = false,
+                        scrollGesturesEnabled = false,
+                        zoomGesturesEnabled = false,
+                        tiltGesturesEnabled = false,
+                        rotationGesturesEnabled = false
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = { /* Open Maps */ }) {
+                ) {
+                    Marker(
+                        state = markerState,
+                        title = "Meeting Point",
+                        draggable = false
+                    )
+                }
+                val context = LocalContext.current
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = tour.meetingPoint ?: tour.location,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(onClick = {
+                        val address = tour.meetingPoint ?: tour.location
+                        val gmmIntentUri = "geo:0,0?q=${Uri.encode(address)}".toUri()
+                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                        context.startActivity(mapIntent)
+                    }) {
                         Text("Open in Maps")
                     }
                 }

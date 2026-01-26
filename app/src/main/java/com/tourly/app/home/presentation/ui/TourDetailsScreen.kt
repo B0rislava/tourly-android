@@ -23,9 +23,12 @@ import com.tourly.app.home.presentation.ui.components.BottomPriceBar
 import com.tourly.app.home.presentation.viewmodel.TourDetailsUiState
 import com.tourly.app.home.presentation.viewmodel.TourDetailsViewModel
 
+import com.tourly.app.login.domain.UserRole
+
 @Composable
 fun TourDetailsScreen(
     viewModel: TourDetailsViewModel,
+    userRole: UserRole?,
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -55,7 +58,7 @@ fun TourDetailsScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            if (uiState is TourDetailsUiState.Success) {
+            if (uiState is TourDetailsUiState.Success && userRole == UserRole.TRAVELER) {
                 val tour = (uiState as TourDetailsUiState.Success).tour
                 // Only show book button if spots available
                 val canBook = tour.availableSpots > 0

@@ -30,6 +30,8 @@ object TourMapper {
             guideRating = dto.guideRating,
             guideToursCompleted = dto.guideToursCompleted,
             guideImageUrl = dto.guideImageUrl,
+            latitude = dto.latitude,
+            longitude = dto.longitude,
             tags = dto.tags.map { TagMapper.toDomain(it) }
         )
     }

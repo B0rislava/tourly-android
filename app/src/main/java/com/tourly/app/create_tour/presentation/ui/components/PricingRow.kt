@@ -24,6 +24,7 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun PricingRow(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
@@ -31,6 +32,7 @@ fun PricingRow(
     errorMessage: String? = null
 ) {
     Card(
+        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
