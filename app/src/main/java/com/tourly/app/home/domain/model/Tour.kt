@@ -9,6 +9,7 @@ data class Tour(
     val location: String,
     val duration: String,
     val maxGroupSize: Int,
+    val availableSpots: Int,
     val pricePerPerson: Double,
     val scheduledDate: String,
     val createdAt: String,

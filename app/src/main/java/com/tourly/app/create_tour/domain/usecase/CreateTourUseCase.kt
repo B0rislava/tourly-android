@@ -1,7 +1,7 @@
 package com.tourly.app.create_tour.domain.usecase
 
 import android.content.Context
-import com.tourly.app.core.util.flatMap
+import com.tourly.app.core.network.Result
 import com.tourly.app.create_tour.domain.mapper.CreateTourMapper
 import com.tourly.app.create_tour.domain.model.CreateTourParams
 import com.tourly.app.create_tour.domain.repository.TourRepository
@@ -16,8 +16,16 @@ class CreateTourUseCase @Inject constructor(
     private val context: Context
 ) {
     suspend operator fun invoke(params: CreateTourParams): Result<Tour> {
-        return validator.validate(params)
-            .map { mapper.toDto(params) }
-            .flatMap { repository.createTour(context, it, params.imageUri) }
+        val validationResult = validator.validate(params)
+        
+        return if (validationResult.isSuccess) {
+            repository.createTour(context, mapper.toDto(params), params.imageUri)
+        } else {
+            val exception = validationResult.exceptionOrNull()
+            Result.Error(
+                code = "VALIDATION_ERROR",
+                message = exception?.message ?: "Validation failed"
+            )
+        }
     }
 }

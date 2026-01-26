@@ -15,6 +15,7 @@ object TourMapper {
             location = dto.location,
             duration = dto.duration,
             maxGroupSize = dto.maxGroupSize,
+            availableSpots = dto.availableSpots,
             pricePerPerson = dto.pricePerPerson,
             scheduledDate = dto.scheduledDate,
             createdAt = dto.createdAt,

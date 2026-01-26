@@ -21,7 +21,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun BottomPriceBar(price: Double) {
+fun BottomPriceBar(
+    price: Double,
+    buttonText: String = "Book Now",
+    isButtonEnabled: Boolean = true,
+    onButtonClick: () -> Unit
+) {
     Surface(
         shadowElevation = 8.dp,
         color = MaterialTheme.colorScheme.surface,
@@ -49,13 +54,17 @@ fun BottomPriceBar(price: Double) {
             }
 
             Button(
-                onClick = { /* Book */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEDA572)), // Peach color from screenshot
+                onClick = onButtonClick,
+                enabled = isButtonEnabled,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEDA572),
+                    disabledContainerColor = Color.Gray
+                ),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.height(50.dp)
             ) {
                 Text(
-                    text = "Book Now",
+                    text = buttonText,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White

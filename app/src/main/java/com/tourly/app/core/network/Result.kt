@@ -7,4 +7,9 @@ sealed class Result<out T> {
         val message: String,
         val errors: Map<String, String>? = null
     ) : Result<Nothing>()
+
+    fun <R> map(transform: (T) -> R): Result<R> = when (this) {
+        is Success -> Success(transform(data))
+        is Error -> this
+    }
 }
