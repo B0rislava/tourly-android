@@ -31,10 +31,17 @@ object NetworkResponseMapper {
                     )
                 } catch (e: Exception) {
                     // Fallback if parsing fails or body is empty
-                    Result.Error(
-                        code = "UNKNOWN_ERROR",
-                        message = "An error occurred: ${response.status.value} ${response.status.description}"
-                    )
+                    val code = when (response.status.value) {
+                        401 -> "UNAUTHORIZED"
+                        403 -> "FORBIDDEN"
+                        else -> "UNKNOWN_ERROR"
+                    }
+                    val message = when (response.status.value) {
+                        401 -> "Your session has expired. Please log in again."
+                        403 -> "You don't have permission to perform this action."
+                        else -> "An error occurred: ${response.status.value} ${response.status.description}"
+                    }
+                    Result.Error(code = code, message = message)
                 }
             }
         } catch (e: Exception) {
