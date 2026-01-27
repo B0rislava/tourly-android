@@ -23,6 +23,7 @@ import com.tourly.app.MainViewModel
 import com.tourly.app.core.presentation.ui.SplashScreen
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
 import com.tourly.app.create_tour.presentation.ui.EditTourScreen
+import com.tourly.app.notifications.presentation.ui.NotificationScreen
 
 @Composable
 fun NavigationRoot(
@@ -121,6 +122,9 @@ fun NavigationRoot(
                                 backStack.clear()
                                 backStack.add(Route.Welcome)
                             },
+                            onNavigateToNotifications = {
+                                backStack.add(Route.Notifications)
+                            },
                             onNavigateToSettings = {
                                 backStack.add(Route.Settings)
                             },
@@ -143,6 +147,9 @@ fun NavigationRoot(
                             onAccountDeleted = {
                                 backStack.clear()
                                 backStack.add(Route.Welcome)
+                            },
+                            onNavigateToNotifications = {
+                                backStack.add(Route.Notifications)
                             },
                             onNavigateToSettings = {
                                 backStack.add(Route.Settings)
@@ -198,6 +205,13 @@ fun NavigationRoot(
                                 backStack.removeLastOrNull()
 
                             }
+                        )
+                    }
+                }
+                is Route.Notifications -> {
+                    NavEntry(key) {
+                        NotificationScreen(
+                            onBackClick = { backStack.removeLastOrNull() }
                         )
                     }
                 }

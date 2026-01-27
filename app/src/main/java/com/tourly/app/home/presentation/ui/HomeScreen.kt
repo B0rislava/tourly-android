@@ -20,7 +20,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     onSessionExpired: () -> Unit,
-    onTourClick: (Long) -> Unit
+    onTourClick: (Long) -> Unit,
+    onNotifyClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -31,6 +32,7 @@ fun HomeScreen(
     val greeting by viewModel.greeting.collectAsState()
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val unreadCount by viewModel.unreadCount.collectAsState()
     
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -78,7 +80,9 @@ fun HomeScreen(
             onThemeToggle = viewModel::toggleTheme,
             isRefreshing = isRefreshing,
             onTourClick = onTourClick,
+            onNotifyClick = onNotifyClick,
+            unreadCount = unreadCount,
             modifier = Modifier.padding(paddingValues)
         )
     }
-}   
+}

@@ -19,6 +19,7 @@ fun GuideMainScreen(
     onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -47,6 +48,7 @@ fun GuideMainScreen(
         onAccountDeleted = onAccountDeleted,
         onTourClick = onTourClick,
         onEditTour = onEditTour,
+        onNavigateToNotifications = onNavigateToNotifications,
         onEditingStateChange = { isEditing, cancelCallback ->
             isEditingProfile = isEditing
             onCancelEdit = cancelCallback

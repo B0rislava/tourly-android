@@ -34,6 +34,7 @@ fun MainContent(
     onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
+    onNavigateToNotifications: () -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
 ) {
     Scaffold(
@@ -87,7 +88,8 @@ fun MainContent(
                 HomeScreen(
                     modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()), // Apply only bottom padding, let Home manage top
                     onSessionExpired = onLogout,
-                    onTourClick = onTourClick
+                    onTourClick = onTourClick,
+                    onNotifyClick = onNavigateToNotifications
                 )
             }
             BottomNavDestination.TRAVELER_DASHBOARD -> {

@@ -37,6 +37,7 @@ fun GuideMainContent(
     onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
+    onNavigateToNotifications: () -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
     userViewModel: UserViewModel
 ) {
@@ -98,6 +99,7 @@ fun GuideMainContent(
                 HomeScreen(
                     onSessionExpired = onLogout,
                     onTourClick = onTourClick,
+                    onNotifyClick = onNavigateToNotifications,
                     modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
                 )
             }

@@ -17,6 +17,7 @@ fun MainScreen(
     onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
     onTourClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -42,6 +43,7 @@ fun MainScreen(
         onLogout = onLogout,
         onAccountDeleted = onAccountDeleted,
         onTourClick = onTourClick,
+        onNavigateToNotifications = onNavigateToNotifications,
         onEditingStateChange = { isEditing, cancelCallback ->
             isEditingProfile = isEditing
             onCancelEdit = cancelCallback

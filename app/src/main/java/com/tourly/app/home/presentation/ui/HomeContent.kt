@@ -50,6 +50,8 @@ fun HomeContent(
     onThemeToggle: () -> Unit,
     isRefreshing: Boolean,
     onTourClick: (Long) -> Unit,
+    onNotifyClick: () -> Unit,
+    unreadCount: Int,
     modifier: Modifier = Modifier
 ) {
 
@@ -70,6 +72,8 @@ fun HomeContent(
                     userName = userName,
                     isDarkTheme = isDarkTheme,
                     onThemeToggle = onThemeToggle,
+                    onNotifyClick = onNotifyClick,
+                    unreadCount = unreadCount,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .padding(top = 16.dp)
