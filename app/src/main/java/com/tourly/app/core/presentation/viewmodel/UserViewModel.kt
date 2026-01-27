@@ -22,9 +22,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,13 +60,18 @@ class UserViewModel @Inject constructor(
 
     private fun observeToken() {
         viewModelScope.launch {
-            tokenManager.getTokenFlow().collectLatest { token ->
-                if (token != null) {
-                    fetchUserProfile()
-                } else {
-                    _uiState.value = UserUiState.Idle
+            tokenManager.getTokenFlow()
+                .distinctUntilChanged()
+                .collect { token ->
+                    if (token != null) {
+                        val currentState = _uiState.value
+                        if (currentState !is UserUiState.Success || currentState.user.email == "") {
+                             fetchUserProfile()
+                        }
+                    } else {
+                        _uiState.value = UserUiState.Idle
+                    }
                 }
-            }
         }
     }
 

@@ -29,6 +29,8 @@ import com.tourly.app.core.network.model.RefreshTokenResponseDto
 import io.ktor.http.contentType
 import io.ktor.http.encodedPath
 import com.tourly.app.BuildConfig
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.Mutex
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -47,6 +49,8 @@ object NetworkModule {
             }
 
             install(Auth) {
+                val refreshMutex = Mutex()
+                
                 bearer {
                     loadTokens {
                         println("HTTP Client: loadTokens called - attempting to load from storage...")
@@ -70,38 +74,47 @@ object NetworkModule {
                     }
 
                     refreshTokens {
-                        val refreshToken = tokenManager.getRefreshToken() ?: return@refreshTokens null
-                        try {
-                            val refreshClient = HttpClient(Android) {
-                                install(ContentNegotiation) {
-                                     json(Json { ignoreUnknownKeys = true })
-                                }
-                            }
+                        refreshMutex.withLock {
+                            // Double check if another request already refreshed the token
+                            val currentRefreshToken = tokenManager.getRefreshToken()
+
+                            println("HTTP Client: Synchronized refresh attempt...")
+                            
+                            val refreshToken = currentRefreshToken ?: return@refreshTokens null
                             
                             try {
-                                val refreshResponse = refreshClient.post(BuildConfig.BASE_URL + "auth/refresh") {
-                                    contentType(ContentType.Application.Json)
-                                    setBody(RefreshTokenRequestDto(refreshToken))
+                                val refreshClient = HttpClient(Android) {
+                                    install(ContentNegotiation) {
+                                         json(Json { ignoreUnknownKeys = true })
+                                    }
                                 }
+                                
+                                try {
+                                    val refreshResponse = refreshClient.post(BuildConfig.BASE_URL + "auth/refresh") {
+                                        contentType(ContentType.Application.Json)
+                                        setBody(RefreshTokenRequestDto(refreshToken))
+                                    }
 
-                                if (refreshResponse.status.isSuccess()) {
-                                    val tokens = refreshResponse.body<RefreshTokenResponseDto>()
-                                    tokenManager.saveToken(tokens.accessToken)
-                                    tokenManager.saveRefreshToken(tokens.refreshToken)
-                                    BearerTokens(tokens.accessToken, tokens.refreshToken)
-                                } else {
-                                    tokenManager.clearToken()
-                                    tokenManager.clearRefreshToken()
-                                    null
+                                    if (refreshResponse.status.isSuccess()) {
+                                        val tokens = refreshResponse.body<RefreshTokenResponseDto>()
+                                        tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
+                                        println("HTTP Client: Token refresh successful")
+                                        BearerTokens(tokens.accessToken, tokens.refreshToken)
+                                    } else {
+                                        println("HTTP Client: Token refresh failed with status ${refreshResponse.status}")
+                                        tokenManager.clearToken()
+                                        tokenManager.clearRefreshToken()
+                                        null
+                                    }
+                                } finally {
+                                    refreshClient.close()
                                 }
-                            } finally {
-                                refreshClient.close()
+                            } catch (e: Exception) {
+                                println("HTTP Client: Failed to refresh token: ${e.message}")
+                                tokenManager.clearToken()
+                                tokenManager.clearRefreshToken()
+                                null
                             }
-                        } catch (e: Exception) {
-                            println("HTTP Client: Failed to refresh token: ${e.message}")
-                            tokenManager.clearToken()
-                            tokenManager.clearRefreshToken()
-                            null
                         }
                     }
                 }
