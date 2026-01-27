@@ -72,12 +72,8 @@ fun EditTourScreen(
             when (event) {
                 is CreateTourEvent.Success -> {
                     onUpdateSuccess()
-                    onNavigateBack()
                 }
                 is CreateTourEvent.Error -> {
-                    // We might still want to show errors here since we are still on the screen
-                    // But for consistency with Option B, we could also pass this back.
-                    // Let's keep a local error snackbar for now or just the navigation back.
                 }
             }
         }
