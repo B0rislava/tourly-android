@@ -27,6 +27,7 @@ fun ProfileScreen(
     userViewModel: UserViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit,
+    onAccountDeleted: () -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
     onEditTour: (Long) -> Unit = {}
 ) {
@@ -94,6 +95,11 @@ fun ProfileScreen(
                         onEditTour = onEditTour,
                         onDeleteTour = userViewModel::deleteTour,
                         onCancelBooking = userViewModel::cancelBooking,
+                        onDeleteAccount = {
+                            userViewModel.deleteAccount {
+                                onAccountDeleted()
+                            }
+                        },
                         bookings = state.bookings,
                         tours = state.tours
                     )

@@ -4,6 +4,7 @@ import com.tourly.app.core.network.model.LoginRequestDto
 import com.tourly.app.core.network.model.RegisterRequestDto
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
@@ -56,5 +57,9 @@ class AuthApiService @Inject constructor(
                 })
             }
         )
+    }
+
+    suspend fun deleteProfile(): HttpResponse {
+        return client.delete("users/me")
     }
 }

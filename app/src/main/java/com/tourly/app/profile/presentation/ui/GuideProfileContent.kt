@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.AlertDialog
@@ -61,9 +62,34 @@ fun GuideProfileContent(
     onEditProfile: () -> Unit,
     onEditTour: (Long) -> Unit = {},
     onDeleteTour: (Long) -> Unit = {},
+    onDeleteAccount: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     var tourToDelete by remember { mutableStateOf<Tour?>(null) }
+    var showDeleteAccountConfirmation by remember { mutableStateOf(false) }
+
+    if (showDeleteAccountConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAccountConfirmation = false },
+            title = { Text(text = stringResource(id = R.string.delete_account), fontFamily = OutfitFamily, fontWeight = FontWeight.Bold) },
+            text = { Text(text = stringResource(id = R.string.delete_account_confirmation), fontFamily = OutfitFamily) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteAccount()
+                        showDeleteAccountConfirmation = false
+                    }
+                ) {
+                    Text(text = "Delete", color = MaterialTheme.colorScheme.error, fontFamily = OutfitFamily, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteAccountConfirmation = false }) {
+                    Text(text = "Cancel", fontFamily = OutfitFamily)
+                }
+            }
+        )
+    }
 
     if (tourToDelete != null) {
         AlertDialog(
@@ -172,6 +198,28 @@ fun GuideProfileContent(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = stringResource(id = R.string.logout),
+                fontFamily = OutfitFamily
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { showDeleteAccountConfirmation = true },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                contentColor = MaterialTheme.colorScheme.error
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.delete_account),
                 fontFamily = OutfitFamily
             )
         }
@@ -406,6 +454,7 @@ private fun GuideProfileContentPreview() {
             )
         ),
         onLogout = {},
-        onEditProfile = {}
+        onEditProfile = {},
+        onDeleteAccount = {}
     )
 }

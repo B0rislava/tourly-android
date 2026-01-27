@@ -32,6 +32,7 @@ fun MainContent(
     onDestinationSelected: (BottomNavDestination) -> Unit,
     onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
+    onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
 ) {
@@ -103,6 +104,7 @@ fun MainContent(
                 ProfileScreen(
                     snackbarHostState = snackbarHostState,
                     onLogout = onLogout,
+                    onAccountDeleted = onAccountDeleted,
                     onEditingStateChange = onEditingStateChange,
                     modifier = Modifier.padding(paddingValues)
                 )

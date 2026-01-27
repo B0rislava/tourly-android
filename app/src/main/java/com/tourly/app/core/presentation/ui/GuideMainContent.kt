@@ -34,6 +34,7 @@ fun GuideMainContent(
     onDestinationSelected: (BottomNavDestination) -> Unit,
     onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
+    onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
@@ -120,6 +121,7 @@ fun GuideMainContent(
                 ProfileScreen(
                     snackbarHostState = snackbarHostState,
                     onLogout = onLogout,
+                    onAccountDeleted = onAccountDeleted,
                     onEditingStateChange = onEditingStateChange,
                     onEditTour = onEditTour,
                     userViewModel = userViewModel,

@@ -8,6 +8,7 @@ import com.tourly.app.core.domain.usecase.GetMyBookingsUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
+import com.tourly.app.core.domain.usecase.DeleteAccountUseCase
 import com.tourly.app.create_tour.domain.usecase.GetMyToursUseCase
 import com.tourly.app.create_tour.domain.usecase.DeleteTourUseCase
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
@@ -21,9 +22,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,6 +38,7 @@ class UserViewModel @Inject constructor(
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val getMyToursUseCase: GetMyToursUseCase,
     private val deleteTourUseCase: DeleteTourUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -58,13 +60,18 @@ class UserViewModel @Inject constructor(
 
     private fun observeToken() {
         viewModelScope.launch {
-            tokenManager.getTokenFlow().collectLatest { token ->
-                if (token != null) {
-                    fetchUserProfile()
-                } else {
-                    _uiState.value = UserUiState.Idle
+            tokenManager.getTokenFlow()
+                .distinctUntilChanged()
+                .collect { token ->
+                    if (token != null) {
+                        val currentState = _uiState.value
+                        if (currentState !is UserUiState.Success || currentState.user.email == "") {
+                             fetchUserProfile()
+                        }
+                    } else {
+                        _uiState.value = UserUiState.Idle
+                    }
                 }
-            }
         }
     }
 
@@ -161,6 +168,22 @@ class UserViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     _events.send(result.message)
+                }
+            }
+        }
+    }
+
+    fun deleteAccount(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.value = UserUiState.Loading
+            when (val result = deleteAccountUseCase()) {
+                is Result.Success -> {
+                    _events.send("Account deleted successfully")
+                    onSuccess()
+                }
+                is Result.Error -> {
+                    _events.send(result.message)
+                    fetchUserProfile()
                 }
             }
         }

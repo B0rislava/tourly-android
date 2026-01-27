@@ -15,6 +15,7 @@ import com.tourly.app.core.presentation.ui.utils.WindowSizeState
 fun MainScreen(
     windowSizeState: WindowSizeState,
     onLogout: () -> Unit,
+    onAccountDeleted: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onTourClick: (Long) -> Unit,
     modifier: Modifier = Modifier
@@ -39,6 +40,7 @@ fun MainScreen(
         },
         onNavigateToSettings = onNavigateToSettings,
         onLogout = onLogout,
+        onAccountDeleted = onAccountDeleted,
         onTourClick = onTourClick,
         onEditingStateChange = { isEditing, cancelCallback ->
             isEditingProfile = isEditing
