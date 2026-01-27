@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
@@ -95,6 +96,9 @@ fun MainContent(
                 )
             }
             BottomNavDestination.TRAVELER_DASHBOARD -> {
+                LaunchedEffect(Unit) {
+                    userViewModel.refreshBookings()
+                }
                 DashboardScreen(
                     userViewModel = userViewModel,
                     onEditTour = {}, // Travelers don't edit tours

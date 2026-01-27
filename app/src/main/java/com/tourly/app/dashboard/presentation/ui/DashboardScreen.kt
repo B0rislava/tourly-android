@@ -1,6 +1,7 @@
 package com.tourly.app.dashboard.presentation.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +15,10 @@ fun DashboardScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by userViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        userViewModel.refreshBookings()
+    }
 
     DashboardContent(
         uiState = uiState,

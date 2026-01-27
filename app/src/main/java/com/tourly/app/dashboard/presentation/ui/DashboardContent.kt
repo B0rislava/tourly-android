@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
@@ -92,6 +93,7 @@ private fun DashboardSuccessContent(
 ) {
     val scrollState = rememberScrollState()
     var tourToDelete by remember { mutableStateOf<Tour?>(null) }
+    var bookingToCancel by remember { mutableStateOf<Booking?>(null) }
 
     if (tourToDelete != null) {
         AlertDialog(
@@ -124,8 +126,10 @@ private fun DashboardSuccessContent(
 
         if (uiState.user.role == UserRole.TRAVELER) {
             BookedToursSection(
-                bookings = uiState.bookings,
-                onCancelBooking = onCancelBooking
+                bookings = uiState.bookings.filter { it.status == "CONFIRMED" },
+                onCancelBooking = { bookingId ->
+                    bookingToCancel = uiState.bookings.find { it.id == bookingId }
+                }
             )
         } else {
             // Guide Dashboard
