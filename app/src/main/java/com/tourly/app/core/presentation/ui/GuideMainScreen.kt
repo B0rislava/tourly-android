@@ -8,8 +8,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.components.BottomNavDestination
 import com.tourly.app.core.presentation.ui.utils.WindowSizeState
+import com.tourly.app.core.presentation.viewmodel.UserViewModel
 
 @Composable
 fun GuideMainScreen(
@@ -17,7 +19,9 @@ fun GuideMainScreen(
     onLogout: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onTourClick: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    onEditTour: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
     var selectedDestination by rememberSaveable {
         mutableStateOf(BottomNavDestination.GUIDE_HOME)
@@ -40,9 +44,11 @@ fun GuideMainScreen(
         onNavigateToSettings = onNavigateToSettings,
         onLogout = onLogout,
         onTourClick = onTourClick,
+        onEditTour = onEditTour,
         onEditingStateChange = { isEditing, cancelCallback ->
             isEditingProfile = isEditing
             onCancelEdit = cancelCallback
-        }
+        },
+        userViewModel = userViewModel
     )
 }

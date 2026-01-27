@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import com.tourly.app.MainActivityUiState
 import com.tourly.app.MainViewModel
 import com.tourly.app.core.presentation.ui.SplashScreen
+import com.tourly.app.create_tour.presentation.ui.EditTourScreen
 
 @Composable
 fun NavigationRoot(
@@ -47,6 +48,11 @@ fun NavigationRoot(
             
             val backStack = rememberNavBackStack(startRoute)
             
+            // Shared UserViewModel for guide management features
+            val guideUserViewModel = if (state.userRole == UserRole.GUIDE) {
+                hiltViewModel<com.tourly.app.core.presentation.viewmodel.UserViewModel>()
+            } else null
+
             // Redirect Guide to GuideMain if they end up on TravelerMain (e.g. after login)
             LaunchedEffect(state, backStack.lastOrNull()) {
                 if (state is MainActivityUiState.Success &&
@@ -120,7 +126,7 @@ fun NavigationRoot(
                     }
                 }
                 is Route.GuideMain -> {
-                     NavEntry(key) {
+                    NavEntry(key) {
                         GuideMainScreen(
                             windowSizeState = windowSizeState,
                             onLogout = {
@@ -132,9 +138,13 @@ fun NavigationRoot(
                             onNavigateToSettings = {
                                 backStack.add(Route.Settings)
                             },
-                                onTourClick = { tourId ->
+                            onTourClick = { tourId ->
                                 backStack.add(Route.TourDetails(tourId))
-                            }
+                            },
+                            onEditTour = { tourId ->
+                                backStack.add(Route.EditTour(tourId))
+                            },
+                            userViewModel = guideUserViewModel!!
                         )
                     }
                 }
@@ -158,8 +168,26 @@ fun NavigationRoot(
                         TourDetailsScreen(
                             viewModel = viewModel,
                             userRole = state.userRole,
+                            onEditTour = { tourId ->
+                                backStack.add(Route.EditTour(tourId))
+                            },
                             onBackClick = {
                                 backStack.removeLastOrNull()
+                            }
+                        )
+                    }
+                }
+                is Route.EditTour -> {
+                    NavEntry(key) {
+                        EditTourScreen(
+                            tourId = key.tourId,
+                            onNavigateBack = {
+                                backStack.removeLastOrNull()
+                            },
+                            onUpdateSuccess = {
+                                guideUserViewModel?.showMessage("Tour updated successfully!")
+                                backStack.removeLastOrNull()
+
                             }
                         )
                     }

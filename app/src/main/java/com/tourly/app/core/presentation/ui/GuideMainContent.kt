@@ -18,6 +18,7 @@ import com.tourly.app.core.presentation.ui.components.BottomNavDestination
 import com.tourly.app.core.presentation.ui.components.BottomNavDestination.Companion.guideDestinations
 import com.tourly.app.core.presentation.ui.components.BottomNavigationBar
 import com.tourly.app.core.presentation.ui.components.SimpleTopBar
+import com.tourly.app.core.presentation.viewmodel.UserViewModel
 import com.tourly.app.dashboard.presentation.ui.DashboardScreen
 import com.tourly.app.profile.presentation.ui.ProfileScreen
 import com.tourly.app.home.presentation.ui.HomeScreen
@@ -34,7 +35,9 @@ fun GuideMainContent(
     onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
     onTourClick: (Long) -> Unit,
-    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
+    onEditTour: (Long) -> Unit,
+    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
+    userViewModel: UserViewModel
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -118,6 +121,8 @@ fun GuideMainContent(
                     snackbarHostState = snackbarHostState,
                     onLogout = onLogout,
                     onEditingStateChange = onEditingStateChange,
+                    onEditTour = onEditTour,
+                    userViewModel = userViewModel,
                     modifier = Modifier.padding(paddingValues)
                 )
             }

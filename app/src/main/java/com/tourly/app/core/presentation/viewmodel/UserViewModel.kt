@@ -46,6 +46,12 @@ class UserViewModel @Inject constructor(
     private val _events = Channel<String>()
     val events = _events.receiveAsFlow()
 
+    fun showMessage(message: String) {
+        viewModelScope.launch {
+            _events.send(message)
+        }
+    }
+
     init {
         observeToken()
     }
