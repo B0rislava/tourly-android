@@ -33,10 +33,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.presentation.ui.components.TourlyAlertDialog
 
 @Composable
 fun DashboardContent(
@@ -96,25 +96,29 @@ private fun DashboardSuccessContent(
     var bookingToCancel by remember { mutableStateOf<Booking?>(null) }
 
     if (tourToDelete != null) {
-        AlertDialog(
+        TourlyAlertDialog(
             onDismissRequest = { tourToDelete = null },
-            title = { Text(text = "Delete Tour", fontFamily = OutfitFamily, fontWeight = FontWeight.Bold) },
-            text = { Text(text = "Are you sure you want to delete '${tourToDelete?.title}'? This action cannot be undone.", fontFamily = OutfitFamily) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        tourToDelete?.id?.let { onDeleteTour(it) }
-                        tourToDelete = null
-                    }
-                ) {
-                    Text(text = "Delete", color = MaterialTheme.colorScheme.error, fontFamily = OutfitFamily, fontWeight = FontWeight.Bold)
-                }
+            onConfirm = {
+                tourToDelete?.id?.let { onDeleteTour(it) }
             },
-            dismissButton = {
-                TextButton(onClick = { tourToDelete = null }) {
-                    Text(text = "Cancel", fontFamily = OutfitFamily)
-                }
-            }
+            title = "Delete Tour",
+            text = "Are you sure you want to delete '${tourToDelete?.title}'? This action cannot be undone.",
+            confirmButtonText = "Delete",
+            isDestructive = true
+        )
+    }
+
+    if (bookingToCancel != null) {
+        TourlyAlertDialog(
+            onDismissRequest = { bookingToCancel = null },
+            onConfirm = {
+                bookingToCancel?.id?.let { onCancelBooking(it) }
+            },
+            title = "Cancel Booking",
+            text = "Are you sure you want to cancel your booking for '${bookingToCancel?.tourTitle}'?",
+            confirmButtonText = "Yes, Cancel",
+            dismissButtonText = "No, Keep",
+            isDestructive = true
         )
     }
 

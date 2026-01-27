@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import com.tourly.app.core.presentation.ui.components.TourlyAlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,25 +67,15 @@ fun GuideProfileContent(
     var showDeleteAccountConfirmation by remember { mutableStateOf(false) }
 
     if (showDeleteAccountConfirmation) {
-        AlertDialog(
+        TourlyAlertDialog(
             onDismissRequest = { showDeleteAccountConfirmation = false },
-            title = { Text(text = stringResource(id = R.string.delete_account), fontFamily = OutfitFamily, fontWeight = FontWeight.Bold) },
-            text = { Text(text = stringResource(id = R.string.delete_account_confirmation), fontFamily = OutfitFamily) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDeleteAccount()
-                        showDeleteAccountConfirmation = false
-                    }
-                ) {
-                    Text(text = "Delete", color = MaterialTheme.colorScheme.error, fontFamily = OutfitFamily, fontWeight = FontWeight.Bold)
-                }
+            onConfirm = {
+                onDeleteAccount()
             },
-            dismissButton = {
-                TextButton(onClick = { showDeleteAccountConfirmation = false }) {
-                    Text(text = "Cancel", fontFamily = OutfitFamily)
-                }
-            }
+            title = stringResource(id = R.string.delete_account),
+            text = stringResource(id = R.string.delete_account_confirmation),
+            confirmButtonText = "Delete",
+            isDestructive = true
         )
     }
 
