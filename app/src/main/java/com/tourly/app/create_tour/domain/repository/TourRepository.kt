@@ -13,4 +13,11 @@ interface TourRepository {
         imageUri: Uri?
     ): Result<Tour>
     suspend fun getMyTours(): Result<List<Tour>>
+    suspend fun updateTour(
+        context: Context,
+        id: Long,
+        request: CreateTourRequestDto,
+        imageUri: Uri?
+    ): Result<Tour>
+    suspend fun deleteTour(id: Long): Result<Unit>
 }

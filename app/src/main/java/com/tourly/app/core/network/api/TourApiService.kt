@@ -11,6 +11,7 @@ import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.delete
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
@@ -90,6 +91,53 @@ class TourApiService @Inject constructor(
 
     suspend fun getTour(id: Long): HttpResponse {
         return client.get("tours/$id")
+    }
+
+    suspend fun updateTour(
+        context: Context,
+        id: Long,
+        request: CreateTourRequestDto,
+        imageUri: Uri?
+    ): HttpResponse {
+        return client.post("tours/$id") {
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        // Add tour data as JSON part
+                        append(
+                            key = "data",
+                            value = Json.encodeToString(CreateTourRequestDto.serializer(), request),
+                            headers = Headers.build {
+                                append(HttpHeaders.ContentType, "application/json")
+                            }
+                        )
+
+                        // Add image if present
+                        imageUri?.let { uri ->
+                            if (uri.scheme == "content" || uri.scheme == "file") {
+                                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                                    val bytes = inputStream.readBytes()
+                                    val filename = getFileName(context, uri) ?: "tour_image.jpg"
+
+                                    append(
+                                        key = "image",
+                                        value = bytes,
+                                        headers = Headers.build {
+                                            append(HttpHeaders.ContentDisposition, "filename=\"$filename\"")
+                                            append(HttpHeaders.ContentType, "image/jpeg")
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                )
+            )
+        }
+    }
+
+    suspend fun deleteTour(id: Long): HttpResponse {
+        return client.delete("tours/$id")
     }
 
     private fun getFileName(context: Context, uri: Uri): String? {
