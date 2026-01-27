@@ -83,14 +83,19 @@ class UserViewModel @Inject constructor(
         
         when (val result = getUserProfileUseCase()) {
             is Result.Success -> {
+                val user = result.data
                 _uiState.value = when (val current = _uiState.value) {
-                    is UserUiState.Success -> current.copy(user = result.data)
-                    else -> UserUiState.Success(result.data)
+                    is UserUiState.Success -> current.copy(
+                        user = user,
+                        bookings = if (user.role == UserRole.TRAVELER) current.bookings else emptyList(),
+                        tours = if (user.role == UserRole.GUIDE) current.tours else emptyList()
+                    )
+                    else -> UserUiState.Success(user)
                 }
                 
-                if (result.data.role == UserRole.TRAVELER) {
+                if (user.role == UserRole.TRAVELER) {
                     fetchBookings()
-                } else if (result.data.role == UserRole.GUIDE) {
+                } else if (user.role == UserRole.GUIDE) {
                     fetchTours()
                 }
             }
@@ -102,11 +107,17 @@ class UserViewModel @Inject constructor(
 
     fun refreshBookings() {
         viewModelScope.launch {
-            val role = (uiState.value as? UserUiState.Success)?.user?.role
-            if (role == UserRole.TRAVELER) {
-                fetchBookings()
-            } else if (role == UserRole.GUIDE) {
-                fetchTours()
+            // If we're already success, just fetch
+            val currentState = _uiState.value
+            if (currentState is UserUiState.Success) {
+                if (currentState.user.role == UserRole.TRAVELER) {
+                    fetchBookings()
+                } else {
+                    fetchTours()
+                }
+            } else {
+                // If not success, try full profile fetch which will fetch specific data too
+                fetchUserProfile()
             }
         }
     }

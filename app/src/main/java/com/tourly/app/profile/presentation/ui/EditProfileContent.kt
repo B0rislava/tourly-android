@@ -40,6 +40,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.components.ImageCropperDialog
 import com.tourly.app.core.presentation.ui.components.UserAvatar
@@ -148,7 +152,11 @@ fun EditProfileContent(
             onValueChange = onFirstNameChange,
             label = stringResource(id = R.string.first_name),
             isError = state.firstNameError != null,
-            supportingText = state.firstNameError
+            supportingText = state.firstNameError,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -158,7 +166,11 @@ fun EditProfileContent(
             onValueChange = onLastNameChange,
             label = stringResource(id = R.string.last_name),
             isError = state.lastNameError != null,
-            supportingText = state.lastNameError
+            supportingText = state.lastNameError,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -204,7 +216,12 @@ fun EditProfileContent(
             onValueChange = onEmailChange,
             label = stringResource(id = R.string.email),
             isError = state.emailError != null,
-            supportingText = state.emailError
+            supportingText = state.emailError,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                autoCorrectEnabled = false,
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -218,6 +235,11 @@ fun EditProfileContent(
             isError = state.passwordError != null,
             supportingText = state.passwordError ?: "Leave empty to keep current password",
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                autoCorrectEnabled = false,
+                imeAction = ImeAction.Done
+            ),
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 val description = if (passwordVisible) stringResource(id = R.string.hide_password) else stringResource(id = R.string.show_password)

@@ -6,12 +6,17 @@ import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.domain.repository.ThemeRepository
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.network.Result
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.PlaceTypes
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.tourly.app.home.domain.model.Tour
 import com.tourly.app.home.domain.model.Tag
 import com.tourly.app.home.domain.model.TourFilters
 import com.tourly.app.home.domain.usecase.GetAllTagsUseCase
 import com.tourly.app.home.domain.usecase.GetAllToursUseCase
 import com.tourly.app.home.presentation.state.HomeUiState
+import com.tourly.app.notifications.domain.usecase.GetUnreadNotificationsCountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +45,8 @@ class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val clock: Clock,
     private val themeRepository: ThemeRepository,
+    private val getUnreadNotificationsCountUseCase: GetUnreadNotificationsCountUseCase,
+    private val placesClient: PlacesClient
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -65,6 +72,12 @@ class HomeViewModel @Inject constructor(
 
     private val _greeting = MutableStateFlow("")
     val greeting = _greeting.asStateFlow()
+
+    private val _unreadCount = MutableStateFlow(0)
+    val unreadCount = _unreadCount.asStateFlow()
+
+    private val _addressPredictions = MutableStateFlow<List<AutocompletePrediction>>(emptyList())
+    val addressPredictions = _addressPredictions.asStateFlow()
 
     val isDarkTheme = themeRepository.isDarkTheme
 
@@ -103,6 +116,7 @@ class HomeViewModel @Inject constructor(
         observeTokenChanges()
         updateGreeting()
         loadTags()
+        fetchUnreadCount()
     }
     
     private fun observeTokenChanges() {
@@ -158,6 +172,31 @@ class HomeViewModel @Inject constructor(
         updateFilters { it.copy(scheduledAfter = date, scheduledBefore = date) } 
     }
 
+    fun updateLocation(location: String?) {
+        updateFilters { it.copy(location = location) }
+        _addressPredictions.value = emptyList()
+    }
+
+    fun fetchLocationPredictions(query: String) {
+        if (query.length < 3) {
+            _addressPredictions.value = emptyList()
+            return
+        }
+
+        val request = FindAutocompletePredictionsRequest.builder()
+            .setQuery(query)
+            .setTypesFilter(listOf(PlaceTypes.CITIES))
+            .build()
+
+        placesClient.findAutocompletePredictions(request)
+            .addOnSuccessListener { response ->
+                _addressPredictions.value = response.autocompletePredictions
+            }
+            .addOnFailureListener {
+                _addressPredictions.value = emptyList()
+            }
+    }
+
     fun toggleTag(tagName: String) {
         updateFilters { filters ->
             val newTags = if (tagName in filters.tags) {
@@ -176,6 +215,7 @@ class HomeViewModel @Inject constructor(
     fun refreshData() {
         loadUserProfile()
         updateGreeting()
+        fetchUnreadCount()
     }
 
     fun toggleTheme() {
@@ -213,6 +253,16 @@ class HomeViewModel @Inject constructor(
                     _events.send(HomeEvent.ShowSnackbar(result.message))
                 }
             }
+            fetchUnreadCount()
+        }
+    }
+
+    private fun fetchUnreadCount() {
+        viewModelScope.launch {
+            when (val result = getUnreadNotificationsCountUseCase()) {
+                is Result.Success -> _unreadCount.value = result.data
+                else -> { /* badge error */ }
+            }
         }
     }
 
@@ -232,9 +282,9 @@ class HomeViewModel @Inject constructor(
                     }
                     _error.value = result.message
                     _isLoading.value = false
-                    _isRefreshing.value = false
                 }
             }
+            fetchUnreadCount()
         }
     }
 }

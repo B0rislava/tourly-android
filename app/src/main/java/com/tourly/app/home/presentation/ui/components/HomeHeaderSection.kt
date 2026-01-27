@@ -13,6 +13,9 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.rounded.WavingHand
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -31,6 +34,8 @@ fun HomeHeaderSection(
     userName: String,
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit,
+    onNotifyClick: () -> Unit,
+    unreadCount: Int,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -84,21 +89,31 @@ fun HomeHeaderSection(
                 )
             }
 
-            // Notification Button (Placeholder)
+            // Notification Button
             IconButton(
-                onClick = { /* TODO: Open Notifications */ },
+                onClick = onNotifyClick,
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 ),
                 modifier = Modifier.size(40.dp)
             ) {
-                // TODO: Add Badge if needed
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notifications",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
+                BadgedBox(
+                    badge = {
+                        if (unreadCount > 0) {
+                            Badge(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.offset(x = (-4).dp, y = 4.dp)
+                            )
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Notifications",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }
@@ -113,6 +128,8 @@ fun HomeHeaderPreview() {
             userName = "John",
             isDarkTheme = false,
             onThemeToggle = {},
+            onNotifyClick = {},
+            unreadCount = 2,
             modifier = Modifier.padding(16.dp)
         )
     }

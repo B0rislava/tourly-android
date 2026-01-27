@@ -30,6 +30,7 @@ fun TourDetailsScreen(
     viewModel: TourDetailsViewModel,
     userRole: UserRole?,
     onBackClick: () -> Unit,
+    onBookingSuccess: () -> Unit = {},
     onEditTour: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -44,6 +45,7 @@ fun TourDetailsScreen(
             if (state.isBookingSuccess) {
                 showBookingDialog = false
                 snackbarHostState.showSnackbar("Tour booked successfully!")
+                onBookingSuccess()
                 viewModel.resetBookingState()
             }
         }

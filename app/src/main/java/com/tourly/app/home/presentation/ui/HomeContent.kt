@@ -42,6 +42,8 @@ fun HomeContent(
     onSortSelected: (TourFilters.SortField, TourFilters.SortOrder) -> Unit,
     onPriceRangeChanged: (ClosedFloatingPointRange<Float>) -> Unit,
     onDateSelected: (LocalDate?) -> Unit,
+    onLocationSearch: (String) -> Unit,
+    onLocationSelected: (String?) -> Unit,
     onClearFilters: () -> Unit,
     onRefresh: () -> Unit,
     greeting: String,
@@ -50,6 +52,8 @@ fun HomeContent(
     onThemeToggle: () -> Unit,
     isRefreshing: Boolean,
     onTourClick: (Long) -> Unit,
+    onNotifyClick: () -> Unit,
+    unreadCount: Int,
     modifier: Modifier = Modifier
 ) {
 
@@ -70,6 +74,8 @@ fun HomeContent(
                     userName = userName,
                     isDarkTheme = isDarkTheme,
                     onThemeToggle = onThemeToggle,
+                    onNotifyClick = onNotifyClick,
+                    unreadCount = unreadCount,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .padding(top = 16.dp)
@@ -86,6 +92,8 @@ fun HomeContent(
                     onSortSelected = onSortSelected,
                     onPriceRangeChanged = onPriceRangeChanged,
                     onDateSelected = onDateSelected,
+                    onLocationSearch = onLocationSearch,
+                    onLocationSelected = onLocationSelected,
                     onClearFilters = onClearFilters,
                     modifier = Modifier.fillMaxWidth()
                 )

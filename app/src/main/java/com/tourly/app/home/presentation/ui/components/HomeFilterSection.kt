@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +30,8 @@ fun HomeFilterSection(
     onSortSelected: (TourFilters.SortField, TourFilters.SortOrder) -> Unit,
     onPriceRangeChanged: (ClosedFloatingPointRange<Float>) -> Unit,
     onDateSelected: (LocalDate?) -> Unit,
+    onLocationSearch: (String) -> Unit,
+    onLocationSelected: (String?) -> Unit,
     onClearFilters: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -57,8 +58,7 @@ fun HomeFilterSection(
 
         Spacer(modifier = Modifier.size(12.dp))
 
-        // Row 2: Price + Sort + Location (All)
-        // Adjust spacing/sizing to fit screen width
+        // Row 2: Price + Sort + Location
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -80,11 +80,11 @@ fun HomeFilterSection(
                 modifier = Modifier.weight(1f)
             )
 
-            // Location/All placeholder
-            FilterButton(
-                text = "All",
-                icon = Icons.Default.LocationOn,
-                onClick = { /* TODO: Location Picker */ },
+            LocationFilterPopup(
+                selectedLocation = uiState.selectedLocation,
+                predictions = uiState.addressPredictions,
+                onSearchTextChange = onLocationSearch,
+                onLocationSelected = onLocationSelected,
                 modifier = Modifier.weight(1f)
             )
         }

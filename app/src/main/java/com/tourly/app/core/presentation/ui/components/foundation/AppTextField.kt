@@ -3,6 +3,7 @@ package com.tourly.app.core.presentation.ui.components.foundation
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +20,8 @@ fun AppTextField(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     OutlinedTextField(
         modifier = modifier
@@ -32,6 +34,7 @@ fun AppTextField(
         trailingIcon = trailingIcon,
         singleLine = singleLine,
         visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions,
         shape = RoundedCornerShape(size = 18.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.onBackground,

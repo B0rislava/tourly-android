@@ -14,13 +14,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import com.tourly.app.core.presentation.ui.components.TourlyAlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,20 +32,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tourly.app.R
-import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
-import com.tourly.app.profile.presentation.ui.components.BookedToursSection
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
 
 @Composable
 fun TravelerProfileContent(
     user: User,
-    bookings: List<Booking>,
     onLogout: () -> Unit,
     onEditProfile: () -> Unit,
-    onCancelBooking: (Long) -> Unit,
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -54,25 +49,15 @@ fun TravelerProfileContent(
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     if (showDeleteConfirmation) {
-        AlertDialog(
+        TourlyAlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text(text = stringResource(id = R.string.delete_account), fontFamily = OutfitFamily, fontWeight = FontWeight.Bold) },
-            text = { Text(text = stringResource(id = R.string.delete_account_confirmation), fontFamily = OutfitFamily) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDeleteAccount()
-                        showDeleteConfirmation = false
-                    }
-                ) {
-                    Text(text = "Delete", color = MaterialTheme.colorScheme.error, fontFamily = OutfitFamily, fontWeight = FontWeight.Bold)
-                }
+            onConfirm = {
+                onDeleteAccount()
             },
-            dismissButton = {
-                TextButton(onClick = { showDeleteConfirmation = false }) {
-                    Text(text = "Cancel", fontFamily = OutfitFamily)
-                }
-            }
+            title = stringResource(id = R.string.delete_account),
+            text = stringResource(id = R.string.delete_account_confirmation),
+            confirmButtonText = "Delete",
+            isDestructive = true
         )
     }
 
@@ -178,11 +163,6 @@ fun TravelerProfileContent(
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
-
-        BookedToursSection(
-            bookings = bookings,
-            onCancelBooking = onCancelBooking
-        )
     }
 }
 
@@ -198,24 +178,8 @@ private fun TravelerProfileContentPreview() {
             role = UserRole.TRAVELER,
             profilePictureUrl = null
         ),
-        bookings = listOf(
-            Booking(
-                id = 1,
-                tourId = 1,
-                tourTitle = "Sofia City Walk",
-                tourLocation = "Sofia, Bulgaria",
-                tourImageUrl = null,
-                tourScheduledDate = "2024-06-01",
-                numberOfParticipants = 2,
-                bookingDate = "2024-01-15",
-                status = "CONFIRMED",
-                pricePerPerson = 20.0,
-                totalPrice = 40.0
-            )
-        ),
         onLogout = {},
         onEditProfile = {},
-        onCancelBooking = {},
         onDeleteAccount = {}
     )
 }

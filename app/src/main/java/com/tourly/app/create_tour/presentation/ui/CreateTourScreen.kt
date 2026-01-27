@@ -26,6 +26,7 @@ fun CreateTourScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit = {},
+    onCreateTourSuccess: () -> Unit = {},
     viewModel: CreateTourViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,6 +66,7 @@ fun CreateTourScreen(
                         message = "Tour created successfully!",
                         duration = SnackbarDuration.Short
                     )
+                    onCreateTourSuccess()
                     onNavigateBack()
                 }
                 is CreateTourEvent.Error -> {

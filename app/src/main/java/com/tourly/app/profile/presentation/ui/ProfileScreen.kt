@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,11 +24,10 @@ import com.tourly.app.login.domain.UserRole
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel(),
-    snackbarHostState: SnackbarHostState,
     onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
-    onEditTour: (Long) -> Unit = {}
+    onSeeMore: () -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
 
@@ -47,12 +45,6 @@ fun ProfileScreen(
 
     LaunchedEffect(Unit) {
         userViewModel.refreshBookings()
-    }
-
-    LaunchedEffect(key1 = true) {
-        userViewModel.events.collect { message ->
-            snackbarHostState.showSnackbar(message)
-        }
     }
 
     Box(
@@ -92,9 +84,7 @@ fun ProfileScreen(
                         user = state.user,
                         onLogout = onLogout,
                         onEditProfile = userViewModel::startEditing,
-                        onEditTour = onEditTour,
-                        onDeleteTour = userViewModel::deleteTour,
-                        onCancelBooking = userViewModel::cancelBooking,
+                        onSeeMore = onSeeMore,
                         onDeleteAccount = {
                             userViewModel.deleteAccount {
                                 onAccountDeleted()

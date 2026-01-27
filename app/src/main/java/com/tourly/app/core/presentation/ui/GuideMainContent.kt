@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
@@ -37,6 +38,7 @@ fun GuideMainContent(
     onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
+    onNavigateToNotifications: () -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
     userViewModel: UserViewModel
 ) {
@@ -98,17 +100,25 @@ fun GuideMainContent(
                 HomeScreen(
                     onSessionExpired = onLogout,
                     onTourClick = onTourClick,
+                    onNotifyClick = onNavigateToNotifications,
                     modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
                 )
             }
             BottomNavDestination.GUIDE_DASHBOARD -> {
+                LaunchedEffect(Unit) {
+                    userViewModel.refreshBookings()
+                }
                 DashboardScreen(
+                    userViewModel = userViewModel,
+                    onEditTour = onEditTour,
+                    onCreateTour = { onDestinationSelected(BottomNavDestination.CREATE_TOUR) },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
             BottomNavDestination.CREATE_TOUR -> {
                 CreateTourScreen(
                     snackbarHostState = snackbarHostState,
+                    onCreateTourSuccess = { userViewModel.refreshBookings() },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -119,11 +129,10 @@ fun GuideMainContent(
             }
             BottomNavDestination.PROFILE -> {
                 ProfileScreen(
-                    snackbarHostState = snackbarHostState,
                     onLogout = onLogout,
                     onAccountDeleted = onAccountDeleted,
                     onEditingStateChange = onEditingStateChange,
-                    onEditTour = onEditTour,
+                    onSeeMore = { onDestinationSelected(BottomNavDestination.GUIDE_DASHBOARD) },
                     userViewModel = userViewModel,
                     modifier = Modifier.padding(paddingValues)
                 )

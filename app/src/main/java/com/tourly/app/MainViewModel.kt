@@ -22,7 +22,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val tokenManager: TokenManager,
     private val userRepository: UserRepository,
-    private val themeRepository: ThemeRepository
+    themeRepository: ThemeRepository
 ) : ViewModel() {
 
     private val _sessionState = MutableStateFlow<SessionState>(SessionState.Loading)
@@ -62,11 +62,12 @@ class MainViewModel @Inject constructor(
                              userRole = result.data.role
                          }
                          is Result.Error -> {
-                             // Profile fetch failed - likely invalid/expired token
-                             // Clear tokens and treat as logged out
-                             Log.e("MainViewModel", "Failed to fetch user profile: ${result.message}")
-                             tokenManager.clearToken()
-                             tokenManager.clearRefreshToken()
+                             Log.e("MainViewModel", "Failed to fetch user profile: ${result.message} (Code: ${result.code})")
+                             if (result.code == "UNAUTHORIZED") {
+                                 // Only clear tokens if specifically unauthorized
+                                 tokenManager.clearToken()
+                                 tokenManager.clearRefreshToken()
+                             }
                          }
                     }
                 }

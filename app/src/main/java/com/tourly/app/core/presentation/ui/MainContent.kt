@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
@@ -21,6 +22,7 @@ import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.dashboard.presentation.ui.DashboardScreen
 import com.tourly.app.home.presentation.ui.HomeScreen
 import com.tourly.app.profile.presentation.ui.ProfileScreen
+import com.tourly.app.core.presentation.viewmodel.UserViewModel
 
 @Composable
 fun MainContent(
@@ -34,7 +36,9 @@ fun MainContent(
     onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
-    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
+    onNavigateToNotifications: () -> Unit,
+    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
+    userViewModel: UserViewModel
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -87,11 +91,18 @@ fun MainContent(
                 HomeScreen(
                     modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()), // Apply only bottom padding, let Home manage top
                     onSessionExpired = onLogout,
-                    onTourClick = onTourClick
+                    onTourClick = onTourClick,
+                    onNotifyClick = onNavigateToNotifications
                 )
             }
             BottomNavDestination.TRAVELER_DASHBOARD -> {
+                LaunchedEffect(Unit) {
+                    userViewModel.refreshBookings()
+                }
                 DashboardScreen(
+                    userViewModel = userViewModel,
+                    onEditTour = {}, // Travelers don't edit tours
+                    onCreateTour = {}, // Travelers don't create tours
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -102,10 +113,11 @@ fun MainContent(
             }
             BottomNavDestination.PROFILE -> {
                 ProfileScreen(
-                    snackbarHostState = snackbarHostState,
                     onLogout = onLogout,
                     onAccountDeleted = onAccountDeleted,
                     onEditingStateChange = onEditingStateChange,
+                    userViewModel = userViewModel,
+                    onSeeMore = { onDestinationSelected(BottomNavDestination.TRAVELER_DASHBOARD) },
                     modifier = Modifier.padding(paddingValues)
                 )
             }

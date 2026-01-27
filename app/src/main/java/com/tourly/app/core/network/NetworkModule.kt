@@ -67,10 +67,10 @@ object NetworkModule {
                     }
                     
                     sendWithoutRequest { request ->
-                        request.url.host == BuildConfig.BASE_HOST && 
-                        !request.url.encodedPath.endsWith("/auth/refresh") &&
-                        !request.url.encodedPath.endsWith("/auth/login") &&
-                        !request.url.encodedPath.endsWith("/auth/register")
+                        val path = request.url.encodedPath
+                        !path.endsWith("/auth/login") &&
+                        !path.endsWith("/auth/register") &&
+                        !path.endsWith("/auth/refresh")
                     }
 
                     refreshTokens {

@@ -2,6 +2,7 @@ package com.tourly.app.core.presentation.ui
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ fun GuideMainScreen(
     onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -32,6 +34,12 @@ fun GuideMainScreen(
     var onCancelEdit: (() -> Unit)? by remember { mutableStateOf(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        userViewModel.events.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
     GuideMainContent(
         modifier = modifier,
@@ -47,6 +55,7 @@ fun GuideMainScreen(
         onAccountDeleted = onAccountDeleted,
         onTourClick = onTourClick,
         onEditTour = onEditTour,
+        onNavigateToNotifications = onNavigateToNotifications,
         onEditingStateChange = { isEditing, cancelCallback ->
             isEditingProfile = isEditing
             onCancelEdit = cancelCallback

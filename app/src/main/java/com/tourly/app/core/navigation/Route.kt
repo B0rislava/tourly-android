@@ -40,4 +40,7 @@ sealed interface Route: NavKey {
     // Other Routes
     @Serializable
     data object Settings : Route, NavKey
+
+    @Serializable
+    data object Notifications : Route, NavKey
 }
