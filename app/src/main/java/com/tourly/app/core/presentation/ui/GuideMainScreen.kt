@@ -17,6 +17,7 @@ import com.tourly.app.core.presentation.viewmodel.UserViewModel
 fun GuideMainScreen(
     windowSizeState: WindowSizeState,
     onLogout: () -> Unit,
+    onAccountDeleted: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
@@ -43,6 +44,7 @@ fun GuideMainScreen(
         },
         onNavigateToSettings = onNavigateToSettings,
         onLogout = onLogout,
+        onAccountDeleted = onAccountDeleted,
         onTourClick = onTourClick,
         onEditTour = onEditTour,
         onEditingStateChange = { isEditing, cancelCallback ->
