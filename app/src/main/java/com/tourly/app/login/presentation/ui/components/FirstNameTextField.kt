@@ -5,6 +5,9 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 
@@ -22,6 +25,10 @@ fun FirstNameTextField(
                 imageVector = Icons.Outlined.Person,
                 contentDescription = stringResource(id = R.string.first_name)
             )
-        }
+        },
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = ImeAction.Next
+        )
     )
 }
