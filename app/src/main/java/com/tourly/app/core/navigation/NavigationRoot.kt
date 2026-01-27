@@ -50,10 +50,8 @@ fun NavigationRoot(
             
             val backStack = rememberNavBackStack(startRoute)
             
-            // Shared UserViewModel for guide management features
-            val guideUserViewModel = if (state.userRole == UserRole.GUIDE) {
-                hiltViewModel<UserViewModel>()
-            } else null
+            // Shared UserViewModel for user-related data (bookings, profile, etc.)
+            val userViewModel: UserViewModel = hiltViewModel()
 
             // Redirect Guide to GuideMain if they end up on TravelerMain (e.g. after login)
             LaunchedEffect(state, backStack.lastOrNull()) {
@@ -130,7 +128,8 @@ fun NavigationRoot(
                             },
                             onTourClick = { tourId ->
                                 backStack.add(Route.TourDetails(tourId))
-                            }
+                            },
+                            userViewModel = userViewModel
                         )
                     }
                 }
@@ -160,7 +159,7 @@ fun NavigationRoot(
                             onEditTour = { tourId ->
                                 backStack.add(Route.EditTour(tourId))
                             },
-                            userViewModel = guideUserViewModel!!
+                            userViewModel = userViewModel
                         )
                     }
                 }
@@ -184,6 +183,9 @@ fun NavigationRoot(
                         TourDetailsScreen(
                             viewModel = viewModel,
                             userRole = state.userRole,
+                            onBookingSuccess = {
+                                userViewModel.refreshBookings()
+                            },
                             onEditTour = { tourId ->
                                 backStack.add(Route.EditTour(tourId))
                             },
@@ -201,7 +203,8 @@ fun NavigationRoot(
                                 backStack.removeLastOrNull()
                             },
                             onUpdateSuccess = {
-                                guideUserViewModel?.showMessage("Tour updated successfully!")
+                                userViewModel.showMessage("Tour updated successfully!")
+                                userViewModel.refreshBookings() // Also refresh tours for guide
                                 backStack.removeLastOrNull()
 
                             }
