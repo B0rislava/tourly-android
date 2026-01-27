@@ -73,7 +73,9 @@ fun CreateTourContent(
     addressPredictions: List<AutocompletePrediction>,
     onMeetingPointAddressChanged: (String) -> Unit,
     onMeetingPointSelected: (Double, Double) -> Unit,
-    onCreateTour: () -> Unit
+    onCreateTour: () -> Unit,
+    buttonText: String = stringResource(id = R.string.create_tour),
+    onButtonClick: () -> Unit = onCreateTour
 ) {
     Column(
         modifier = modifier
@@ -284,8 +286,8 @@ fun CreateTourContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         PrimaryButton(
-            text = stringResource(id = R.string.create_tour),
-            onClick = onCreateTour,
+            text = buttonText,
+            onClick = onButtonClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
