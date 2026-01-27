@@ -32,14 +32,20 @@ object NetworkResponseMapper {
                 } catch (e: Exception) {
                     // Fallback if parsing fails or body is empty
                     val code = when (response.status.value) {
+                        400 -> "BAD_REQUEST"
                         401 -> "UNAUTHORIZED"
                         403 -> "FORBIDDEN"
+                        404 -> "NOT_FOUND"
+                        in 500..599 -> "SERVER_ERROR"
                         else -> "UNKNOWN_ERROR"
                     }
                     val message = when (response.status.value) {
-                        401 -> "Your session has expired. Please log in again."
+                        400 -> "Invalid request. Please check your input."
+                        401 -> "Invalid credentials or session expired."
                         403 -> "You don't have permission to perform this action."
-                        else -> "An error occurred: ${response.status.value} ${response.status.description}"
+                        404 -> "The requested resource was not found."
+                        in 500..599 -> "Server error. Please try again later."
+                        else -> "An unexpected error occurred (${response.status.value})"
                     }
                     Result.Error(code = code, message = message)
                 }
