@@ -129,7 +129,6 @@ fun GuideMainContent(
             }
             BottomNavDestination.PROFILE -> {
                 ProfileScreen(
-                    snackbarHostState = snackbarHostState,
                     onLogout = onLogout,
                     onAccountDeleted = onAccountDeleted,
                     onEditingStateChange = onEditingStateChange,

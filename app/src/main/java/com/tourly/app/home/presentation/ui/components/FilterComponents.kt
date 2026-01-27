@@ -18,7 +18,9 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -26,12 +28,15 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.home.domain.model.TourFilters
+import com.google.android.libraries.places.api.model.AutocompletePrediction
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -340,6 +346,148 @@ fun PriceFilterPopup(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text("Apply")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+@Composable
+fun LocationFilterPopup(
+    selectedLocation: String?,
+    predictions: List<AutocompletePrediction>,
+    onSearchTextChange: (String) -> Unit,
+    onLocationSelected: (String?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf(selectedLocation ?: "") }
+    
+
+    Box(modifier = modifier) {
+        FilterButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = selectedLocation ?: "Location",
+            icon = Icons.Default.LocationOn,
+            onClick = { expanded = true },
+            isActive = selectedLocation != null
+        )
+
+        if (expanded) {
+            Dialog(onDismissRequest = { expanded = false }) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Select Location",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontFamily = OutfitFamily
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        TextField(
+                            value = searchText,
+                            onValueChange = { 
+                                searchText = it
+                                onSearchTextChange(it)
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text("Enter city or country...") },
+                            trailingIcon = {
+                                if (searchText.isNotEmpty()) {
+                                    IconButton(onClick = { 
+                                        searchText = "" 
+                                        onSearchTextChange("")
+                                    }) {
+                                        Icon(Icons.Default.Close, contentDescription = "Clear")
+                                    }
+                                }
+                            },
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        )
+
+                        if (predictions.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
+                                    .padding(8.dp)
+                            ) {
+                                predictions.take(5).forEach { prediction ->
+                                    val cityName = prediction.getPrimaryText(null).toString()
+                                    val countryName = prediction.getSecondaryText(null).toString()
+                                    val fullText = if (countryName.isNotEmpty()) "$cityName, $countryName" else cityName
+
+                                    TextButton(
+                                        onClick = {
+                                            searchText = fullText
+                                            onLocationSelected(fullText)
+                                            expanded = false
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.LocationOn,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(16.dp),
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = fullText,
+                                                modifier = Modifier.weight(1f),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            TextButton(
+                                onClick = {
+                                    onLocationSelected(null)
+                                    expanded = false
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Clear")
+                            }
+                            Button(
+                                onClick = {
+                                    if (searchText.isNotBlank()) {
+                                        onLocationSelected(searchText)
+                                    } else {
+                                        onLocationSelected(null)
+                                    }
+                                    expanded = false
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Apply")
+                            }
                         }
                     }
                 }

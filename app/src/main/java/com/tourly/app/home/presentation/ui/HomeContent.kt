@@ -42,6 +42,8 @@ fun HomeContent(
     onSortSelected: (TourFilters.SortField, TourFilters.SortOrder) -> Unit,
     onPriceRangeChanged: (ClosedFloatingPointRange<Float>) -> Unit,
     onDateSelected: (LocalDate?) -> Unit,
+    onLocationSearch: (String) -> Unit,
+    onLocationSelected: (String?) -> Unit,
     onClearFilters: () -> Unit,
     onRefresh: () -> Unit,
     greeting: String,
@@ -90,6 +92,8 @@ fun HomeContent(
                     onSortSelected = onSortSelected,
                     onPriceRangeChanged = onPriceRangeChanged,
                     onDateSelected = onDateSelected,
+                    onLocationSearch = onLocationSearch,
+                    onLocationSelected = onLocationSelected,
                     onClearFilters = onClearFilters,
                     modifier = Modifier.fillMaxWidth()
                 )

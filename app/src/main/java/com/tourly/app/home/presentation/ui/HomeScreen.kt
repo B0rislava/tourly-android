@@ -33,6 +33,7 @@ fun HomeScreen(
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val unreadCount by viewModel.unreadCount.collectAsState()
+    val addressPredictions by viewModel.addressPredictions.collectAsState()
     
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -66,12 +67,16 @@ fun HomeScreen(
                 sortOrder = filters.sortOrder,
                 minPrice = filters.minPrice,
                 maxPrice = filters.maxPrice,
-                selectedDate = filters.scheduledAfter // Using scheduledAfter as the single date
+                selectedDate = filters.scheduledAfter, // Using scheduledAfter as the single date
+                selectedLocation = filters.location,
+                addressPredictions = addressPredictions
             ),
             onTagToggle = viewModel::toggleTag,
             onSortSelected = viewModel::updateSort,
             onPriceRangeChanged = { range -> viewModel.updatePriceRange(range.start.toDouble(), range.endInclusive.toDouble()) },
             onDateSelected = viewModel::updateDate,
+            onLocationSearch = viewModel::fetchLocationPredictions,
+            onLocationSelected = viewModel::updateLocation,
             onClearFilters = viewModel::clearFilters,
             onRefresh = viewModel::refreshData,
             greeting = greeting,

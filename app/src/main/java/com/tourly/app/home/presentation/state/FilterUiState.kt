@@ -1,5 +1,6 @@
 package com.tourly.app.home.presentation.state
 
+import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.tourly.app.home.domain.model.Tag
 import com.tourly.app.home.domain.model.TourFilters
 import java.time.LocalDate
@@ -12,8 +13,10 @@ data class FilterUiState(
     val minPrice: Double? = null,
     val maxPrice: Double? = null,
     val selectedDate: LocalDate? = null,
+    val selectedLocation: String? = null,
+    val addressPredictions: List<AutocompletePrediction> = emptyList(),
     val isExpanded: Boolean = false
 ) {
     val hasActiveFilters: Boolean
-        get() = selectedTags.isNotEmpty() || minPrice != null || maxPrice != null || selectedDate != null
+        get() = selectedTags.isNotEmpty() || minPrice != null || maxPrice != null || selectedDate != null || selectedLocation != null
 }
