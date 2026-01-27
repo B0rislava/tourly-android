@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import com.tourly.app.MainActivityUiState
 import com.tourly.app.MainViewModel
 import com.tourly.app.core.presentation.ui.SplashScreen
+import com.tourly.app.core.presentation.viewmodel.UserViewModel
 import com.tourly.app.create_tour.presentation.ui.EditTourScreen
 
 @Composable
@@ -50,7 +51,7 @@ fun NavigationRoot(
             
             // Shared UserViewModel for guide management features
             val guideUserViewModel = if (state.userRole == UserRole.GUIDE) {
-                hiltViewModel<com.tourly.app.core.presentation.viewmodel.UserViewModel>()
+                hiltViewModel<UserViewModel>()
             } else null
 
             // Redirect Guide to GuideMain if they end up on TravelerMain (e.g. after login)
@@ -116,6 +117,10 @@ fun NavigationRoot(
                                     backStack.add(Route.Welcome)
                                 }
                             },
+                            onAccountDeleted = {
+                                backStack.clear()
+                                backStack.add(Route.Welcome)
+                            },
                             onNavigateToSettings = {
                                 backStack.add(Route.Settings)
                             },
@@ -134,6 +139,10 @@ fun NavigationRoot(
                                     backStack.clear()
                                     backStack.add(Route.Welcome)
                                 }
+                            },
+                            onAccountDeleted = {
+                                backStack.clear()
+                                backStack.add(Route.Welcome)
                             },
                             onNavigateToSettings = {
                                 backStack.add(Route.Settings)

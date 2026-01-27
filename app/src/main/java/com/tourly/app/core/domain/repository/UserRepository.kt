@@ -9,6 +9,7 @@ interface UserRepository {
     suspend fun getUserProfile(): Result<User>
     suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<User>
     suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<User>
+    suspend fun deleteAccount(): Result<Unit>
     suspend fun logout()
     fun getTokenFlow(): Flow<Boolean>
 }

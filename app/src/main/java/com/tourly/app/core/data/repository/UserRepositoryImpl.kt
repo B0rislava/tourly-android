@@ -66,6 +66,21 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteAccount(): Result<Unit> {
+        return try {
+            val response = authApiService.deleteProfile()
+            when (val result = NetworkResponseMapper.map<Unit>(response)) {
+                is Result.Success -> {
+                    logout()
+                    Result.Success(Unit)
+                }
+                is Result.Error -> result
+            }
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        }
+    }
+
     override suspend fun logout() {
         println("UserRepository: Starting logout process...")
 

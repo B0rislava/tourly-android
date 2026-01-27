@@ -50,4 +50,6 @@
     <string name="empty_subheading">Check back later for new tours</string>
 
 
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action is permanent and cannot be undone.</string>
 </resources>
