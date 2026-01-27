@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Delete
@@ -29,7 +28,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +50,8 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.home.domain.model.Tour
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 
 @Composable
 fun GuideProfileContent(
@@ -60,12 +60,10 @@ fun GuideProfileContent(
     tours: List<Tour>,
     onLogout: () -> Unit,
     onEditProfile: () -> Unit,
-    onEditTour: (Long) -> Unit = {},
-    onDeleteTour: (Long) -> Unit = {},
+    onSeeMore: () -> Unit,
     onDeleteAccount: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
-    var tourToDelete by remember { mutableStateOf<Tour?>(null) }
     var showDeleteAccountConfirmation by remember { mutableStateOf(false) }
 
     if (showDeleteAccountConfirmation) {
@@ -85,29 +83,6 @@ fun GuideProfileContent(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteAccountConfirmation = false }) {
-                    Text(text = "Cancel", fontFamily = OutfitFamily)
-                }
-            }
-        )
-    }
-
-    if (tourToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { tourToDelete = null },
-            title = { Text(text = "Delete Tour", fontFamily = OutfitFamily, fontWeight = FontWeight.Bold) },
-            text = { Text(text = "Are you sure you want to delete '${tourToDelete?.title}'? This action cannot be undone.", fontFamily = OutfitFamily) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        tourToDelete?.id?.let { onDeleteTour(it) }
-                        tourToDelete = null
-                    }
-                ) {
-                    Text(text = "Delete", color = MaterialTheme.colorScheme.error, fontFamily = OutfitFamily, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { tourToDelete = null }) {
                     Text(text = "Cancel", fontFamily = OutfitFamily)
                 }
             }
@@ -165,7 +140,6 @@ fun GuideProfileContent(
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White
-                // TODO: Fix color
             )
         ) {
             Icon(
@@ -268,12 +242,25 @@ fun GuideProfileContent(
 
         // Tours Section
         Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "My Tours",
-                style = MaterialTheme.typography.titleLarge,
-                fontFamily = OutfitFamily,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "My Tours",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontFamily = OutfitFamily,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                if (tours.isNotEmpty()) {
+                    TextButton(onClick = onSeeMore) {
+                        Text(text = "See more", fontFamily = OutfitFamily)
+                    }
+                }
+            }
+            
             Spacer(modifier = Modifier.height(16.dp))
             
             if (tours.isEmpty()) {
@@ -284,18 +271,71 @@ fun GuideProfileContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
-                tours.forEach { tour ->
-                    GuideTourCard(
-                        tour = tour,
-                        onEdit = { onEditTour(tour.id) },
-                        onDelete = { tourToDelete = tour }
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(tours) { tour ->
+                        CompactTourCard(tour = tour)
+                    }
                 }
             }
         }
         
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun CompactTourCard(
+    tour: Tour,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.width(240.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = tour.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                fontFamily = OutfitFamily,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = tour.location,
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = OutfitFamily,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${tour.rating} ★",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = OutfitFamily
+                )
+                Text(
+                    text = "$${tour.pricePerPerson.toInt()}",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontFamily = OutfitFamily
+                )
+            }
+        }
     }
 }
 
@@ -329,82 +369,6 @@ fun GuideStatItem(
             fontFamily = OutfitFamily,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-
-@Composable
-fun GuideTourCard(
-    tour: Tour,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = tour.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = OutfitFamily
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = tour.location,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontFamily = OutfitFamily,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(
-                        text = "${tour.rating} ★ (${tour.reviewsCount})",
-                        style = MaterialTheme.typography.bodySmall,
-                        fontFamily = OutfitFamily
-                    )
-                    Text(
-                        text = "$${tour.pricePerPerson.toInt()}",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontFamily = OutfitFamily
-                    )
-                }
-            }
-            
-            Row {
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Tour",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Default.Cancel,
-                        contentDescription = "Delete Tour",
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -455,6 +419,7 @@ private fun GuideProfileContentPreview() {
         ),
         onLogout = {},
         onEditProfile = {},
+        onSeeMore = {},
         onDeleteAccount = {}
     )
 }

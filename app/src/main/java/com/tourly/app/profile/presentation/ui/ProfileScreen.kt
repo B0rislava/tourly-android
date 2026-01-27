@@ -29,7 +29,7 @@ fun ProfileScreen(
     onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
     onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
-    onEditTour: (Long) -> Unit = {}
+    onSeeMore: () -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
 
@@ -92,9 +92,7 @@ fun ProfileScreen(
                         user = state.user,
                         onLogout = onLogout,
                         onEditProfile = userViewModel::startEditing,
-                        onEditTour = onEditTour,
-                        onDeleteTour = userViewModel::deleteTour,
-                        onCancelBooking = userViewModel::cancelBooking,
+                        onSeeMore = onSeeMore,
                         onDeleteAccount = {
                             userViewModel.deleteAccount {
                                 onAccountDeleted()

@@ -105,6 +105,9 @@ fun GuideMainContent(
             }
             BottomNavDestination.GUIDE_DASHBOARD -> {
                 DashboardScreen(
+                    userViewModel = userViewModel,
+                    onEditTour = onEditTour,
+                    onCreateTour = { onDestinationSelected(BottomNavDestination.CREATE_TOUR) },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -125,7 +128,7 @@ fun GuideMainContent(
                     onLogout = onLogout,
                     onAccountDeleted = onAccountDeleted,
                     onEditingStateChange = onEditingStateChange,
-                    onEditTour = onEditTour,
+                    onSeeMore = { onDestinationSelected(BottomNavDestination.GUIDE_DASHBOARD) },
                     userViewModel = userViewModel,
                     modifier = Modifier.padding(paddingValues)
                 )

@@ -21,6 +21,7 @@ import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.dashboard.presentation.ui.DashboardScreen
 import com.tourly.app.home.presentation.ui.HomeScreen
 import com.tourly.app.profile.presentation.ui.ProfileScreen
+import com.tourly.app.core.presentation.viewmodel.UserViewModel
 
 @Composable
 fun MainContent(
@@ -35,7 +36,8 @@ fun MainContent(
     onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
     onNavigateToNotifications: () -> Unit,
-    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit
+    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
+    userViewModel: UserViewModel
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -94,6 +96,9 @@ fun MainContent(
             }
             BottomNavDestination.TRAVELER_DASHBOARD -> {
                 DashboardScreen(
+                    userViewModel = userViewModel,
+                    onEditTour = {}, // Travelers don't edit tours
+                    onCreateTour = {}, // Travelers don't create tours
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -108,6 +113,8 @@ fun MainContent(
                     onLogout = onLogout,
                     onAccountDeleted = onAccountDeleted,
                     onEditingStateChange = onEditingStateChange,
+                    userViewModel = userViewModel,
+                    onSeeMore = { onDestinationSelected(BottomNavDestination.TRAVELER_DASHBOARD) },
                     modifier = Modifier.padding(paddingValues)
                 )
             }

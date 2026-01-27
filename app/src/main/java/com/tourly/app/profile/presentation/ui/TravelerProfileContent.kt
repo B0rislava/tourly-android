@@ -33,20 +33,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tourly.app.R
-import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
-import com.tourly.app.profile.presentation.ui.components.BookedToursSection
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
 
 @Composable
 fun TravelerProfileContent(
     user: User,
-    bookings: List<Booking>,
     onLogout: () -> Unit,
     onEditProfile: () -> Unit,
-    onCancelBooking: (Long) -> Unit,
     onDeleteAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -178,11 +174,6 @@ fun TravelerProfileContent(
             }
             Spacer(modifier = Modifier.height(24.dp))
         }
-
-        BookedToursSection(
-            bookings = bookings,
-            onCancelBooking = onCancelBooking
-        )
     }
 }
 
@@ -198,24 +189,8 @@ private fun TravelerProfileContentPreview() {
             role = UserRole.TRAVELER,
             profilePictureUrl = null
         ),
-        bookings = listOf(
-            Booking(
-                id = 1,
-                tourId = 1,
-                tourTitle = "Sofia City Walk",
-                tourLocation = "Sofia, Bulgaria",
-                tourImageUrl = null,
-                tourScheduledDate = "2024-06-01",
-                numberOfParticipants = 2,
-                bookingDate = "2024-01-15",
-                status = "CONFIRMED",
-                pricePerPerson = 20.0,
-                totalPrice = 40.0
-            )
-        ),
         onLogout = {},
         onEditProfile = {},
-        onCancelBooking = {},
         onDeleteAccount = {}
     )
 }

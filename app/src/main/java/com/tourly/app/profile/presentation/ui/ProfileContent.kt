@@ -13,9 +13,7 @@ fun ProfileContent(
     user: User,
     onLogout: () -> Unit,
     onEditProfile: () -> Unit,
-    onEditTour: (Long) -> Unit = {},
-    onDeleteTour: (Long) -> Unit = {},
-    onCancelBooking: (Long) -> Unit = {},
+    onSeeMore: () -> Unit = {},
     onDeleteAccount: () -> Unit = {},
     bookings: List<Booking> = emptyList(),
     tours: List<Tour> = emptyList()
@@ -26,18 +24,15 @@ fun ProfileContent(
             tours = tours,
             onLogout = onLogout,
             onEditProfile = onEditProfile,
-            onEditTour = onEditTour,
-            onDeleteTour = onDeleteTour,
+            onSeeMore = onSeeMore,
             onDeleteAccount = onDeleteAccount,
             modifier = modifier
         )
     } else {
         TravelerProfileContent(
             user = user,
-            bookings = bookings,
             onLogout = onLogout,
             onEditProfile = onEditProfile,
-            onCancelBooking = onCancelBooking,
             onDeleteAccount = onDeleteAccount,
             modifier = modifier
         )
