@@ -8,7 +8,13 @@ data class User(
     val firstName: String,
     val lastName: String,
     val role: UserRole,
-    val profilePictureUrl: String?
+    val profilePictureUrl: String?,
+    val bio: String? = null,
+    val rating: Double = 0.0,
+    val reviewsCount: Int = 0,
+    val followerCount: Int = 0,
+    val certifications: String? = null,
+    val toursCompleted: Int = 0
 ) {
     val fullName: String
         get() = "$firstName $lastName"

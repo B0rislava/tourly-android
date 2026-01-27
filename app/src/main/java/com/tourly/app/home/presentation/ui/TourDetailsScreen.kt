@@ -29,7 +29,8 @@ import com.tourly.app.login.domain.UserRole
 fun TourDetailsScreen(
     viewModel: TourDetailsViewModel,
     userRole: UserRole?,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onEditTour: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -91,6 +92,8 @@ fun TourDetailsScreen(
                 is TourDetailsUiState.Success -> {
                     TourDetailsContent(
                         tour = state.tour,
+                        userRole = userRole,
+                        onEditTour = onEditTour,
                         onBackClick = onBackClick
                     )
                     

@@ -35,4 +35,22 @@ class TourRepositoryImpl @Inject constructor(
             is Result.Error -> result
         }
     }
+
+    override suspend fun updateTour(
+        context: Context,
+        id: Long,
+        request: CreateTourRequestDto,
+        imageUri: Uri?
+    ): Result<Tour> {
+        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto>(
+            apiService.updateTour(context, id, request, imageUri)
+        )) {
+            is Result.Success -> Result.Success(TourMapper.toDomain(result.data))
+            is Result.Error -> result
+        }
+    }
+
+    override suspend fun deleteTour(id: Long): Result<Unit> {
+        return NetworkResponseMapper.map(apiService.deleteTour(id))
+    }
 }

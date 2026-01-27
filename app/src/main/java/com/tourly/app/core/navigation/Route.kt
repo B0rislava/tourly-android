@@ -24,6 +24,9 @@ sealed interface Route: NavKey {
     @Serializable
     data class TourDetails(val tourId: Long) : Route, NavKey
     
+    @Serializable
+    data class EditTour(val tourId: Long) : Route, NavKey
+
     // Bottom Navigation Routes
     @Serializable
     data class Dashboard(val userId: String) : Route, NavKey

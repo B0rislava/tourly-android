@@ -8,6 +8,8 @@ import com.tourly.app.core.domain.usecase.GetMyBookingsUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
+import com.tourly.app.create_tour.domain.usecase.GetMyToursUseCase
+import com.tourly.app.create_tour.domain.usecase.DeleteTourUseCase
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.network.Result
@@ -33,6 +35,8 @@ class UserViewModel @Inject constructor(
     private val tokenManager: TokenManager,
     private val getMyBookingsUseCase: GetMyBookingsUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
+    private val getMyToursUseCase: GetMyToursUseCase,
+    private val deleteTourUseCase: DeleteTourUseCase,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -41,6 +45,12 @@ class UserViewModel @Inject constructor(
 
     private val _events = Channel<String>()
     val events = _events.receiveAsFlow()
+
+    fun showMessage(message: String) {
+        viewModelScope.launch {
+            _events.send(message)
+        }
+    }
 
     init {
         observeToken()
@@ -66,15 +76,15 @@ class UserViewModel @Inject constructor(
         
         when (val result = getUserProfileUseCase()) {
             is Result.Success -> {
-                val newSuccess = if (currentState is UserUiState.Success) {
-                    currentState.copy(user = result.data)
-                } else {
-                    UserUiState.Success(result.data)
+                _uiState.value = when (val current = _uiState.value) {
+                    is UserUiState.Success -> current.copy(user = result.data)
+                    else -> UserUiState.Success(result.data)
                 }
-                _uiState.value = newSuccess
                 
                 if (result.data.role == UserRole.TRAVELER) {
                     fetchBookings()
+                } else if (result.data.role == UserRole.GUIDE) {
+                    fetchTours()
                 }
             }
             is Result.Error -> {
@@ -85,8 +95,11 @@ class UserViewModel @Inject constructor(
 
     fun refreshBookings() {
         viewModelScope.launch {
-            if (_uiState.value is UserUiState.Success) {
+            val role = (uiState.value as? UserUiState.Success)?.user?.role
+            if (role == UserRole.TRAVELER) {
                 fetchBookings()
+            } else if (role == UserRole.GUIDE) {
+                fetchTours()
             }
         }
     }
@@ -96,7 +109,27 @@ class UserViewModel @Inject constructor(
         if (currentState is UserUiState.Success) {
             when (val result = getMyBookingsUseCase()) {
                 is Result.Success -> {
-                    _uiState.value = currentState.copy(bookings = result.data)
+                    val current = _uiState.value
+                    if (current is UserUiState.Success) {
+                        _uiState.value = current.copy(bookings = result.data)
+                    }
+                }
+                is Result.Error -> {
+                    // TODO: Handle error
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchTours() {
+        val currentState = _uiState.value
+        if (currentState is UserUiState.Success) {
+            when (val result = getMyToursUseCase()) {
+                is Result.Success -> {
+                    val current = _uiState.value
+                    if (current is UserUiState.Success) {
+                        _uiState.value = current.copy(tours = result.data)
+                    }
                 }
                 is Result.Error -> {
                     // TODO: Handle error
@@ -119,6 +152,20 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    fun deleteTour(id: Long) {
+        viewModelScope.launch {
+            when (val result = deleteTourUseCase(id)) {
+                is Result.Success -> {
+                    _events.send("Tour deleted successfully")
+                    fetchTours()
+                }
+                is Result.Error -> {
+                    _events.send(result.message)
+                }
+            }
+        }
+    }
+
     fun startEditing() {
         val currentState = _uiState.value
         if (currentState is UserUiState.Success) {
@@ -128,6 +175,8 @@ class UserViewModel @Inject constructor(
                     firstName = currentState.user.firstName,
                     lastName = currentState.user.lastName,
                     email = currentState.user.email,
+                    bio = currentState.user.bio ?: "",
+                    certifications = currentState.user.certifications ?: "",
                     profilePictureUrl = currentState.user.profilePictureUrl
                 )
             )
@@ -158,6 +207,14 @@ class UserViewModel @Inject constructor(
 
     fun onPasswordChange(value: String) {
         updateEditState { it.copy(password = value, passwordError = null) }
+    }
+
+    fun onBioChange(value: String) {
+        updateEditState { it.copy(bio = value, bioError = null) }
+    }
+
+    fun onCertificationsChange(value: String) {
+        updateEditState { it.copy(certifications = value, certificationsError = null) }
     }
 
     private fun updateEditState(update: (EditProfileUiState) -> EditProfileUiState) {
@@ -212,12 +269,15 @@ class UserViewModel @Inject constructor(
             }
 
             if (uploadError != null) {
-                _uiState.value = currentState.copy(
-                    editState = currentState.editState.copy(
-                        isSaving = false,
-                        saveError = uploadError
+                val current = _uiState.value
+                if (current is UserUiState.Success) {
+                    _uiState.value = current.copy(
+                        editState = current.editState.copy(
+                            isSaving = false,
+                            saveError = uploadError
+                        )
                     )
-                )
+                }
                 return@launch
             }
 
@@ -225,24 +285,39 @@ class UserViewModel @Inject constructor(
                 email = currentState.editState.email,
                 firstName = currentState.editState.firstName,
                 lastName = currentState.editState.lastName,
+                bio = currentState.editState.bio.ifBlank { null },
+                certifications = currentState.editState.certifications.ifBlank { null },
                 password = currentState.editState.password.ifBlank { null }
             )
 
             when (val result = updateUserProfileUseCase(request)) {
                 is Result.Success -> {
-                    _uiState.value = UserUiState.Success(
-                        user = result.data,
-                        isEditing = false
-                    )
+                    // Update state to success and close editing
+                    val current = _uiState.value
+                    if (current is UserUiState.Success) {
+                        _uiState.value = current.copy(
+                            user = result.data,
+                            isEditing = false,
+                            editState = EditProfileUiState() // Reset edit state
+                        )
+                    } else {
+                        _uiState.value = UserUiState.Success(
+                            user = result.data,
+                            isEditing = false
+                        )
+                    }
                     _events.send("Profile updated successfully")
                 }
                 is Result.Error -> {
-                    _uiState.value = currentState.copy(
-                        editState = currentState.editState.copy(
-                            isSaving = false,
-                            saveError = result.message
+                    val current = _uiState.value
+                    if (current is UserUiState.Success) {
+                        _uiState.value = current.copy(
+                            editState = current.editState.copy(
+                                isSaving = false,
+                                saveError = result.message
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

@@ -32,6 +32,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LocationOn
@@ -59,10 +60,14 @@ import com.tourly.app.home.presentation.ui.components.GuideCard
 import com.tourly.app.home.presentation.ui.components.InfoRow
 import androidx.core.net.toUri
 
+import com.tourly.app.login.domain.UserRole
+
 @Composable
 fun TourDetailsContent(
     tour: Tour,
-    onBackClick: () -> Unit
+    userRole: UserRole? = null,
+    onBackClick: () -> Unit,
+    onEditTour: (Long) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -101,6 +106,16 @@ fun TourDetailsContent(
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (userRole == UserRole.GUIDE) {
+                        IconButton(
+                            onClick = { onEditTour(tour.id) },
+                            modifier = Modifier
+                                .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                                .size(40.dp)
+                        ) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Tour")
+                        }
+                    }
                     IconButton(
                         onClick = { /* Share */ },
                         modifier = Modifier

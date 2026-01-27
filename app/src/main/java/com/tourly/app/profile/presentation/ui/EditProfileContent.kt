@@ -53,6 +53,8 @@ fun EditProfileContent(
     onFirstNameChange: (String) -> Unit,
     onLastNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
+    onBioChange: (String) -> Unit,
+    onCertificationsChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onProfilePictureSelected: (Uri) -> Unit,
     onSaveClick: () -> Unit,
@@ -157,6 +159,32 @@ fun EditProfileContent(
             label = stringResource(id = R.string.last_name),
             isError = state.lastNameError != null,
             supportingText = state.lastNameError
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EditProfileTextField(
+            value = state.bio,
+            onValueChange = onBioChange,
+            label = "Bio",
+            isError = state.bioError != null,
+            supportingText = state.bioError,
+            minLines = 3,
+            maxLines = 5,
+            singleLine = false
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EditProfileTextField(
+            value = state.certifications,
+            onValueChange = onCertificationsChange,
+            label = "Certifications",
+            isError = state.certificationsError != null,
+            supportingText = state.certificationsError,
+            minLines = 2,
+            maxLines = 4,
+            singleLine = false
         )
 
         Spacer(modifier = Modifier.height(32.dp))

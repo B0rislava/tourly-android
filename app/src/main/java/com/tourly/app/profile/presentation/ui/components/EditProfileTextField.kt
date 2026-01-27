@@ -21,7 +21,10 @@ fun EditProfileTextField(
     isError: Boolean = false,
     supportingText: String? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    singleLine: Boolean = true,
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE
 ) {
     OutlinedTextField(
         value = value,
@@ -30,7 +33,9 @@ fun EditProfileTextField(
         modifier = modifier.fillMaxWidth(),
         isError = isError,
         supportingText = { supportingText?.let { Text(text = it, fontFamily = OutfitFamily) } },
-        singleLine = true,
+        singleLine = singleLine,
+        minLines = minLines,
+        maxLines = maxLines,
         visualTransformation = visualTransformation,
         trailingIcon = trailingIcon,
         shape = RoundedCornerShape(12.dp),
