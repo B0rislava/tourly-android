@@ -16,5 +16,11 @@ data class SignUpUiState(
     val signUpError: String? = null,
 
     val isLoading: Boolean = false,
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean = false,
+    val showVerificationDialog: Boolean = false,
+    
+    val verificationCode: String = "",
+    val verificationError: String? = null,
+    val isVerifying: Boolean = false,
+    val verificationSuccess: Boolean = false
 )

@@ -2,6 +2,7 @@ package com.tourly.app.login.presentation.ui
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -9,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import com.tourly.app.login.domain.UserRole
+import com.tourly.app.login.presentation.ui.components.VerificationCodeDialog
 import com.tourly.app.login.presentation.viewmodel.SignUpViewModel
 
 @Composable
@@ -18,12 +20,35 @@ fun SignUpScreen(
     onSignUpSuccess: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    
+    // Reset state on entry to prevent stale verification dialogs
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
 
-    // Handle success navigation
-    LaunchedEffect(uiState.isSuccess) {
-        if (uiState.isSuccess) {
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetState()
+        }
+    }
+
+    // Handle verification success
+    LaunchedEffect(uiState.verificationSuccess) {
+        if (uiState.verificationSuccess) {
             onSignUpSuccess()
         }
+    }
+
+    if (uiState.showVerificationDialog) {
+        VerificationCodeDialog(
+            email = uiState.email,
+            code = uiState.verificationCode,
+            onCodeChange = viewModel::onVerificationCodeChange,
+            onDismiss = viewModel::closeVerificationDialog,
+            error = uiState.verificationError,
+            isVerifying = uiState.isVerifying,
+            isSuccess = uiState.verificationSuccess
+        )
     }
 
     SignUpContent(

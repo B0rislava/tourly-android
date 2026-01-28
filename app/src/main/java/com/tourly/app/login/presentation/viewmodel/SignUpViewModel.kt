@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.domain.usecase.SignUpUseCase
-import com.tourly.app.login.domain.usecase.SignInUseCase
+import com.tourly.app.login.domain.usecase.VerifyCodeUseCase
 import com.tourly.app.login.presentation.state.SignUpUiState
 import com.tourly.app.core.network.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
-    private val signInUseCase: SignInUseCase
+    private val verifyCodeUseCase: VerifyCodeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUiState())
@@ -64,6 +64,19 @@ class SignUpViewModel @Inject constructor(
         _uiState.update { it.copy(role = role) }
     }
 
+    fun resetState() {
+        _uiState.value = SignUpUiState()
+    }
+
+    fun onVerificationCodeChange(code: String) {
+        if (code.length <= 6) {
+            _uiState.update { it.copy(verificationCode = code, verificationError = null) }
+            if (code.length == 6) {
+                verifyCode()
+            }
+        }
+    }
+
     fun signUp() {
         if (!validateFields()) return
 
@@ -86,26 +99,11 @@ class SignUpViewModel @Inject constructor(
                 role = currentState.role
             )) {
                 is Result.Success -> {
-                    // Auto-login after successful registration
-                    val loginResult = signInUseCase(currentState.email, currentState.password)
-                    
-                    when (loginResult) {
-                        is Result.Success -> {
-                            _uiState.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    isSuccess = true
-                                )
-                            }
-                        }
-                        is Result.Error -> {
-                            _uiState.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    signUpError = "Registration successful, but login failed: ${loginResult.message}"
-                                )
-                            }
-                        }
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            showVerificationDialog = true
+                        )
                     }
                 }
                 is Result.Error -> {
@@ -118,6 +116,31 @@ class SignUpViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun verifyCode() {
+        val currentState = _uiState.value
+        if (currentState.verificationCode.length != 6) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isVerifying = true, verificationError = null) }
+
+            when (val result = verifyCodeUseCase(
+                email = currentState.email,
+                code = currentState.verificationCode
+            )) {
+                is Result.Success -> {
+                    _uiState.update { it.copy(isVerifying = false, verificationSuccess = true) }
+                }
+                is Result.Error -> {
+                    _uiState.update { it.copy(isVerifying = false, verificationError = result.message) }
+                }
+            }
+        }
+    }
+
+    fun closeVerificationDialog() {
+        _uiState.update { it.copy(showVerificationDialog = false) }
     }
 
     private fun validateFields(): Boolean {
