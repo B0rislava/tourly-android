@@ -49,9 +49,16 @@ class AuthRepositoryImpl @Inject constructor(
         )
         val response = apiService.register(request)
         val result = NetworkResponseMapper.map<RegisterResponseDto>(response)
-        
+
+        return result
+    }
+
+    override suspend fun verifyCode(email: String, code: String): Result<LoginResponseDto> {
+        val response = apiService.verifyCode(email, code)
+        val result = NetworkResponseMapper.map<LoginResponseDto>(response)
+
         if (result is Result.Success) {
-            println("AuthRepository: Registration successful, saving tokens atomically...")
+            println("AuthRepository: Verification successful, saving tokens...")
             tokenManager.saveTokens(result.data.token, result.data.refreshToken)
             println("AuthRepository: Tokens saved successfully")
         }
