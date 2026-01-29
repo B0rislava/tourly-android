@@ -47,7 +47,10 @@ fun SignUpScreen(
             onDismiss = viewModel::closeVerificationDialog,
             error = uiState.verificationError,
             isVerifying = uiState.isVerifying,
-            isSuccess = uiState.verificationSuccess
+            isSuccess = uiState.verificationSuccess,
+            onResend = viewModel::resendCode,
+            canResend = uiState.canResend,
+            resendTimer = uiState.resendTimer
         )
     }
 

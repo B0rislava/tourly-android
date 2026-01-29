@@ -22,5 +22,8 @@ data class SignUpUiState(
     val verificationCode: String = "",
     val verificationError: String? = null,
     val isVerifying: Boolean = false,
-    val verificationSuccess: Boolean = false
+    val verificationSuccess: Boolean = false,
+    
+    val resendTimer: Int = 0,
+    val canResend: Boolean = true
 )
