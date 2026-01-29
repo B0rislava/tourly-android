@@ -71,4 +71,12 @@ class AuthApiService @Inject constructor(
             }
         }
     }
+
+    suspend fun resendCode(email: String): HttpResponse {
+        return client.post("auth/resend-code") {
+            url {
+                parameters.append("email", email)
+            }
+        }
+    }
 }

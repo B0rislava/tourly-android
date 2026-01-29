@@ -65,4 +65,9 @@ class AuthRepositoryImpl @Inject constructor(
 
         return result
     }
+
+    override suspend fun resendCode(email: String): Result<Unit> {
+        val response = apiService.resendCode(email)
+        return NetworkResponseMapper.map<Unit>(response)
+    }
 }

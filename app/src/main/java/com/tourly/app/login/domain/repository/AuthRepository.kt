@@ -23,4 +23,6 @@ interface AuthRepository {
         email: String,
         code: String
     ): Result<LoginResponseDto>
+
+    suspend fun resendCode(email: String): Result<Unit>
 }
