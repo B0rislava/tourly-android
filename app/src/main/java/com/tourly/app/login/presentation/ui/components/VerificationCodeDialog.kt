@@ -52,7 +52,10 @@ fun VerificationCodeDialog(
     onDismiss: () -> Unit,
     error: String? = null,
     isVerifying: Boolean = false,
-    isSuccess: Boolean = false
+    isSuccess: Boolean = false,
+    onResend: () -> Unit,
+    canResend: Boolean = true,
+    resendTimer: Int = 0
 ) {
     // Blinking cursor animation
     val infiniteTransition = rememberInfiniteTransition(label = "cursor")
@@ -220,8 +223,23 @@ fun VerificationCodeDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextButton(
+                    onClick = onResend,
+                    enabled = canResend && !isVerifying && !isSuccess
+                ) {
+                    Text(
+                        text = if (canResend) "Resend Code" else "Resend Code ($resendTimer)",
+                        fontFamily = OutfitFamily,
+                        color = if (canResend) MaterialTheme.colorScheme.primary 
+                                else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 
                 TextButton(onClick = onDismiss) {
                     Text(

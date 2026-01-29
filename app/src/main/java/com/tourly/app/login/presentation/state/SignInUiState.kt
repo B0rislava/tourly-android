@@ -10,4 +10,13 @@ data class SignInUiState(
 
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
+
+    // Verification related fields
+    val showVerificationDialog: Boolean = false,
+    val verificationCode: String = "",
+    val verificationError: String? = null,
+    val isVerifying: Boolean = false,
+    val verificationSuccess: Boolean = false,
+    val resendTimer: Int = 0,
+    val canResend: Boolean = true
 )
