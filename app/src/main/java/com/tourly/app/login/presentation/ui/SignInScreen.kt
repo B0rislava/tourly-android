@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
+import com.tourly.app.login.presentation.ui.components.VerificationCodeDialog
 import com.tourly.app.login.presentation.viewmodel.SignInViewModel
 
 
@@ -26,10 +27,32 @@ fun SignInScreen(
         }
     }
 
+    // Handle verification success from login screen
+    LaunchedEffect(uiState.verificationSuccess) {
+        if (uiState.verificationSuccess) {
+            onLoginSuccess()
+        }
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             viewModel.resetState()
         }
+    }
+
+    if (uiState.showVerificationDialog) {
+        VerificationCodeDialog(
+            email = uiState.email,
+            code = uiState.verificationCode,
+            onCodeChange = viewModel::onVerificationCodeChange,
+            onDismiss = viewModel::closeVerificationDialog,
+            error = uiState.verificationError,
+            isVerifying = uiState.isVerifying,
+            isSuccess = uiState.verificationSuccess,
+            onResend = viewModel::resendCode,
+            canResend = uiState.canResend,
+            resendTimer = uiState.resendTimer
+        )
     }
 
     SignInContent(
@@ -43,9 +66,7 @@ fun SignInScreen(
         isLoading = uiState.isLoading,
         onLoginClick = viewModel::login,
         onRegisterClick = onNavigateToSignUp
-
     )
-
 }
 
 @Preview(name = "Sign In Light Mode",

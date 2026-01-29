@@ -18,4 +18,11 @@ interface AuthRepository {
         password: String,
         role: UserRole
     ): Result<RegisterResponseDto>
+
+    suspend fun verifyCode(
+        email: String,
+        code: String
+    ): Result<LoginResponseDto>
+
+    suspend fun resendCode(email: String): Result<Unit>
 }

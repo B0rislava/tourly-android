@@ -62,4 +62,21 @@ class AuthApiService @Inject constructor(
     suspend fun deleteProfile(): HttpResponse {
         return client.delete("users/me")
     }
+
+    suspend fun verifyCode(email: String, code: String): HttpResponse {
+        return client.post("auth/verify-code") {
+            url {
+                parameters.append("email", email)
+                parameters.append("code", code)
+            }
+        }
+    }
+
+    suspend fun resendCode(email: String): HttpResponse {
+        return client.post("auth/resend-code") {
+            url {
+                parameters.append("email", email)
+            }
+        }
+    }
 }
