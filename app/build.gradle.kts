@@ -42,7 +42,11 @@ android {
         buildConfigField("String", "BASE_URL", "\"$devBaseUrl\"")
         buildConfigField("String", "BASE_HOST", "\"$devBaseHost\"")
         buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+
+        val googleWebClientId: String = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
     }
 
     buildTypes {
@@ -111,6 +115,9 @@ dependencies {
 
     implementation(libs.google.tink.android)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     implementation(libs.coil.compose)
 
