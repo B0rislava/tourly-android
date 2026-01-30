@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.tourly.app.core.domain.model.LocationPrediction
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
@@ -69,8 +69,8 @@ fun CreateTourContent(
     onScheduledDateChanged: (Long?) -> Unit,
     onTagToggled: (Long) -> Unit,
     onImageSelected: () -> Unit,
-    onLocationPredictionClick: (AutocompletePrediction) -> Unit,
-    addressPredictions: List<AutocompletePrediction>,
+    onLocationPredictionClick: (LocationPrediction) -> Unit,
+    addressPredictions: List<LocationPrediction>,
     onMeetingPointAddressChanged: (String) -> Unit,
     onMeetingPointSelected: (Double, Double) -> Unit,
     onCreateTour: () -> Unit,

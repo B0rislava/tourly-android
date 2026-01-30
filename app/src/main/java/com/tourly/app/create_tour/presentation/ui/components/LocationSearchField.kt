@@ -16,7 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.tourly.app.core.domain.model.LocationPrediction
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,8 +25,8 @@ fun LocationSearchField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    predictions: List<AutocompletePrediction>,
-    onPredictionClick: (AutocompletePrediction) -> Unit,
+    predictions: List<LocationPrediction>,
+    onPredictionClick: (LocationPrediction) -> Unit,
     placeholder: String,
     error: String? = null
 ) {
@@ -69,12 +69,12 @@ fun LocationSearchField(
                     text = {
                         Column {
                             Text(
-                                text = prediction.getPrimaryText(null).toString(),
+                                text = prediction.primaryText,
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontFamily = OutfitFamily
                             )
                             Text(
-                                text = prediction.getSecondaryText(null).toString(),
+                                text = prediction.secondaryText,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontFamily = OutfitFamily
