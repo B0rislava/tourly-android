@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import com.tourly.app.login.presentation.ui.components.VerificationCodeDialog
+import com.tourly.app.login.presentation.ui.components.GoogleRoleDialog
 import com.tourly.app.login.presentation.viewmodel.SignInViewModel
 
 
@@ -20,6 +21,10 @@ fun SignInScreen(
     onLoginSuccess: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
@@ -55,6 +60,13 @@ fun SignInScreen(
         )
     }
 
+    if (uiState.showRoleSelectionDialog) {
+        GoogleRoleDialog(
+            onRoleSelected = viewModel::onRoleSelected,
+            onDismiss = viewModel::closeRoleSelectionDialog
+        )
+    }
+
     SignInContent(
         email = uiState.email,
         onEmailChange = viewModel::onEmailChange,
@@ -65,7 +77,8 @@ fun SignInScreen(
         loginError = uiState.loginError,
         isLoading = uiState.isLoading,
         onLoginClick = viewModel::login,
-        onRegisterClick = onNavigateToSignUp
+        onRegisterClick = onNavigateToSignUp,
+        onGoogleLoginClick = viewModel::googleLogin
     )
 }
 
@@ -92,7 +105,8 @@ fun PreviewSignInScreen() {
             loginError = null,
             isLoading = false,
             onLoginClick = {},
-            onRegisterClick = {}
+            onRegisterClick = {},
+            onGoogleLoginClick = {}
         )
     }
 }

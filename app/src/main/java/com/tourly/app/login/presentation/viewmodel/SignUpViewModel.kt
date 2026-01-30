@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import com.tourly.app.login.domain.usecase.ResendCodeUseCase
+import com.tourly.app.login.domain.usecase.GoogleSignInUseCase
+import com.tourly.app.core.auth.GoogleAuthManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +23,9 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
     private val verifyCodeUseCase: VerifyCodeUseCase,
-    private val resendCodeUseCase: ResendCodeUseCase
+    private val resendCodeUseCase: ResendCodeUseCase,
+    private val googleSignInUseCase: GoogleSignInUseCase,
+    private val googleAuthManager: GoogleAuthManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUiState())
@@ -45,20 +49,29 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun onFirstNameChange(firstName: String) {
+    fun onConfirmPasswordChange(confirmPassword: String) {
         _uiState.update {
             it.copy(
-                firstName = firstName,
-                firstNameError = null
+                confirmPassword = confirmPassword,
+                confirmPasswordError = null
             )
         }
     }
 
-    fun onLastNameChange(lastName: String) {
+    fun onAgreeToTermsChange(agreed: Boolean) {
         _uiState.update {
             it.copy(
-                lastName = lastName,
-                lastNameError = null
+                agreedToTerms = agreed,
+                termsError = null
+            )
+        }
+    }
+
+    fun onFullNameChange(fullName: String) {
+        _uiState.update {
+            it.copy(
+                fullName = fullName,
+                fullNameError = null
             )
         }
     }
@@ -94,11 +107,15 @@ class SignUpViewModel @Inject constructor(
             }
 
 
+            val names = currentState.fullName.trim().split(" ", limit = 2)
+            val firstName = names.getOrNull(0) ?: ""
+            val lastName = names.getOrNull(1) ?: ""
+
             when (val result = signUpUseCase(
                 email = currentState.email,
                 password = currentState.password,
-                firstName = currentState.firstName,
-                lastName = currentState.lastName,
+                firstName = firstName,
+                lastName = lastName,
                 role = currentState.role
             )) {
                 is Result.Success -> {
@@ -122,6 +139,82 @@ class SignUpViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun googleSignUp() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, signUpError = null) }
+            
+            val idToken = googleAuthManager.getGoogleIdToken()
+            
+            if (idToken != null) {
+                // Pass null initially to check if user exists or force role selection
+                when (val result = googleSignInUseCase(idToken, null)) {
+                    is Result.Success -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoading = false,
+                                isSuccess = true
+                            )
+                        }
+                    }
+                    is Result.Error -> {
+                        // If user is not found (meaning new user and no role provided), show dialog
+                        if (result.message.contains("not registered", ignoreCase = true)) {
+                             _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    showRoleSelectionDialog = true,
+                                    pendingGoogleIdToken = idToken
+                                )
+                            }
+                        } else {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    signUpError = result.message
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun onRoleSelected(role: UserRole) {
+        val idToken = _uiState.value.pendingGoogleIdToken ?: return
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, showRoleSelectionDialog = false) }
+            
+            when (val result = googleSignInUseCase(idToken, role)) {
+                is Result.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            pendingGoogleIdToken = null
+                        )
+                    }
+                }
+                is Result.Error -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            signUpError = result.message,
+                            pendingGoogleIdToken = null
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun closeRoleSelectionDialog() {
+        _uiState.update { it.copy(showRoleSelectionDialog = false, pendingGoogleIdToken = null) }
     }
 
     fun verifyCode() {
@@ -184,24 +277,16 @@ class SignUpViewModel @Inject constructor(
 
         var emailError: String? = null
         var passwordError: String? = null
-        var firstNameError: String? = null
-        var lastNameError: String? = null
+        var confirmPasswordError: String? = null
+        var fullNameError: String? = null
+        var termsError: String? = null
 
-        // Validate first name
-        if (state.firstName.isBlank()) {
-            firstNameError = "First name cannot be empty"
+        // Validate full name
+        if (state.fullName.isBlank()) {
+            fullNameError = "Name cannot be empty"
             isValid = false
-        } else if (state.firstName.length < 2) {
-            firstNameError = "First name must be at least 2 characters"
-            isValid = false
-        }
-
-        // Validate last name
-        if (state.lastName.isBlank()) {
-            lastNameError = "Last name cannot be empty"
-            isValid = false
-        } else if (state.lastName.length < 2) {
-            lastNameError = "Last name must be at least 2 characters"
+        } else if (!state.fullName.trim().contains(" ")) {
+            fullNameError = "Please enter both first and last name"
             isValid = false
         }
 
@@ -226,12 +311,25 @@ class SignUpViewModel @Inject constructor(
             isValid = false
         }
 
+        // Validate confirm password
+        if (state.confirmPassword != state.password) {
+            confirmPasswordError = "Passwords do not match"
+            isValid = false
+        }
+
+        // Validate terms
+        if (!state.agreedToTerms) {
+            termsError = "You must agree to the terms and conditions"
+            isValid = false
+        }
+
         _uiState.update {
             it.copy(
                 emailError = emailError,
                 passwordError = passwordError,
-                firstNameError = firstNameError,
-                lastNameError = lastNameError
+                confirmPasswordError = confirmPasswordError,
+                fullNameError = fullNameError,
+                termsError = termsError
             )
         }
 

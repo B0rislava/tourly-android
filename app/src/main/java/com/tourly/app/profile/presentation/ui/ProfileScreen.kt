@@ -70,8 +70,7 @@ fun ProfileScreen(
 
                     EditProfileContent(
                         state = state.editState,
-                        onFirstNameChange = userViewModel::onFirstNameChange,
-                        onLastNameChange = userViewModel::onLastNameChange,
+                        onFullNameChange = userViewModel::onFullNameChange,
                         onEmailChange = userViewModel::onEmailChange,
                         onBioChange = userViewModel::onBioChange,
                         onCertificationsChange = userViewModel::onCertificationsChange,

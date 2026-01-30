@@ -1,6 +1,5 @@
 package com.tourly.app.login.presentation.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,13 +14,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tourly.app.R
-import com.tourly.app.login.presentation.ui.components.AuthCardHeader
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.components.foundation.AuthBackground
 import com.tourly.app.core.presentation.ui.components.foundation.ClickableText
+import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
 import com.tourly.app.login.presentation.ui.components.EmailTextField
 import com.tourly.app.login.presentation.ui.components.PasswordTextField
-import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
+import com.tourly.app.login.presentation.ui.components.OrDivider
+import com.tourly.app.login.presentation.ui.components.GoogleSignInButton
 
 @Composable
 fun SignInContent(
@@ -35,12 +40,12 @@ fun SignInContent(
     isLoading: Boolean,
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
+    onGoogleLoginClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.fillMaxSize()
     ) {
+        AuthBackground()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -50,15 +55,33 @@ fun SignInContent(
 
             Spacer(modifier = Modifier.height(100.dp))
 
-            AuthCardHeader(
-                title = stringResource(id = R.string.welcome_back),
-                subtitle = stringResource(id = R.string.adventure_awaits)
+            Text(
+                text = stringResource(id = R.string.welcome_back),
+                fontFamily = OutfitFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 32.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(35.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(id = R.string.adventure_awaits),
+                fontFamily = OutfitFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             EmailTextField(
                 value = email,
-                onValueChange = onEmailChange
+                onValueChange = onEmailChange,
+                label = stringResource(id = R.string.email),
+                placeholder = stringResource(id = R.string.enter_email)
             )
 
             if (emailError != null) {
@@ -66,7 +89,9 @@ fun SignInContent(
                     text = emailError,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 4.dp)
                 )
             }
 
@@ -74,7 +99,9 @@ fun SignInContent(
 
             PasswordTextField(
                 value = password,
-                onValueChange = onPasswordChange
+                onValueChange = onPasswordChange,
+                label = stringResource(id = R.string.password),
+                placeholder = stringResource(id = R.string.enter_password)
             )
 
             if (passwordError != null) {
@@ -82,11 +109,13 @@ fun SignInContent(
                     text = passwordError,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 4.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(height = 20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             PrimaryButton(
                 text = stringResource(id = R.string.login),
@@ -95,15 +124,14 @@ fun SignInContent(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
-
             if (isLoading) {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.padding(8.dp)
-                    )
+                    CircularProgressIndicator()
                 }
             }
 
@@ -112,11 +140,23 @@ fun SignInContent(
                     text = loginError,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp),
+                    textAlign = TextAlign.Center
                 )
             }
 
-            Spacer(modifier = Modifier.height(height = 8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OrDivider()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            GoogleSignInButton(
+                onClick = onGoogleLoginClick,
+                text = stringResource(id = R.string.google)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             ClickableText(
                 prefixText = stringResource(id = R.string.no_account),

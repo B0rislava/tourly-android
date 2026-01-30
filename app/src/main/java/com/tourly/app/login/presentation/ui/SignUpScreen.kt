@@ -11,6 +11,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.ui.components.VerificationCodeDialog
+import com.tourly.app.login.presentation.ui.components.GoogleRoleDialog
 import com.tourly.app.login.presentation.viewmodel.SignUpViewModel
 
 @Composable
@@ -39,6 +40,13 @@ fun SignUpScreen(
         }
     }
 
+    // Handle Google Sign-Up success
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            onSignUpSuccess()
+        }
+    }
+
     if (uiState.showVerificationDialog) {
         VerificationCodeDialog(
             email = uiState.email,
@@ -54,24 +62,35 @@ fun SignUpScreen(
         )
     }
 
+    if (uiState.showRoleSelectionDialog) {
+        GoogleRoleDialog(
+            onRoleSelected = viewModel::onRoleSelected,
+            onDismiss = viewModel::closeRoleSelectionDialog
+        )
+    }
+
     SignUpContent(
         email = uiState.email,
         onEmailChange = viewModel::onEmailChange,
         password = uiState.password,
         onPasswordChange = viewModel::onPasswordChange,
-        firstName = uiState.firstName,
-        onFirstNameChange = viewModel::onFirstNameChange,
-        lastName = uiState.lastName,
-        onLastNameChange = viewModel::onLastNameChange,
+        confirmPassword = uiState.confirmPassword,
+        onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
+        fullName = uiState.fullName,
+        onFullNameChange = viewModel::onFullNameChange,
         role = uiState.role,
         onRoleChange = viewModel::onRoleChange,
+        agreedToTerms = uiState.agreedToTerms,
+        onAgreeToTermsChange = viewModel::onAgreeToTermsChange,
         emailError = uiState.emailError,
         passwordError = uiState.passwordError,
-        firstNameError = uiState.firstNameError,
-        lastNameError = uiState.lastNameError,
+        confirmPasswordError = uiState.confirmPasswordError,
+        fullNameError = uiState.fullNameError,
+        termsError = uiState.termsError,
         signUpError = uiState.signUpError,
         isLoading = uiState.isLoading,
         onRegisterClick = viewModel::signUp,
+        onGoogleRegisterClick = viewModel::googleSignUp,
         onLoginClick = onNavigateToSignIn
     )
 }
@@ -96,20 +115,24 @@ fun PreviewSignUpScreen() {
             onEmailChange = {},
             password = "password123",
             onPasswordChange = {},
-            firstName = "John",
-            onFirstNameChange = {},
-            lastName = "Doe",
-            onLastNameChange = {},
+            confirmPassword = "password123",
+            onConfirmPasswordChange = {},
+            fullName = "John Doe",
+            onFullNameChange = {},
             role = UserRole.GUIDE,
             onRoleChange = {},
+            agreedToTerms = true,
+            onAgreeToTermsChange = {},
             emailError = null,
             passwordError = null,
-            firstNameError = null,
-            lastNameError = null,
+            confirmPasswordError = null,
+            fullNameError = null,
+            termsError = null,
             signUpError = null,
             isLoading = false,
             onLoginClick = {},
-            onRegisterClick = {}
+            onRegisterClick = {},
+            onGoogleRegisterClick = {}
         )
     }
 }

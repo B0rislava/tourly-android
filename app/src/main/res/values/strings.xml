@@ -1,9 +1,17 @@
 <resources>
     <string name="app_name" translatable="false">Tourly</string>
-    <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
+
+    <string name="enter_email">Enter Email</string>
     <string name="email">Email</string>
+
+    <string name="enter_password">Enter Password</string>
     <string name="password">Password</string>
+    <string name="enter_new_password">Enter New Password</string>
+    <string name="new_password">New Password</string>
+    <string name="enter_confirm_password">Enter Confirm Password</string>
+
+    <string name="enter_full_name">Enter Full Name</string>
+    <string name="full_name">Full Name</string>
 
     <string name="login">Login</string>
     <string name="logout">Logout</string>
@@ -14,7 +22,7 @@
 
     <string name="welcome_abroad">Welcome Abroad!</string>
     <string name="welcome_back">Welcome Back!</string>
-    <string name="welcome_subtitle">Stay organized, connected, and ready for every adventure.</string>
+    <string name="welcome_subtitle">Stay organized and ready for every adventure.</string>
 
     <string name="adventure_awaits">Your next adventure awaits.</string>
     <string name="journey_starts">Your journey starts here.</string>
@@ -49,7 +57,13 @@
     <string name="empty_heading">No Tours Available</string>
     <string name="empty_subheading">Check back later for new tours</string>
 
-
     <string name="delete_account">Delete Account</string>
     <string name="delete_account_confirmation">Are you sure you want to delete your account? This action is permanent and cannot be undone.</string>
+
+    <string name="or_with">Or with</string>
+    <string name="google">Google</string>
+    <string name="google_sign_up">Sign up with Google</string>
+    <string name="agree_terms">I Agree With The Terms And Conditions</string>
+    <string name="confirm_password">Confirm Password</string>
+
 </resources>

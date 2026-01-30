@@ -12,18 +12,21 @@ import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 
 @Composable
-fun LastNameTextField(
+fun FullNameTextField(
     value: String,
-    onValueChange: (String) -> Unit
-) {
+    onValueChange: (String) -> Unit,
+    label: String = stringResource(id = R.string.full_name),
+    placeholder: String? = stringResource(id = R.string.enter_full_name)
+){
     AppTextField(
         value = value,
         onValueChange = onValueChange,
-        label = stringResource(id = R.string.last_name),
+        label = label,
+        placeholder = placeholder,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.Person,
-                contentDescription = stringResource(id = R.string.last_name)
+                contentDescription = label
             )
         },
         keyboardOptions = KeyboardOptions(

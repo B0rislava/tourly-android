@@ -3,6 +3,8 @@ package com.tourly.app.login.presentation.state
 data class SignInUiState(
     val email: String = "",
     val password: String = "",
+    val showRoleSelectionDialog: Boolean = false,
+    val pendingGoogleIdToken: String? = null,
 
     val emailError: String? = null,
     val passwordError: String? = null,
