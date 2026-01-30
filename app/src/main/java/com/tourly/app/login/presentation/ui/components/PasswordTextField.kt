@@ -24,13 +24,16 @@ import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    label: String = stringResource(id = R.string.password),
+    placeholder: String? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     AppTextField(
         value = value,
         onValueChange = onValueChange,
-        label = stringResource(id = R.string.password),
+        label = label,
+        placeholder = placeholder,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.Lock,

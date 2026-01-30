@@ -21,6 +21,10 @@ fun SignInScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
+
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             onLoginSuccess()
@@ -65,7 +69,8 @@ fun SignInScreen(
         loginError = uiState.loginError,
         isLoading = uiState.isLoading,
         onLoginClick = viewModel::login,
-        onRegisterClick = onNavigateToSignUp
+        onRegisterClick = onNavigateToSignUp,
+        onGoogleLoginClick = { /* TODO: Implement Google Sign-In */ }
     )
 }
 
@@ -92,7 +97,8 @@ fun PreviewSignInScreen() {
             loginError = null,
             isLoading = false,
             onLoginClick = {},
-            onRegisterClick = {}
+            onRegisterClick = {},
+            onGoogleLoginClick = {}
         )
     }
 }

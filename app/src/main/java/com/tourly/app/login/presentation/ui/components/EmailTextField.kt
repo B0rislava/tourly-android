@@ -14,12 +14,15 @@ import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 @Composable
 fun EmailTextField(
     value: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    label: String = stringResource(id = R.string.email),
+    placeholder: String? = null
 ){
     AppTextField(
         value = value,
         onValueChange = onValueChange,
-        label = stringResource(id = R.string.email),
+        label = label,
+        placeholder = placeholder,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.Email,

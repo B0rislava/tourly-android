@@ -22,49 +22,58 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tourly.app.R
+import com.tourly.app.core.presentation.ui.components.foundation.AuthBackground
 import com.tourly.app.core.presentation.ui.components.foundation.ClickableText
 import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.ui.components.RoleSelector
-import com.tourly.app.login.presentation.ui.components.FirstNameTextField
-import com.tourly.app.login.presentation.ui.components.LastNameTextField
+import com.tourly.app.login.presentation.ui.components.FullNameTextField
 import com.tourly.app.login.presentation.ui.components.EmailTextField
 import com.tourly.app.login.presentation.ui.components.PasswordTextField
+import com.tourly.app.login.presentation.ui.components.OrDivider
+import com.tourly.app.login.presentation.ui.components.GoogleSignInButton
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+
 @Composable
 fun SignUpContent(
     email: String,
     onEmailChange: (String) -> Unit,
     password: String,
     onPasswordChange: (String) -> Unit,
-    firstName: String,
-    onFirstNameChange: (String) -> Unit,
-    lastName: String,
-    onLastNameChange: (String) -> Unit,
+    confirmPassword: String,
+    onConfirmPasswordChange: (String) -> Unit,
+    fullName: String,
+    onFullNameChange: (String) -> Unit,
     role: UserRole,
     onRoleChange: (UserRole) -> Unit,
+    agreedToTerms: Boolean,
+    onAgreeToTermsChange: (Boolean) -> Unit,
     emailError: String?,
     passwordError: String?,
-    firstNameError: String?,
-    lastNameError: String?,
+    confirmPasswordError: String?,
+    fullNameError: String?,
+    termsError: String?,
     signUpError: String?,
     isLoading: Boolean,
     onRegisterClick: () -> Unit,
+    onGoogleRegisterClick: () -> Unit,
     onLoginClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.fillMaxSize()
     ) {
+        AuthBackground()
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(90.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             Text(
                 text = stringResource(id = R.string.welcome_abroad),
@@ -78,7 +87,7 @@ fun SignUpContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(id = R.string.journey_starts),
+                text = stringResource(id = R.string.welcome_subtitle),
                 fontFamily = OutfitFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
@@ -86,7 +95,7 @@ fun SignUpContent(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             RoleSelector(
                 selectedRole = role,
@@ -95,32 +104,14 @@ fun SignUpContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            FirstNameTextField(
-                value = firstName,
-                onValueChange = onFirstNameChange
+            FullNameTextField(
+                value = fullName,
+                onValueChange = onFullNameChange
             )
 
-            if (firstNameError != null) {
+            if (fullNameError != null) {
                 Text(
-                    text = firstNameError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LastNameTextField(
-                value = lastName,
-                onValueChange = onLastNameChange
-            )
-
-            if (lastNameError != null) {
-                Text(
-                    text = lastNameError,
+                    text = fullNameError,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
@@ -134,7 +125,9 @@ fun SignUpContent(
             // Email
             EmailTextField(
                 value = email,
-                onValueChange = onEmailChange
+                onValueChange = onEmailChange,
+                label = stringResource(id = R.string.email),
+                placeholder = stringResource(id = R.string.enter_email)
             )
 
             if (emailError != null) {
@@ -152,7 +145,9 @@ fun SignUpContent(
 
             PasswordTextField(
                 value = password,
-                onValueChange = onPasswordChange
+                onValueChange = onPasswordChange,
+                label = stringResource(id = R.string.new_password),
+                placeholder = stringResource(id = R.string.enter_new_password)
             )
 
             if (passwordError != null) {
@@ -166,7 +161,64 @@ fun SignUpContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Confirm Password
+            PasswordTextField(
+                value = confirmPassword,
+                onValueChange = onConfirmPasswordChange,
+                label = stringResource(id = R.string.confirm_password),
+                placeholder = stringResource(id = R.string.enter_confirm_password)
+            )
+
+            if (confirmPasswordError != null) {
+                Text(
+                    text = confirmPasswordError,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 4.dp)
+                )
+            }
+
+            // Terms and Conditions checkbox
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = agreedToTerms,
+                    onCheckedChange = onAgreeToTermsChange,
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        uncheckedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
+                    )
+                )
+                Text(
+                    text = stringResource(id = R.string.agree_terms),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontFamily = OutfitFamily,
+                        fontSize = 14.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                )
+            }
+
+            if (termsError != null) {
+                Text(
+                    text = termsError,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             PrimaryButton(
                 text = stringResource(id = R.string.register),
@@ -197,7 +249,18 @@ fun SignUpContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OrDivider()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            GoogleSignInButton(
+                onClick = onGoogleRegisterClick,
+                text = stringResource(id = R.string.google)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             ClickableText(
                 prefixText = stringResource(id = R.string.have_account),
