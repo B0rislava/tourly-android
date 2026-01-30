@@ -5,15 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.network.Result
-import com.google.android.libraries.places.api.model.AutocompletePrediction
-import com.google.android.libraries.places.api.model.PlaceTypes
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.PlacesClient
+import com.tourly.app.core.domain.model.LocationPrediction
+import com.tourly.app.core.domain.usecase.SearchLocationsUseCase
 import com.tourly.app.home.domain.model.Tour
 import com.tourly.app.home.domain.model.Tag
 import com.tourly.app.home.domain.model.TourFilters
 import com.tourly.app.home.domain.usecase.GetAllTagsUseCase
 import com.tourly.app.home.domain.usecase.GetAllToursUseCase
+import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.home.presentation.state.HomeUiState
 import com.tourly.app.notifications.domain.usecase.GetUnreadNotificationsCountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,9 +41,10 @@ class HomeViewModel @Inject constructor(
     private val getAllToursUseCase: GetAllToursUseCase,
     private val getAllTagsUseCase: GetAllTagsUseCase,
     private val userRepository: UserRepository,
+    private val getUserProfileUseCase: GetUserProfileUseCase,
     private val clock: Clock,
     private val getUnreadNotificationsCountUseCase: GetUnreadNotificationsCountUseCase,
-    private val placesClient: PlacesClient
+    private val searchLocationsUseCase: SearchLocationsUseCase
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -74,7 +74,7 @@ class HomeViewModel @Inject constructor(
     private val _unreadCount = MutableStateFlow(0)
     val unreadCount = _unreadCount.asStateFlow()
 
-    private val _addressPredictions = MutableStateFlow<List<AutocompletePrediction>>(emptyList())
+    private val _addressPredictions = MutableStateFlow<List<LocationPrediction>>(emptyList())
     val addressPredictions = _addressPredictions.asStateFlow()
 
 
@@ -181,18 +181,16 @@ class HomeViewModel @Inject constructor(
             return
         }
 
-        val request = FindAutocompletePredictionsRequest.builder()
-            .setQuery(query)
-            .setTypesFilter(listOf(PlaceTypes.CITIES))
-            .build()
-
-        placesClient.findAutocompletePredictions(request)
-            .addOnSuccessListener { response ->
-                _addressPredictions.value = response.autocompletePredictions
+        viewModelScope.launch {
+            when (val result = searchLocationsUseCase(query)) {
+                is Result.Success -> {
+                    _addressPredictions.value = result.data
+                }
+                is Result.Error -> {
+                    _addressPredictions.value = emptyList()
+                }
             }
-            .addOnFailureListener {
-                _addressPredictions.value = emptyList()
-            }
+        }
     }
 
     fun toggleTag(tagName: String) {
@@ -234,7 +232,7 @@ class HomeViewModel @Inject constructor(
                 _isRefreshing.value = true
             }
             
-            when (val result = userRepository.getUserProfile()) {
+            when (val result = getUserProfileUseCase()) {
                 is Result.Success -> {
                     _userProfile.value = result.data
                     loadTours()

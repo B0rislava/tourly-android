@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.home.domain.model.TourFilters
-import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.tourly.app.core.domain.model.LocationPrediction
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -356,7 +356,7 @@ fun PriceFilterPopup(
 @Composable
 fun LocationFilterPopup(
     selectedLocation: String?,
-    predictions: List<AutocompletePrediction>,
+    predictions: List<LocationPrediction>,
     onSearchTextChange: (String) -> Unit,
     onLocationSelected: (String?) -> Unit,
     modifier: Modifier = Modifier
@@ -396,7 +396,7 @@ fun LocationFilterPopup(
                             onValueChange = { 
                                 searchText = it
                                 onSearchTextChange(it)
-                            },
+                             },
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = { Text("Enter city or country...") },
                             trailingIcon = {
@@ -425,8 +425,8 @@ fun LocationFilterPopup(
                                     .padding(8.dp)
                             ) {
                                 predictions.take(5).forEach { prediction ->
-                                    val cityName = prediction.getPrimaryText(null).toString()
-                                    val countryName = prediction.getSecondaryText(null).toString()
+                                    val cityName = prediction.primaryText
+                                    val countryName = prediction.secondaryText
                                     val fullText = if (countryName.isNotEmpty()) "$cityName, $countryName" else cityName
 
                                     TextButton(
