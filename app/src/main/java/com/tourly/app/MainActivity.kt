@@ -1,10 +1,12 @@
 package com.tourly.app
 
+import com.tourly.app.core.domain.model.ThemeMode
 import com.tourly.app.core.navigation.NavigationRoot
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -22,8 +24,14 @@ class MainActivity : ComponentActivity() {
             val uiState by viewModel.uiState.collectAsState()
             
             val isDarkTheme = when(val state = uiState) {
-                is MainActivityUiState.Success -> state.isDarkTheme
-                else -> false
+                is MainActivityUiState.Success -> {
+                    when (state.themeMode) {
+                        ThemeMode.LIGHT -> false
+                        ThemeMode.DARK -> true
+                        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                    }
+                }
+                else -> isSystemInDarkTheme()
             }
 
             TourlyTheme(darkTheme = isDarkTheme) {

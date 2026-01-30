@@ -29,14 +29,14 @@ class MainViewModel @Inject constructor(
     
     val uiState: StateFlow<MainActivityUiState> = combine(
         _sessionState,
-        themeRepository.isDarkTheme
-    ) { session, isDark ->
+        themeRepository.themeMode
+    ) { session, mode ->
         when (session) {
             is SessionState.Loading -> MainActivityUiState.Loading
             is SessionState.Success -> MainActivityUiState.Success(
                 isUserLoggedIn = session.isLoggedIn,
                 userRole = session.userRole,
-                isDarkTheme = isDark
+                themeMode = mode
             )
         }
     }.stateIn(
