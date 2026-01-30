@@ -48,8 +48,6 @@ fun HomeContent(
     onRefresh: () -> Unit,
     greeting: String,
     userName: String,
-    isDarkTheme: Boolean,
-    onThemeToggle: () -> Unit,
     isRefreshing: Boolean,
     onTourClick: (Long) -> Unit,
     onNotifyClick: () -> Unit,
@@ -72,8 +70,6 @@ fun HomeContent(
                 HomeHeaderSection(
                     greeting = greeting,
                     userName = userName,
-                    isDarkTheme = isDarkTheme,
-                    onThemeToggle = onThemeToggle,
                     onNotifyClick = onNotifyClick,
                     unreadCount = unreadCount,
                     modifier = Modifier

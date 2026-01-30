@@ -20,12 +20,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,8 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,7 +53,6 @@ fun EditProfileContent(
     onEmailChange: (String) -> Unit,
     onBioChange: (String) -> Unit,
     onCertificationsChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
     onProfilePictureSelected: (Uri) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -192,7 +186,7 @@ fun EditProfileContent(
 
         // Email & Password Section
         Text(
-            text = "Email & password",
+            text = "Contact",
             style = MaterialTheme.typography.titleLarge,
             fontFamily = OutfitFamily,
             modifier = Modifier.fillMaxWidth()
@@ -213,31 +207,7 @@ fun EditProfileContent(
             )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // Password Field
-        var passwordVisible by remember { mutableStateOf(false) }
-        EditProfileTextField(
-            value = state.password,
-            onValueChange = onPasswordChange,
-            label = "New Password (Optional)",
-            isError = state.passwordError != null,
-            supportingText = state.passwordError ?: "Leave empty to keep current password",
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                autoCorrectEnabled = false,
-                imeAction = ImeAction.Done
-            ),
-            trailingIcon = {
-                val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                val description = if (passwordVisible) stringResource(id = R.string.hide_password) else stringResource(id = R.string.show_password)
-
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = description)
-                }
-            }
-        )
 
         if (state.saveError != null) {
             Spacer(modifier = Modifier.height(16.dp))

@@ -43,4 +43,10 @@ sealed interface Route: NavKey {
 
     @Serializable
     data object Notifications : Route, NavKey
+
+    @Serializable
+    data object EditProfile : Route, NavKey
+
+    @Serializable
+    data object ChangePassword : Route, NavKey
 }

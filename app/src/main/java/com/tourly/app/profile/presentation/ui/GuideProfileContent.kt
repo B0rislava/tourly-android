@@ -16,35 +16,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import com.tourly.app.core.presentation.ui.components.TourlyAlertDialog
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.tourly.app.R
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.home.domain.model.Tour
@@ -58,26 +45,9 @@ fun GuideProfileContent(
     modifier: Modifier = Modifier,
     user: User,
     tours: List<Tour>,
-    onLogout: () -> Unit,
-    onEditProfile: () -> Unit,
     onSeeMore: () -> Unit,
-    onDeleteAccount: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
-    var showDeleteAccountConfirmation by remember { mutableStateOf(false) }
-
-    if (showDeleteAccountConfirmation) {
-        TourlyAlertDialog(
-            onDismissRequest = { showDeleteAccountConfirmation = false },
-            onConfirm = {
-                onDeleteAccount()
-            },
-            title = stringResource(id = R.string.delete_account),
-            text = stringResource(id = R.string.delete_account_confirmation),
-            confirmButtonText = "Delete",
-            isDestructive = true
-        )
-    }
 
     Column(
         modifier = modifier
@@ -124,69 +94,8 @@ fun GuideProfileContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Primary Actions
-        Button(
-            onClick = onEditProfile,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.edit_profile),
-                fontFamily = OutfitFamily
-            )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = onLogout,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                contentColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.Logout,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.logout),
-                fontFamily = OutfitFamily
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { showDeleteAccountConfirmation = true },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-                contentColor = MaterialTheme.colorScheme.error
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.delete_account),
-                fontFamily = OutfitFamily
-            )
-        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -407,9 +316,6 @@ private fun GuideProfileContentPreview() {
                 guideImageUrl = null
             )
         ),
-        onLogout = {},
-        onEditProfile = {},
-        onSeeMore = {},
-        onDeleteAccount = {}
+        onSeeMore = {}
     )
 }

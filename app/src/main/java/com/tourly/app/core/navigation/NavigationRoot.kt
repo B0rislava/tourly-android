@@ -55,10 +55,7 @@ fun NavigationRoot(
 
             // Redirect Guide to GuideMain if they end up on TravelerMain (e.g. after login)
             LaunchedEffect(state, backStack.lastOrNull()) {
-                if (state is MainActivityUiState.Success &&
-                    state.isUserLoggedIn &&
-                    state.userRole == UserRole.GUIDE &&
-                    backStack.lastOrNull() == Route.TravelerMain
+                if (state.isUserLoggedIn && state.userRole == UserRole.GUIDE && backStack.lastOrNull() == Route.TravelerMain
                 ) {
                     backStack.removeLastOrNull()
                     backStack.add(Route.GuideMain)
@@ -116,10 +113,6 @@ fun NavigationRoot(
                                     backStack.add(Route.Welcome)
                                 }
                             },
-                            onAccountDeleted = {
-                                backStack.clear()
-                                backStack.add(Route.Welcome)
-                            },
                             onNavigateToNotifications = {
                                 backStack.add(Route.Notifications)
                             },
@@ -143,10 +136,6 @@ fun NavigationRoot(
                                     backStack.add(Route.Welcome)
                                 }
                             },
-                            onAccountDeleted = {
-                                backStack.clear()
-                                backStack.add(Route.Welcome)
-                            },
                             onNavigateToNotifications = {
                                 backStack.add(Route.Notifications)
                             },
@@ -168,7 +157,41 @@ fun NavigationRoot(
                         SettingsScreen(
                             onNavigateBack = {
                                 backStack.removeLastOrNull()
+                            },
+                            onLogout = {
+                                backStack.clear()
+                                backStack.add(Route.Welcome)
+                            },
+                            onAccountDeleted = {
+                                backStack.clear()
+                                backStack.add(Route.Welcome)
+                            },
+                            onNavigatePassword = {
+                                backStack.add(Route.ChangePassword)
+                            },
+                            onNavigateToEditProfile = {
+                                backStack.add(Route.EditProfile)
                             }
+                        )
+                    }
+                }
+                is Route.EditProfile -> {
+                    NavEntry(key) {
+                        com.tourly.app.settings.presentation.ui.EditProfileScreen(
+                            onNavigateBack = {
+                                backStack.removeLastOrNull()
+                            },
+                            userViewModel = userViewModel
+                        )
+                    }
+                }
+                is Route.ChangePassword -> {
+                    NavEntry(key) {
+                        com.tourly.app.settings.presentation.ui.ChangePasswordScreen(
+                            onNavigateBack = {
+                                backStack.removeLastOrNull()
+                            },
+                            userViewModel = userViewModel
                         )
                     }
                 }

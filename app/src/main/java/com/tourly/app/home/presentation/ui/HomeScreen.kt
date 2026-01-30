@@ -30,7 +30,6 @@ fun HomeScreen(
     
     val userProfile by viewModel.userProfile.collectAsState()
     val greeting by viewModel.greeting.collectAsState()
-    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val unreadCount by viewModel.unreadCount.collectAsState()
     val addressPredictions by viewModel.addressPredictions.collectAsState()
@@ -81,8 +80,6 @@ fun HomeScreen(
             onRefresh = viewModel::refreshData,
             greeting = greeting,
             userName = userProfile?.fullName ?: "Traveler", // Fallback name
-            isDarkTheme = isDarkTheme,
-            onThemeToggle = viewModel::toggleTheme,
             isRefreshing = isRefreshing,
             onTourClick = onTourClick,
             onNotifyClick = onNotifyClick,
