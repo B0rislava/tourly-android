@@ -8,17 +8,23 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.luminance
+
 @Composable
 fun AuthBackground(modifier: Modifier = Modifier) {
+    // Detect dark theme based on the actual background color (respects app settings)
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val isDarkTheme = backgroundColor.luminance() < 0.5f
 
-    val sunsetPurple = Color(0xFFB162A6).copy(alpha = 0.25f)
-    val sunsetPeach = Color(0xFFF59466).copy(alpha = 0.25f)
-    val sunsetOrange = Color(0xFFE2762F).copy(alpha = 0.25f)
-    val white = Color(0xFFFFFFFF)
+    // Colors
+    val sunsetPurple = Color(0xFFDC4EC5).copy(alpha = if (isDarkTheme) 0.15f else 0.25f)
+    val sunsetPeach = Color(0xFFF59466).copy(alpha = if (isDarkTheme) 0.15f else 0.25f)
+    val sunsetOrange = Color(0xFFE2762F).copy(alpha = if (isDarkTheme) 0.15f else 0.25f)
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        // Draw base white
-        drawRect(color = white)
+        // Draw base background
+        drawRect(color = backgroundColor)
 
 
         drawCircle(
