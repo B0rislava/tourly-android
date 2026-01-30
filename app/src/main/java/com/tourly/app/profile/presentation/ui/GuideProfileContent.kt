@@ -16,8 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.People
@@ -38,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,8 +55,6 @@ fun GuideProfileContent(
     modifier: Modifier = Modifier,
     user: User,
     tours: List<Tour>,
-    onLogout: () -> Unit,
-    onEditProfile: () -> Unit,
     onSeeMore: () -> Unit,
     onDeleteAccount: () -> Unit,
 ) {
@@ -124,49 +119,6 @@ fun GuideProfileContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Primary Actions
-        Button(
-            onClick = onEditProfile,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.edit_profile),
-                fontFamily = OutfitFamily
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onLogout,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                contentColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.Logout,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.logout),
-                fontFamily = OutfitFamily
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { showDeleteAccountConfirmation = true },
@@ -407,8 +359,6 @@ private fun GuideProfileContentPreview() {
                 guideImageUrl = null
             )
         ),
-        onLogout = {},
-        onEditProfile = {},
         onSeeMore = {},
         onDeleteAccount = {}
     )

@@ -169,7 +169,20 @@ fun NavigationRoot(
                             onLogout = {
                                 backStack.clear()
                                 backStack.add(Route.Welcome)
+                            },
+                            onNavigateToEditProfile = {
+                                backStack.add(Route.EditProfile)
                             }
+                        )
+                    }
+                }
+                is Route.EditProfile -> {
+                    NavEntry(key) {
+                        com.tourly.app.settings.presentation.ui.EditProfileScreen(
+                            onNavigateBack = {
+                                backStack.removeLastOrNull()
+                            },
+                            userViewModel = userViewModel
                         )
                     }
                 }

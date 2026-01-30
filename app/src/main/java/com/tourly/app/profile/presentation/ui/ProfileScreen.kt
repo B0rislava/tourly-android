@@ -1,6 +1,5 @@
 package com.tourly.app.profile.presentation.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,24 +23,10 @@ import com.tourly.app.login.domain.UserRole
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel(),
-    onLogout: () -> Unit,
     onAccountDeleted: () -> Unit,
-    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
     onSeeMore: () -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
-
-    // Notify parent about editing state changes
-    LaunchedEffect(userState) {
-        when (val state = userState) {
-            is UserUiState.Success -> {
-                onEditingStateChange(state.isEditing, userViewModel::cancelEditing)
-            }
-            else -> {
-                onEditingStateChange(false, null)
-            }
-        }
-    }
 
     LaunchedEffect(Unit) {
         userViewModel.refreshBookings()
@@ -63,36 +48,16 @@ fun ProfileScreen(
                 CircularProgressIndicator()
             }
             is UserUiState.Success -> {
-                if (state.isEditing) {
-                    BackHandler {
-                        userViewModel.cancelEditing()
-                    }
-
-                    EditProfileContent(
-                        state = state.editState,
-                        onFullNameChange = userViewModel::onFullNameChange,
-                        onEmailChange = userViewModel::onEmailChange,
-                        onBioChange = userViewModel::onBioChange,
-                        onCertificationsChange = userViewModel::onCertificationsChange,
-                        onPasswordChange = userViewModel::onPasswordChange,
-                        onProfilePictureSelected = userViewModel::onProfilePictureSelected,
-                        onSaveClick = userViewModel::saveProfile
-                    )
-                } else {
-                    ProfileContent(
-                        user = state.user,
-                        onLogout = onLogout,
-                        onEditProfile = userViewModel::startEditing,
-                        onSeeMore = onSeeMore,
-                        onDeleteAccount = {
-                            userViewModel.deleteAccount {
-                                onAccountDeleted()
-                            }
-                        },
-                        bookings = state.bookings,
-                        tours = state.tours
-                    )
-                }
+                ProfileContent(
+                    user = state.user,
+                    onSeeMore = onSeeMore,
+                    onDeleteAccount = {
+                        userViewModel.deleteAccount {
+                            onAccountDeleted()
+                        }
+                    },
+                    tours = state.tours
+                )
             }
             is UserUiState.Error -> {
                 Text(
@@ -121,9 +86,7 @@ private fun GuideProfileContentPreview() {
             reviewsCount = 120,
             followerCount = 450,
             toursCompleted = 85
-        ),
-        onLogout = {},
-        onEditProfile = {}
+        )
     )
 }
 
@@ -138,8 +101,6 @@ private fun TravelerProfileContentPreview() {
             lastName = "Traveler",
             role = UserRole.TRAVELER,
             profilePictureUrl = null
-        ),
-        onLogout = {},
-        onEditProfile = {}
+        )
     )
 }
