@@ -27,5 +27,9 @@ data class SignUpUiState(
     val verificationSuccess: Boolean = false,
     
     val resendTimer: Int = 0,
-    val canResend: Boolean = true
+    val canResend: Boolean = true,
+
+    // Google Sign Up Role Selection
+    val showRoleSelectionDialog: Boolean = false,
+    val pendingGoogleIdToken: String? = null
 )

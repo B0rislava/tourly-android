@@ -11,6 +11,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.ui.components.VerificationCodeDialog
+import com.tourly.app.login.presentation.ui.components.GoogleRoleDialog
 import com.tourly.app.login.presentation.viewmodel.SignUpViewModel
 
 @Composable
@@ -39,6 +40,13 @@ fun SignUpScreen(
         }
     }
 
+    // Handle Google Sign-Up success
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            onSignUpSuccess()
+        }
+    }
+
     if (uiState.showVerificationDialog) {
         VerificationCodeDialog(
             email = uiState.email,
@@ -51,6 +59,13 @@ fun SignUpScreen(
             onResend = viewModel::resendCode,
             canResend = uiState.canResend,
             resendTimer = uiState.resendTimer
+        )
+    }
+
+    if (uiState.showRoleSelectionDialog) {
+        GoogleRoleDialog(
+            onRoleSelected = viewModel::onRoleSelected,
+            onDismiss = viewModel::closeRoleSelectionDialog
         )
     }
 
@@ -75,7 +90,7 @@ fun SignUpScreen(
         signUpError = uiState.signUpError,
         isLoading = uiState.isLoading,
         onRegisterClick = viewModel::signUp,
-        onGoogleRegisterClick = { /* TODO: Implement Google Sign-Up */ },
+        onGoogleRegisterClick = viewModel::googleSignUp,
         onLoginClick = onNavigateToSignIn
     )
 }

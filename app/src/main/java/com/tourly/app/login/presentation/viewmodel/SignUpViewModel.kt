@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import com.tourly.app.login.domain.usecase.ResendCodeUseCase
+import com.tourly.app.login.domain.usecase.GoogleSignInUseCase
+import com.tourly.app.core.auth.GoogleAuthManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +23,9 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
     private val verifyCodeUseCase: VerifyCodeUseCase,
-    private val resendCodeUseCase: ResendCodeUseCase
+    private val resendCodeUseCase: ResendCodeUseCase,
+    private val googleSignInUseCase: GoogleSignInUseCase,
+    private val googleAuthManager: GoogleAuthManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUiState())
@@ -135,6 +139,82 @@ class SignUpViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun googleSignUp() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, signUpError = null) }
+            
+            val idToken = googleAuthManager.getGoogleIdToken()
+            
+            if (idToken != null) {
+                // Pass null initially to check if user exists or force role selection
+                when (val result = googleSignInUseCase(idToken, null)) {
+                    is Result.Success -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoading = false,
+                                isSuccess = true
+                            )
+                        }
+                    }
+                    is Result.Error -> {
+                        // If user is not found (meaning new user and no role provided), show dialog
+                        if (result.message.contains("not registered", ignoreCase = true)) {
+                             _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    showRoleSelectionDialog = true,
+                                    pendingGoogleIdToken = idToken
+                                )
+                            }
+                        } else {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    signUpError = result.message
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun onRoleSelected(role: UserRole) {
+        val idToken = _uiState.value.pendingGoogleIdToken ?: return
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, showRoleSelectionDialog = false) }
+            
+            when (val result = googleSignInUseCase(idToken, role)) {
+                is Result.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            pendingGoogleIdToken = null
+                        )
+                    }
+                }
+                is Result.Error -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            signUpError = result.message,
+                            pendingGoogleIdToken = null
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun closeRoleSelectionDialog() {
+        _uiState.update { it.copy(showRoleSelectionDialog = false, pendingGoogleIdToken = null) }
     }
 
     fun verifyCode() {
