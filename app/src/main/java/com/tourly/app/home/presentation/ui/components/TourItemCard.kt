@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.util.Formatters
 

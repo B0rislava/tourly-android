@@ -4,8 +4,8 @@ import com.tourly.app.core.mapper.BookingMapper
 import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.api.BookingApiService
-import com.tourly.app.core.network.model.BookTourRequestDto
-import com.tourly.app.core.network.model.BookingResponseDto
+import com.tourly.app.home.data.dto.BookTourRequestDto
+import com.tourly.app.home.data.dto.BookingResponseDto
 import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.domain.repository.BookingRepository
 import javax.inject.Inject

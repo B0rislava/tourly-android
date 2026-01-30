@@ -50,7 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
-import com.tourly.app.home.domain.model.TourFilters
+import com.tourly.app.core.domain.model.TourFilters
 import com.tourly.app.core.domain.model.LocationPrediction
 import java.time.Instant
 import java.time.LocalDate

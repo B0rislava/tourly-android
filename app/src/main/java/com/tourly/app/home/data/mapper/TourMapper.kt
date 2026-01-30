@@ -1,8 +1,8 @@
 package com.tourly.app.home.data.mapper
 
 import com.tourly.app.core.network.mapper.TagMapper
-import com.tourly.app.core.network.model.CreateTourResponseDto
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.home.data.dto.CreateTourResponseDto
+import com.tourly.app.core.domain.model.Tour
 
 object TourMapper {
     fun toDomain(dto: CreateTourResponseDto): Tour {

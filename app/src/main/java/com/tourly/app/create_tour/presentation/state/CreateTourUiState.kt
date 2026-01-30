@@ -1,6 +1,6 @@
 package com.tourly.app.create_tour.presentation.state
 
-import com.tourly.app.home.domain.model.Tag
+import com.tourly.app.core.domain.model.Tag
 
 data class CreateTourUiState(
     val title: String = "",

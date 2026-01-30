@@ -1,6 +1,6 @@
 package com.tourly.app.home.presentation.state
 
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 
 sealed interface HomeUiState {
     data object Loading : HomeUiState

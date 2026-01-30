@@ -1,8 +1,8 @@
 package com.tourly.app.core.network.api
 
-import com.tourly.app.core.network.model.LoginRequestDto
-import com.tourly.app.core.network.model.RegisterRequestDto
-import com.tourly.app.core.network.model.UpdateProfileRequestDto
+import com.tourly.app.login.data.dto.LoginRequestDto
+import com.tourly.app.login.data.dto.RegisterRequestDto
+import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get

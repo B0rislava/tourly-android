@@ -1,7 +1,7 @@
 package com.tourly.app.login.domain.repository
 
-import com.tourly.app.core.network.model.LoginResponseDto
-import com.tourly.app.core.network.model.RegisterResponseDto
+import com.tourly.app.login.data.dto.LoginResponseDto
+import com.tourly.app.login.data.dto.RegisterResponseDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.core.network.Result
 

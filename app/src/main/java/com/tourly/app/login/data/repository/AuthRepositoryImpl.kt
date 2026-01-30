@@ -2,10 +2,10 @@ package com.tourly.app.login.data.repository
 
 import javax.inject.Inject
 import com.tourly.app.core.network.api.AuthApiService
-import com.tourly.app.core.network.model.LoginRequestDto
-import com.tourly.app.core.network.model.LoginResponseDto
-import com.tourly.app.core.network.model.RegisterRequestDto
-import com.tourly.app.core.network.model.RegisterResponseDto
+import com.tourly.app.login.data.dto.LoginRequestDto
+import com.tourly.app.login.data.dto.LoginResponseDto
+import com.tourly.app.login.data.dto.RegisterRequestDto
+import com.tourly.app.login.data.dto.RegisterResponseDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.domain.repository.AuthRepository
 import com.tourly.app.core.storage.TokenManager

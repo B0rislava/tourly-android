@@ -2,7 +2,7 @@ package com.tourly.app.create_tour.domain.usecase
 
 import com.tourly.app.core.network.Result
 import com.tourly.app.create_tour.domain.repository.TourRepository
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import javax.inject.Inject
 
 class GetMyToursUseCase @Inject constructor(

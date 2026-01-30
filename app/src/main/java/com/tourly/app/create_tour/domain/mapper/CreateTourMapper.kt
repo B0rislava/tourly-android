@@ -1,6 +1,6 @@
 package com.tourly.app.create_tour.domain.mapper
 
-import com.tourly.app.core.network.model.CreateTourRequestDto
+import com.tourly.app.create_tour.data.dto.CreateTourRequestDto
 import com.tourly.app.create_tour.domain.model.CreateTourParams
 import javax.inject.Inject
 

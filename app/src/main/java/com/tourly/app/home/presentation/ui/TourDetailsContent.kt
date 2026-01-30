@@ -55,7 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.tourly.app.R
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.home.presentation.ui.components.GuideCard
 import com.tourly.app.home.presentation.ui.components.InfoRow
 import androidx.core.net.toUri

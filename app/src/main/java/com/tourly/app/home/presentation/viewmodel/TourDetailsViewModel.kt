@@ -3,7 +3,7 @@ package com.tourly.app.home.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.network.Result
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.home.domain.usecase.GetTourDetailsUseCase
 import com.tourly.app.home.domain.usecase.BookTourUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

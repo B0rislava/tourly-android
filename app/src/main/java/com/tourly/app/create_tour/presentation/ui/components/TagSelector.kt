@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.tourly.app.home.domain.model.Tag
+import com.tourly.app.core.domain.model.Tag
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

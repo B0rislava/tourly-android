@@ -1,6 +1,6 @@
 package com.tourly.app.login.domain.usecase
 
-import com.tourly.app.core.network.model.LoginResponseDto
+import com.tourly.app.login.data.dto.LoginResponseDto
 import com.tourly.app.login.domain.repository.AuthRepository
 import javax.inject.Inject
 import com.tourly.app.core.network.Result

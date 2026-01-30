@@ -1,7 +1,7 @@
 package com.tourly.app.core.data.mapper
 
 import com.tourly.app.core.domain.model.User
-import com.tourly.app.core.network.model.UserDto
+import com.tourly.app.profile.data.dto.UserDto
 
 object UserMapper {
     fun mapToDomain(dto: UserDto): User {

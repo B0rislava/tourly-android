@@ -1,7 +1,7 @@
 package com.tourly.app.home.presentation.ui.components
 
 import com.tourly.app.core.presentation.ui.components.UserAvatar
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

@@ -2,7 +2,7 @@ package com.tourly.app.login.domain.usecase
 
 import com.tourly.app.login.domain.repository.AuthRepository
 import com.tourly.app.core.network.Result
-import com.tourly.app.core.network.model.LoginResponseDto
+import com.tourly.app.login.data.dto.LoginResponseDto
 import javax.inject.Inject
 
 class VerifyCodeUseCase @Inject constructor(

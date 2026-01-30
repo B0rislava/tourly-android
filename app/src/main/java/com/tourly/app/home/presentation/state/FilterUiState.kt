@@ -1,8 +1,8 @@
 package com.tourly.app.home.presentation.state
 
 import com.tourly.app.core.domain.model.LocationPrediction
-import com.tourly.app.home.domain.model.Tag
-import com.tourly.app.home.domain.model.TourFilters
+import com.tourly.app.core.domain.model.Tag
+import com.tourly.app.core.domain.model.TourFilters
 import java.time.LocalDate
 
 data class FilterUiState(
