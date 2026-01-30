@@ -45,20 +45,29 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun onFirstNameChange(firstName: String) {
+    fun onConfirmPasswordChange(confirmPassword: String) {
         _uiState.update {
             it.copy(
-                firstName = firstName,
-                firstNameError = null
+                confirmPassword = confirmPassword,
+                confirmPasswordError = null
             )
         }
     }
 
-    fun onLastNameChange(lastName: String) {
+    fun onAgreeToTermsChange(agreed: Boolean) {
         _uiState.update {
             it.copy(
-                lastName = lastName,
-                lastNameError = null
+                agreedToTerms = agreed,
+                termsError = null
+            )
+        }
+    }
+
+    fun onFullNameChange(fullName: String) {
+        _uiState.update {
+            it.copy(
+                fullName = fullName,
+                fullNameError = null
             )
         }
     }
@@ -94,11 +103,15 @@ class SignUpViewModel @Inject constructor(
             }
 
 
+            val names = currentState.fullName.trim().split(" ", limit = 2)
+            val firstName = names.getOrNull(0) ?: ""
+            val lastName = names.getOrNull(1) ?: ""
+
             when (val result = signUpUseCase(
                 email = currentState.email,
                 password = currentState.password,
-                firstName = currentState.firstName,
-                lastName = currentState.lastName,
+                firstName = firstName,
+                lastName = lastName,
                 role = currentState.role
             )) {
                 is Result.Success -> {
@@ -184,24 +197,16 @@ class SignUpViewModel @Inject constructor(
 
         var emailError: String? = null
         var passwordError: String? = null
-        var firstNameError: String? = null
-        var lastNameError: String? = null
+        var confirmPasswordError: String? = null
+        var fullNameError: String? = null
+        var termsError: String? = null
 
-        // Validate first name
-        if (state.firstName.isBlank()) {
-            firstNameError = "First name cannot be empty"
+        // Validate full name
+        if (state.fullName.isBlank()) {
+            fullNameError = "Name cannot be empty"
             isValid = false
-        } else if (state.firstName.length < 2) {
-            firstNameError = "First name must be at least 2 characters"
-            isValid = false
-        }
-
-        // Validate last name
-        if (state.lastName.isBlank()) {
-            lastNameError = "Last name cannot be empty"
-            isValid = false
-        } else if (state.lastName.length < 2) {
-            lastNameError = "Last name must be at least 2 characters"
+        } else if (!state.fullName.trim().contains(" ")) {
+            fullNameError = "Please enter both first and last name"
             isValid = false
         }
 
@@ -226,12 +231,25 @@ class SignUpViewModel @Inject constructor(
             isValid = false
         }
 
+        // Validate confirm password
+        if (state.confirmPassword != state.password) {
+            confirmPasswordError = "Passwords do not match"
+            isValid = false
+        }
+
+        // Validate terms
+        if (!state.agreedToTerms) {
+            termsError = "You must agree to the terms and conditions"
+            isValid = false
+        }
+
         _uiState.update {
             it.copy(
                 emailError = emailError,
                 passwordError = passwordError,
-                firstNameError = firstNameError,
-                lastNameError = lastNameError
+                confirmPasswordError = confirmPasswordError,
+                fullNameError = fullNameError,
+                termsError = termsError
             )
         }
 

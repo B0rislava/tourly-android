@@ -79,4 +79,12 @@ class AuthApiService @Inject constructor(
             }
         }
     }
+
+    suspend fun googleLogin(idToken: String): HttpResponse {
+        return client.post("auth/google") {
+            url {
+                parameters.append("idToken", idToken)
+            }
+        }
+    }
 }

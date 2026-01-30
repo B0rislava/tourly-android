@@ -70,4 +70,15 @@ class AuthRepositoryImpl @Inject constructor(
         val response = apiService.resendCode(email)
         return NetworkResponseMapper.map<Unit>(response)
     }
+
+    override suspend fun googleSignIn(idToken: String): Result<LoginResponseDto> {
+        val response = apiService.googleLogin(idToken)
+        val result = NetworkResponseMapper.map<LoginResponseDto>(response)
+
+        if (result is Result.Success) {
+            tokenManager.saveTokens(result.data.token, result.data.refreshToken)
+        }
+
+        return result
+    }
 }
