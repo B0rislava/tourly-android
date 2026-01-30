@@ -1,4 +1,4 @@
-package com.tourly.app.home.domain.model
+package com.tourly.app.core.domain.model
 
 data class Tour(
     val id: Long,
