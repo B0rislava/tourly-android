@@ -2,6 +2,8 @@ package com.tourly.app.core.di
 
 import com.tourly.app.core.domain.repository.ThemeRepository
 import com.tourly.app.core.data.repository.ThemeRepositoryImpl
+import com.tourly.app.core.domain.repository.LocationRepository
+import com.tourly.app.core.data.repository.LocationRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +19,10 @@ abstract class CoreModule {
     abstract fun bindThemeRepository(
         themeRepositoryImpl: ThemeRepositoryImpl
     ): ThemeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocationRepository(
+        locationRepositoryImpl: LocationRepositoryImpl
+    ): LocationRepository
 }
