@@ -55,10 +55,7 @@ fun NavigationRoot(
 
             // Redirect Guide to GuideMain if they end up on TravelerMain (e.g. after login)
             LaunchedEffect(state, backStack.lastOrNull()) {
-                if (state is MainActivityUiState.Success &&
-                    state.isUserLoggedIn &&
-                    state.userRole == UserRole.GUIDE &&
-                    backStack.lastOrNull() == Route.TravelerMain
+                if (state.isUserLoggedIn && state.userRole == UserRole.GUIDE && backStack.lastOrNull() == Route.TravelerMain
                 ) {
                     backStack.removeLastOrNull()
                     backStack.add(Route.GuideMain)
@@ -168,6 +165,10 @@ fun NavigationRoot(
                         SettingsScreen(
                             onNavigateBack = {
                                 backStack.removeLastOrNull()
+                            },
+                            onLogout = {
+                                backStack.clear()
+                                backStack.add(Route.Welcome)
                             }
                         )
                     }
