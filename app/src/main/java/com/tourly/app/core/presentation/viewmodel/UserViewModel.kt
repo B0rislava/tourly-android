@@ -206,8 +206,7 @@ class UserViewModel @Inject constructor(
             _uiState.value = currentState.copy(
                 isEditing = true,
                 editState = EditProfileUiState(
-                    firstName = currentState.user.firstName,
-                    lastName = currentState.user.lastName,
+                    fullName = "${currentState.user.firstName} ${currentState.user.lastName}".trim(),
                     email = currentState.user.email,
                     bio = currentState.user.bio ?: "",
                     certifications = currentState.user.certifications ?: "",
@@ -227,12 +226,8 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun onFirstNameChange(value: String) {
-        updateEditState { it.copy(firstName = value, firstNameError = null) }
-    }
-
-    fun onLastNameChange(value: String) {
-        updateEditState { it.copy(lastName = value, lastNameError = null) }
+    fun onFullNameChange(value: String) {
+        updateEditState { it.copy(fullName = value, fullNameError = null) }
     }
 
     fun onEmailChange(value: String) {
@@ -315,10 +310,14 @@ class UserViewModel @Inject constructor(
                 return@launch
             }
 
+            val names = currentState.editState.fullName.trim().split(" ", limit = 2)
+            val firstName = names.getOrNull(0) ?: ""
+            val lastName = names.getOrNull(1) ?: ""
+
             val request = UpdateProfileRequestDto(
                 email = currentState.editState.email,
-                firstName = currentState.editState.firstName,
-                lastName = currentState.editState.lastName,
+                firstName = firstName,
+                lastName = lastName,
                 bio = currentState.editState.bio.ifBlank { null },
                 certifications = currentState.editState.certifications.ifBlank { null },
                 password = currentState.editState.password.ifBlank { null }
@@ -359,18 +358,15 @@ class UserViewModel @Inject constructor(
 
     private fun validateFields(state: EditProfileUiState): Boolean {
         var isValid = true
-        var firstNameError: String? = null
-        var lastNameError: String? = null
+        var fullNameError: String? = null
         var emailError: String? = null
         var passwordError: String? = null
 
-        if (state.firstName.isBlank()) {
-            firstNameError = "First name cannot be empty"
+        if (state.fullName.isBlank()) {
+            fullNameError = "Name cannot be empty"
             isValid = false
-        }
-
-        if (state.lastName.isBlank()) {
-            lastNameError = "Last name cannot be empty"
+        } else if (!state.fullName.trim().contains(" ")) {
+            fullNameError = "Please enter both first and last name"
             isValid = false
         }
 
@@ -390,8 +386,7 @@ class UserViewModel @Inject constructor(
         if (!isValid) {
             updateEditState {
                 it.copy(
-                    firstNameError = firstNameError,
-                    lastNameError = lastNameError,
+                    fullNameError = fullNameError,
                     emailError = emailError,
                     passwordError = passwordError
                 )

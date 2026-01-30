@@ -3,14 +3,12 @@ package com.tourly.app.profile.presentation.state
 import android.net.Uri
 
 data class EditProfileUiState(
-    val firstName: String = "",
-    val lastName: String = "",
+    val fullName: String = "",
     val email: String = "",
     val bio: String = "",
     val certifications: String = "",
     val password: String = "",
-    val firstNameError: String? = null,
-    val lastNameError: String? = null,
+    val fullNameError: String? = null,
     val emailError: String? = null,
     val bioError: String? = null,
     val certificationsError: String? = null,

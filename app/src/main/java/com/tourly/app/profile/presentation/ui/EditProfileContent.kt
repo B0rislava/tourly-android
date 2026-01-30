@@ -41,7 +41,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.ImeAction
 import com.tourly.app.R
@@ -50,12 +49,12 @@ import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import com.tourly.app.profile.presentation.ui.components.EditProfileTextField
+import com.tourly.app.login.presentation.ui.components.FullNameTextField
 
 @Composable
 fun EditProfileContent(
     state: EditProfileUiState,
-    onFirstNameChange: (String) -> Unit,
-    onLastNameChange: (String) -> Unit,
+    onFullNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onBioChange: (String) -> Unit,
     onCertificationsChange: (String) -> Unit,
@@ -110,7 +109,7 @@ fun EditProfileContent(
         ) {
             UserAvatar(
                 imageUrl = (state.profilePictureUri ?: state.profilePictureUrl)?.toString(),
-                name = "${state.firstName} ${state.lastName}",
+                name = state.fullName,
                 textStyle = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .size(120.dp)
@@ -147,31 +146,21 @@ fun EditProfileContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        EditProfileTextField(
-            value = state.firstName,
-            onValueChange = onFirstNameChange,
-            label = stringResource(id = R.string.first_name),
-            isError = state.firstNameError != null,
-            supportingText = state.firstNameError,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Next
-            )
+        FullNameTextField(
+            value = state.fullName,
+            onValueChange = onFullNameChange
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        EditProfileTextField(
-            value = state.lastName,
-            onValueChange = onLastNameChange,
-            label = stringResource(id = R.string.last_name),
-            isError = state.lastNameError != null,
-            supportingText = state.lastNameError,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Next
+        if (state.fullNameError != null) {
+            Text(
+                text = state.fullNameError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 4.dp)
             )
-        )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
