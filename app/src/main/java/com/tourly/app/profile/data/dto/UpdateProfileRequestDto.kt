@@ -1,4 +1,4 @@
-package com.tourly.app.core.network.model
+package com.tourly.app.profile.data.dto
 
 import kotlinx.serialization.Serializable
 
