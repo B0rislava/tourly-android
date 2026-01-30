@@ -2,11 +2,14 @@ package com.tourly.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.state.SignInUiState
 import com.tourly.app.core.network.Result
 import com.tourly.app.login.domain.usecase.SignInUseCase
 import com.tourly.app.login.domain.usecase.VerifyCodeUseCase
 import com.tourly.app.login.domain.usecase.ResendCodeUseCase
+import com.tourly.app.login.domain.usecase.GoogleSignInUseCase
+import com.tourly.app.core.auth.GoogleAuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +23,9 @@ import javax.inject.Inject
 class SignInViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
     private val verifyCodeUseCase: VerifyCodeUseCase,
-    private val resendCodeUseCase: ResendCodeUseCase
+    private val resendCodeUseCase: ResendCodeUseCase,
+    private val googleSignInUseCase: GoogleSignInUseCase,
+    private val googleAuthManager: GoogleAuthManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(value = SignInUiState())
@@ -46,6 +51,39 @@ class SignInViewModel @Inject constructor(
                 passwordError = null
             )
         }
+    }
+
+    fun onRoleSelected(role: UserRole) {
+        val idToken = _uiState.value.pendingGoogleIdToken ?: return
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, showRoleSelectionDialog = false) }
+            
+            when (val result = googleSignInUseCase(idToken, role)) {
+                is Result.Success -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            pendingGoogleIdToken = null
+                        )
+                    }
+                }
+                is Result.Error -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            loginError = result.message,
+                            pendingGoogleIdToken = null
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun closeRoleSelectionDialog() {
+        _uiState.update { it.copy(showRoleSelectionDialog = false, pendingGoogleIdToken = null) }
     }
 
     fun login() {
@@ -91,6 +129,50 @@ class SignInViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun googleLogin() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, loginError = null) }
+            
+            val idToken = googleAuthManager.getGoogleIdToken()
+            
+            if (idToken != null) {
+                // First attempt without role to see if user exists
+                when (val result = googleSignInUseCase(idToken, null)) {
+                    is Result.Success -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoading = false,
+                                isSuccess = true
+                            )
+                        }
+                    }
+                    is Result.Error -> {
+                        // Check for the specific "user not registered" error message
+                        // Note: We need to make sure the Result object contains the right code
+                        if (result.message.contains("not registered", ignoreCase = true)) {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    showRoleSelectionDialog = true,
+                                    pendingGoogleIdToken = idToken
+                                )
+                            }
+                        } else {
+                            _uiState.update { state ->
+                                state.copy(
+                                    isLoading = false,
+                                    loginError = result.message
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }

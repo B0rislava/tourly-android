@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.theme.TourlyTheme
 import com.tourly.app.login.presentation.ui.components.VerificationCodeDialog
+import com.tourly.app.login.presentation.ui.components.GoogleRoleDialog
 import com.tourly.app.login.presentation.viewmodel.SignInViewModel
 
 
@@ -59,6 +60,13 @@ fun SignInScreen(
         )
     }
 
+    if (uiState.showRoleSelectionDialog) {
+        GoogleRoleDialog(
+            onRoleSelected = viewModel::onRoleSelected,
+            onDismiss = viewModel::closeRoleSelectionDialog
+        )
+    }
+
     SignInContent(
         email = uiState.email,
         onEmailChange = viewModel::onEmailChange,
@@ -70,7 +78,7 @@ fun SignInScreen(
         isLoading = uiState.isLoading,
         onLoginClick = viewModel::login,
         onRegisterClick = onNavigateToSignUp,
-        onGoogleLoginClick = { /* TODO: Implement Google Sign-In */ }
+        onGoogleLoginClick = viewModel::googleLogin
     )
 }
 
