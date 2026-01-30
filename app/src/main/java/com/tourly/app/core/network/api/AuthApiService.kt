@@ -80,10 +80,13 @@ class AuthApiService @Inject constructor(
         }
     }
 
-    suspend fun googleLogin(idToken: String): HttpResponse {
+    suspend fun googleLogin(idToken: String, role: String? = null): HttpResponse {
         return client.post("auth/google") {
             url {
                 parameters.append("idToken", idToken)
+                if (role != null) {
+                    parameters.append("role", role)
+                }
             }
         }
     }

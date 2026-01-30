@@ -26,5 +26,5 @@ interface AuthRepository {
 
     suspend fun resendCode(email: String): Result<Unit>
     
-    suspend fun googleSignIn(idToken: String): Result<LoginResponseDto>
+    suspend fun googleSignIn(idToken: String, role: UserRole? = null): Result<LoginResponseDto>
 }
