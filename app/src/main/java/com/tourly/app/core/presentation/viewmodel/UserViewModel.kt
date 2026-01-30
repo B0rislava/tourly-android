@@ -8,13 +8,12 @@ import com.tourly.app.core.domain.usecase.GetMyBookingsUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
-import com.tourly.app.core.domain.usecase.DeleteAccountUseCase
 import com.tourly.app.create_tour.domain.usecase.GetMyToursUseCase
 import com.tourly.app.create_tour.domain.usecase.DeleteTourUseCase
 import com.tourly.app.core.network.model.UpdateProfileRequestDto
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.network.Result
-import com.tourly.app.core.storage.TokenManager
+import com.tourly.app.core.domain.usecase.ObserveAuthStateUseCase
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,12 +32,11 @@ class UserViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
-    private val tokenManager: TokenManager,
     private val getMyBookingsUseCase: GetMyBookingsUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val getMyToursUseCase: GetMyToursUseCase,
     private val deleteTourUseCase: DeleteTourUseCase,
-    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -60,10 +58,10 @@ class UserViewModel @Inject constructor(
 
     private fun observeToken() {
         viewModelScope.launch {
-            tokenManager.getTokenFlow()
+            observeAuthStateUseCase()
                 .distinctUntilChanged()
-                .collect { token ->
-                    if (token != null) {
+                .collect { isLoggedIn ->
+                    if (isLoggedIn) {
                         val currentState = _uiState.value
                         if (currentState !is UserUiState.Success || currentState.user.email == "") {
                              fetchUserProfile()
@@ -184,21 +182,7 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun deleteAccount(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            _uiState.value = UserUiState.Loading
-            when (val result = deleteAccountUseCase()) {
-                is Result.Success -> {
-                    _events.send("Account deleted successfully")
-                    onSuccess()
-                }
-                is Result.Error -> {
-                    _events.send(result.message)
-                    fetchUserProfile()
-                }
-            }
-        }
-    }
+
 
     fun startEditing() {
         val currentState = _uiState.value
@@ -235,7 +219,11 @@ class UserViewModel @Inject constructor(
     }
 
     fun onPasswordChange(value: String) {
-        updateEditState { it.copy(password = value, passwordError = null) }
+        updateEditState { it.copy(password = value, passwordError = null, confirmPasswordError = null) }
+    }
+
+    fun onConfirmPasswordChange(value: String) {
+        updateEditState { it.copy(confirmPassword = value, confirmPasswordError = null) }
     }
 
     fun onBioChange(value: String) {
@@ -270,12 +258,6 @@ class UserViewModel @Inject constructor(
             _uiState.value = currentState.copy(
                 editState = currentState.editState.copy(isSaving = true, saveError = null)
             )
-
-            val token = tokenManager.getToken()
-            if (token == null) {
-                _uiState.value = UserUiState.Idle
-                return@launch
-            }
 
             // Upload profile picture if changed
             var uploadError: String? = null
@@ -361,6 +343,7 @@ class UserViewModel @Inject constructor(
         var fullNameError: String? = null
         var emailError: String? = null
         var passwordError: String? = null
+        var confirmPasswordError: String? = null
 
         if (state.fullName.isBlank()) {
             fullNameError = "Name cannot be empty"
@@ -378,9 +361,15 @@ class UserViewModel @Inject constructor(
             isValid = false
         }
 
-        if (state.password.isNotEmpty() && state.password.length < 6) {
-            passwordError = "Password must be at least 6 characters"
-            isValid = false
+        if (state.password.isNotEmpty()) {
+            if (state.password.length < 6) {
+                passwordError = "Password must be at least 6 characters"
+                isValid = false
+            }
+            if (state.password != state.confirmPassword) {
+                confirmPasswordError = "Passwords do not match"
+                isValid = false
+            }
         }
 
         if (!isValid) {
@@ -388,7 +377,8 @@ class UserViewModel @Inject constructor(
                 it.copy(
                     fullNameError = fullNameError,
                     emailError = emailError,
-                    passwordError = passwordError
+                    passwordError = passwordError,
+                    confirmPasswordError = confirmPasswordError
                 )
             }
         }

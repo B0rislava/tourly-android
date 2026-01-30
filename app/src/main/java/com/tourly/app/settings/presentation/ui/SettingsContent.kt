@@ -17,14 +17,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Report
-import androidx.compose.material.icons.outlined.SupportAgent
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.filled.Delete
+import com.tourly.app.core.presentation.ui.components.TourlyAlertDialog
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -65,12 +66,12 @@ fun SettingsContent(
     onNavigateProfileDetails: () -> Unit,
     onNavigatePassword: () -> Unit,
     onNavigateNotifications: () -> Unit,
-    onNavigateSupport: () -> Unit,
-    onNavigateReport: () -> Unit,
-    onNavigateAbout: () -> Unit,
-    onNavigateLanguage: () -> Unit
+    onDeleteAccount: () -> Unit
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var currentLanguage by remember { mutableStateOf("English") }
 
     if (showThemeDialog) {
         ThemeSelectionDialog(
@@ -80,6 +81,46 @@ fun SettingsContent(
                 showThemeDialog = false
             },
             onDismissRequest = { showThemeDialog = false }
+        )
+    }
+
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(text = "Choose Language", fontFamily = OutfitFamily) },
+            text = {
+                Column {
+                    listOf("English", "Bulgarian").forEach { language ->
+                        ThemeOption(
+                            text = language,
+                            selected = language == currentLanguage,
+                            onClick = {
+                                currentLanguage = language
+                                showLanguageDialog = false
+                            }
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
+                    Text("Cancel", fontFamily = OutfitFamily)
+                }
+            }
+        )
+    }
+
+    if (showDeleteConfirmation) {
+        TourlyAlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            onConfirm = {
+                onDeleteAccount()
+                showDeleteConfirmation = false
+            },
+            title = stringResource(id = R.string.delete_account),
+            text = stringResource(id = R.string.delete_account_confirmation),
+            confirmButtonText = "Delete",
+            isDestructive = true
         )
     }
 
@@ -126,7 +167,7 @@ fun SettingsContent(
 
             item {
                 Text(
-                    text = "Other Settings",
+                    text = "Profile Settings",
                     style = MaterialTheme.typography.titleMedium,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.SemiBold,
@@ -146,7 +187,20 @@ fun SettingsContent(
                         title = "Password",
                         onClick = onNavigatePassword
                     )
-                    HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
+                }
+            }
+
+            item {
+                Text(
+                    text = "Preferences",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontFamily = OutfitFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                SettingsGroup {
                     SettingsItem(
                         icon = Icons.Outlined.Notifications,
                         title = "Notifications",
@@ -157,7 +211,7 @@ fun SettingsContent(
                         icon = Icons.Outlined.DarkMode,
                         title = "Theme",
                         onClick = { showThemeDialog = true },
-                        showNavigateIcon = true, // It now navigates to a dialog conceptually
+                        showNavigateIcon = true,
                         trailingContent = {
                             Text(
                                 text = when(themeMode) {
@@ -171,33 +225,19 @@ fun SettingsContent(
                             )
                         }
                     )
-                }
-            }
-
-            item {
-                SettingsGroup {
-                    SettingsItem(
-                        icon = Icons.Outlined.SupportAgent,
-                        title = "Support",
-                        onClick = onNavigateSupport
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
-                    SettingsItem(
-                        icon = Icons.Outlined.Report,
-                        title = "Report an Issue",
-                        onClick = onNavigateReport
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
-                    SettingsItem(
-                        icon = Icons.Outlined.Info,
-                        title = "About Tourly",
-                        onClick = onNavigateAbout
-                    )
                     HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
                     SettingsItem(
                         icon = Icons.Outlined.Language,
                         title = "Language",
-                        onClick = onNavigateLanguage
+                        onClick = { showLanguageDialog = true },
+                         trailingContent = {
+                            Text(
+                                text = currentLanguage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontFamily = OutfitFamily
+                            )
+                        }
                     )
                 }
             }
@@ -222,6 +262,32 @@ fun SettingsContent(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Log out",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontFamily = OutfitFamily
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                FilledTonalButton(
+                    onClick = { showDeleteConfirmation = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Delete Account",
                         style = MaterialTheme.typography.bodyLarge,
                         fontFamily = OutfitFamily
                     )

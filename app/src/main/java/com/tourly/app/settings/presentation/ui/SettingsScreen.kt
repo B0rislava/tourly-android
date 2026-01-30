@@ -17,6 +17,8 @@ import com.tourly.app.settings.presentation.viewmodel.SettingsViewModel
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onLogout: () -> Unit,
+    onAccountDeleted: () -> Unit,
+    onNavigatePassword: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -35,12 +37,9 @@ fun SettingsScreen(
         onSetThemeMode = { viewModel.setThemeMode(it) },
         onLogout = { viewModel.logout(onLogout) },
         onNavigateProfileDetails = onNavigateToEditProfile,
-        onNavigatePassword = { },
+        onNavigatePassword = onNavigatePassword,
         onNavigateNotifications = { },
-        onNavigateSupport = { },
-        onNavigateReport = { },
-        onNavigateAbout = { },
-        onNavigateLanguage = { }
+        onDeleteAccount = { viewModel.deleteAccount(onAccountDeleted) }
     )
 }
 
@@ -67,9 +66,6 @@ private fun SettingsScreenPreview() {
         onNavigateProfileDetails = {},
         onNavigatePassword = {},
         onNavigateNotifications = {},
-        onNavigateSupport = {},
-        onNavigateReport = {},
-        onNavigateAbout = {},
-        onNavigateLanguage = {}
+        onDeleteAccount = {}
     )
 }

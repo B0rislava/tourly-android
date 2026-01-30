@@ -113,10 +113,6 @@ fun NavigationRoot(
                                     backStack.add(Route.Welcome)
                                 }
                             },
-                            onAccountDeleted = {
-                                backStack.clear()
-                                backStack.add(Route.Welcome)
-                            },
                             onNavigateToNotifications = {
                                 backStack.add(Route.Notifications)
                             },
@@ -139,10 +135,6 @@ fun NavigationRoot(
                                     backStack.clear()
                                     backStack.add(Route.Welcome)
                                 }
-                            },
-                            onAccountDeleted = {
-                                backStack.clear()
-                                backStack.add(Route.Welcome)
                             },
                             onNavigateToNotifications = {
                                 backStack.add(Route.Notifications)
@@ -170,6 +162,13 @@ fun NavigationRoot(
                                 backStack.clear()
                                 backStack.add(Route.Welcome)
                             },
+                            onAccountDeleted = {
+                                backStack.clear()
+                                backStack.add(Route.Welcome)
+                            },
+                            onNavigatePassword = {
+                                backStack.add(Route.ChangePassword)
+                            },
                             onNavigateToEditProfile = {
                                 backStack.add(Route.EditProfile)
                             }
@@ -179,6 +178,16 @@ fun NavigationRoot(
                 is Route.EditProfile -> {
                     NavEntry(key) {
                         com.tourly.app.settings.presentation.ui.EditProfileScreen(
+                            onNavigateBack = {
+                                backStack.removeLastOrNull()
+                            },
+                            userViewModel = userViewModel
+                        )
+                    }
+                }
+                is Route.ChangePassword -> {
+                    NavEntry(key) {
+                        com.tourly.app.settings.presentation.ui.ChangePasswordScreen(
                             onNavigateBack = {
                                 backStack.removeLastOrNull()
                             },

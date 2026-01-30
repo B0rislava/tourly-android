@@ -96,7 +96,6 @@ fun EditProfileScreen(
                         onEmailChange = userViewModel::onEmailChange,
                         onBioChange = userViewModel::onBioChange,
                         onCertificationsChange = userViewModel::onCertificationsChange,
-                        onPasswordChange = userViewModel::onPasswordChange,
                         onProfilePictureSelected = userViewModel::onProfilePictureSelected,
                         onSaveClick = {
                             userViewModel.saveProfile()
