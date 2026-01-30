@@ -1,10 +1,9 @@
 package com.tourly.app.create_tour.presentation.viewmodel
 
-import android.content.Context
-import android.location.Geocoder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.model.LocationPrediction
+import com.tourly.app.core.domain.usecase.GetAddressFromCoordinatesUseCase
 import com.tourly.app.core.domain.usecase.GetPlaceDetailsUseCase
 import com.tourly.app.core.domain.usecase.SearchLocationsUseCase
 import com.tourly.app.core.network.Result
@@ -15,7 +14,6 @@ import com.tourly.app.create_tour.presentation.util.CreateTourEvent
 import com.tourly.app.create_tour.presentation.util.InputFormatter
 import com.tourly.app.home.domain.usecase.GetAllTagsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +23,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,10 +32,8 @@ class CreateTourViewModel @Inject constructor(
     private val inputFormatter: InputFormatter,
     private val searchLocationsUseCase: SearchLocationsUseCase,
     private val getPlaceDetailsUseCase: GetPlaceDetailsUseCase,
-    @param:ApplicationContext private val context: Context
+    private val getAddressFromCoordinatesUseCase: GetAddressFromCoordinatesUseCase
 ) : ViewModel() {
-
-    private val geocoder = Geocoder(context, Locale.getDefault())
 
     init {
         loadTags()
@@ -120,7 +115,7 @@ class CreateTourViewModel @Inject constructor(
         viewModelScope.launch {
             val state = _uiState.value
             val result = searchLocationsUseCase(query, state.latitude, state.longitude)
-            
+
             when (result) {
                 is Result.Success -> {
                     _addressPredictions.value = result.data
@@ -139,35 +134,18 @@ class CreateTourViewModel @Inject constructor(
     }
 
     private fun reverseGeocode(latitude: Double, longitude: Double) {
-        if (android.os.Build.VERSION.SDK_INT >= 33) {
-            geocoder.getFromLocation(latitude, longitude, 1) { addresses ->
-                val address = addresses.firstOrNull()
-                if (address != null) {
-                    val fullAddress = address.getAddressLine(0) ?: ""
-                    val city = address.locality ?: ""
-                    val country = address.countryName ?: ""
-                    val generalLocation = if (city.isNotEmpty() && country.isNotEmpty()) "$city, $country" else city.ifEmpty { country }
-                    
+        viewModelScope.launch {
+            when (val result = getAddressFromCoordinatesUseCase(latitude, longitude)) {
+                is Result.Success -> {
+                    val addressContent = result.data
                     _uiState.update { it.copy(
-                        meetingPointAddress = fullAddress,
-                        location = generalLocation.ifEmpty { it.location }
+                        meetingPointAddress = addressContent.fullAddress,
+                        location = addressContent.displayLocation.ifEmpty { it.location }
                     ) }
                 }
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-            val address = addresses?.firstOrNull()
-            if (address != null) {
-                val fullAddress = address.getAddressLine(0) ?: ""
-                val city = address.locality ?: ""
-                val country = address.countryName ?: ""
-                val generalLocation = if (city.isNotEmpty() && country.isNotEmpty()) "$city, $country" else city.ifEmpty { country }
-
-                _uiState.update { it.copy(
-                    meetingPointAddress = fullAddress,
-                    location = generalLocation.ifEmpty { it.location }
-                ) }
+                is Result.Error -> {
+                    // TODO: Handle error
+                }
             }
         }
     }

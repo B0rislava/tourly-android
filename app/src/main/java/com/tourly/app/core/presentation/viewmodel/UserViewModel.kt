@@ -1,6 +1,5 @@
 package com.tourly.app.core.presentation.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.usecase.CancelBookingUseCase
@@ -10,14 +9,13 @@ import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
 import com.tourly.app.create_tour.domain.usecase.GetMyToursUseCase
 import com.tourly.app.create_tour.domain.usecase.DeleteTourUseCase
-import com.tourly.app.core.network.model.UpdateProfileRequestDto
+import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.domain.usecase.ObserveAuthStateUseCase
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,8 +34,7 @@ class UserViewModel @Inject constructor(
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val getMyToursUseCase: GetMyToursUseCase,
     private val deleteTourUseCase: DeleteTourUseCase,
-    private val observeAuthStateUseCase: ObserveAuthStateUseCase,
-    @param:ApplicationContext private val context: Context
+    private val observeAuthStateUseCase: ObserveAuthStateUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UserUiState>(UserUiState.Idle)
@@ -262,20 +259,9 @@ class UserViewModel @Inject constructor(
             // Upload profile picture if changed
             var uploadError: String? = null
             if (currentState.editState.profilePictureUri != null) {
-                try {
-                    val inputStream = context.contentResolver.openInputStream(currentState.editState.profilePictureUri)
-                    val bytes = inputStream?.use { it.readBytes() }
-                    
-                    if (bytes != null) {
-                        val result = updateProfilePictureUseCase(bytes)
-                        if (result is Result.Error) {
-                            uploadError = "Failed to upload image: ${result.message}"
-                        }
-                    } else {
-                        uploadError = "Failed to read image file"
-                    }
-                } catch (e: Exception) {
-                    uploadError = "Error processing image: ${e.message}"
+                val result = updateProfilePictureUseCase(currentState.editState.profilePictureUri.toString())
+                if (result is Result.Error) {
+                    uploadError = "Failed to upload image: ${result.message}"
                 }
             }
 
