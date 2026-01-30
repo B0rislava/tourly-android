@@ -29,11 +29,9 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
 fun SettingsProfileCard(
-    user: User,
-    onClick: () -> Unit
+    user: User
 ) {
     Card(
-        onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
@@ -68,11 +66,6 @@ fun SettingsProfileCard(
                     fontFamily = OutfitFamily
                 )
             }
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }

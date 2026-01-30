@@ -120,10 +120,7 @@ fun SettingsContent(
         ) {
             item {
                 user?.let {
-                    SettingsProfileCard(
-                        user = it,
-                        onClick = onNavigateProfileDetails
-                    )
+                    SettingsProfileCard(user = it)
                 }
             }
 
