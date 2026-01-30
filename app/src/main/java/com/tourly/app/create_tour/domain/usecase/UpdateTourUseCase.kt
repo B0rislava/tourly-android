@@ -2,6 +2,7 @@ package com.tourly.app.create_tour.domain.usecase
 
 import android.content.Context
 import com.tourly.app.core.network.Result
+import com.tourly.app.create_tour.domain.exception.CreateTourException
 import com.tourly.app.create_tour.domain.mapper.CreateTourMapper
 import com.tourly.app.create_tour.domain.model.CreateTourParams
 import com.tourly.app.create_tour.domain.repository.TourRepository
@@ -22,8 +23,9 @@ class UpdateTourUseCase @Inject constructor(
             repository.updateTour(context, id, mapper.toDto(params), params.imageUri)
         } else {
             val exception = validationResult.exceptionOrNull()
+            val code = (exception as? CreateTourException)?.code ?: "VALIDATION_ERROR"
             Result.Error(
-                code = "VALIDATION_ERROR",
+                code = code,
                 message = exception?.message ?: "Validation failed"
             )
         }

@@ -309,20 +309,20 @@ class EditTourViewModel @Inject constructor(
     private fun handleError(error: Result.Error) {
         _uiState.update { state ->
             val message = error.message
-            when {
-                message.contains("Title") ->
+            when (error.code) {
+                "INVALID_TITLE" ->
                     state.copy(isLoading = false, titleError = message)
-                message.contains("Description") ->
+                "INVALID_DESCRIPTION" ->
                     state.copy(isLoading = false, descriptionError = message)
-                message.contains("Location") ->
+                "INVALID_LOCATION" ->
                     state.copy(isLoading = false, locationError = message)
-                message.contains("Duration") ->
+                "INVALID_DURATION", "INVALID_DURATION_RANGE" ->
                     state.copy(isLoading = false, durationError = message)
-                message.contains("group size") ->
+                "INVALID_GROUP_SIZE" ->
                     state.copy(isLoading = false, maxGroupSizeError = message)
-                message.contains("Price") ->
+                "INVALID_PRICE" ->
                     state.copy(isLoading = false, priceError = message)
-                message.contains("Date") ->
+                "DATE_REQUIRED", "DATE_IN_PAST" ->
                     state.copy(isLoading = false, dateError = message)
                 else ->
                     state.copy(isLoading = false, createTourError = message)

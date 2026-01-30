@@ -110,7 +110,7 @@ class SignInViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     // Check if error is due to unverified email
-                    if (result.message.contains("verify your email", ignoreCase = true)) {
+                    if (result.code == "TY-8") {
                         _uiState.update { state ->
                             state.copy(
                                 isLoading = false,
@@ -153,7 +153,7 @@ class SignInViewModel @Inject constructor(
                     is Result.Error -> {
                         // Check for the specific "user not registered" error message
                         // Note: We need to make sure the Result object contains the right code
-                        if (result.message.contains("not registered", ignoreCase = true)) {
+                        if (result.code == "TY-7") {
                             _uiState.update { state ->
                                 state.copy(
                                     isLoading = false,
