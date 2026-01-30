@@ -3,7 +3,6 @@ package com.tourly.app.home.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.repository.UserRepository
-import com.tourly.app.core.domain.repository.ThemeRepository
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.network.Result
 import com.google.android.libraries.places.api.model.AutocompletePrediction
@@ -44,7 +43,6 @@ class HomeViewModel @Inject constructor(
     private val getAllTagsUseCase: GetAllTagsUseCase,
     private val userRepository: UserRepository,
     private val clock: Clock,
-    private val themeRepository: ThemeRepository,
     private val getUnreadNotificationsCountUseCase: GetUnreadNotificationsCountUseCase,
     private val placesClient: PlacesClient
 ) : ViewModel() {
@@ -79,7 +77,7 @@ class HomeViewModel @Inject constructor(
     private val _addressPredictions = MutableStateFlow<List<AutocompletePrediction>>(emptyList())
     val addressPredictions = _addressPredictions.asStateFlow()
 
-    val isDarkTheme = themeRepository.isDarkTheme
+
 
     val uiState: StateFlow<HomeUiState> = combine(
         _isLoading,
@@ -216,12 +214,6 @@ class HomeViewModel @Inject constructor(
         loadUserProfile()
         updateGreeting()
         fetchUnreadCount()
-    }
-
-    fun toggleTheme() {
-        viewModelScope.launch {
-            themeRepository.toggleTheme()
-        }
     }
 
     private fun updateGreeting() {

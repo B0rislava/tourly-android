@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.rounded.WavingHand
 import androidx.compose.foundation.layout.offset
@@ -32,8 +30,6 @@ import androidx.compose.ui.unit.dp
 fun HomeHeaderSection(
     greeting: String,
     userName: String,
-    isDarkTheme: Boolean,
-    onThemeToggle: () -> Unit,
     onNotifyClick: () -> Unit,
     unreadCount: Int,
     modifier: Modifier = Modifier
@@ -72,22 +68,7 @@ fun HomeHeaderSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Theme Toggle
-            IconButton(
-                onClick = onThemeToggle,
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    //TODO: Extract to strings
-                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                    contentDescription = "Toggle Theme",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+
 
             // Notification Button
             IconButton(
@@ -126,8 +107,6 @@ fun HomeHeaderPreview() {
         HomeHeaderSection(
             greeting = "Good morning",
             userName = "John",
-            isDarkTheme = false,
-            onThemeToggle = {},
             onNotifyClick = {},
             unreadCount = 2,
             modifier = Modifier.padding(16.dp)
