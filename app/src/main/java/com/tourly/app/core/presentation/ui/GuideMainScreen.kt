@@ -18,7 +18,6 @@ import com.tourly.app.core.presentation.viewmodel.UserViewModel
 fun GuideMainScreen(
     windowSizeState: WindowSizeState,
     onLogout: () -> Unit,
-    onAccountDeleted: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onTourClick: (Long) -> Unit,
@@ -29,9 +28,6 @@ fun GuideMainScreen(
     var selectedDestination by rememberSaveable {
         mutableStateOf(BottomNavDestination.GUIDE_HOME)
     }
-
-    var isEditingProfile by rememberSaveable { mutableStateOf(false) }
-    var onCancelEdit: (() -> Unit)? by remember { mutableStateOf(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -44,22 +40,15 @@ fun GuideMainScreen(
     GuideMainContent(
         modifier = modifier,
         selectedDestination = selectedDestination,
-        isEditingProfile = isEditingProfile,
-        onCancelEdit = { onCancelEdit?.invoke() },
         snackbarHostState = snackbarHostState,
         onDestinationSelected = { destination ->
             selectedDestination = destination
         },
         onNavigateToSettings = onNavigateToSettings,
         onLogout = onLogout,
-        onAccountDeleted = onAccountDeleted,
         onTourClick = onTourClick,
         onEditTour = onEditTour,
         onNavigateToNotifications = onNavigateToNotifications,
-        onEditingStateChange = { isEditing, cancelCallback ->
-            isEditingProfile = isEditing
-            onCancelEdit = cancelCallback
-        },
         userViewModel = userViewModel
     )
 }

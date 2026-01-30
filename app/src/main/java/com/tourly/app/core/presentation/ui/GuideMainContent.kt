@@ -29,17 +29,13 @@ import com.tourly.app.create_tour.presentation.ui.CreateTourScreen
 fun GuideMainContent(
     modifier: Modifier = Modifier,
     selectedDestination: BottomNavDestination,
-    isEditingProfile: Boolean,
-    onCancelEdit: () -> Unit,
     snackbarHostState: SnackbarHostState,
     onDestinationSelected: (BottomNavDestination) -> Unit,
     onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
-    onAccountDeleted: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
     onNavigateToNotifications: () -> Unit,
-    onEditingStateChange: (Boolean, (() -> Unit)?) -> Unit,
     userViewModel: UserViewModel
 ) {
     Scaffold(
@@ -48,14 +44,9 @@ fun GuideMainContent(
 
             if (selectedDestination != BottomNavDestination.GUIDE_HOME) {
                 SimpleTopBar(
-                    title = if (isEditingProfile) {
-                        stringResource(id = R.string.edit_profile)
-                    } else {
-                        selectedDestination.label
-                    },
+                    title = selectedDestination.label,
                     navigationIcon = {
                         val onBack: (() -> Unit)? = when {
-                            isEditingProfile -> onCancelEdit
                             selectedDestination == BottomNavDestination.CREATE_TOUR -> {
                                 { onDestinationSelected(BottomNavDestination.GUIDE_HOME) }
                             }
@@ -72,7 +63,7 @@ fun GuideMainContent(
                         }
                     },
                     actions = {
-                        if (selectedDestination == BottomNavDestination.PROFILE && !isEditingProfile) {
+                        if (selectedDestination == BottomNavDestination.PROFILE) {
                             IconButton(onClick = onNavigateToSettings) {
                                 Icon(
                                     imageVector = Icons.Filled.Settings,
@@ -85,13 +76,11 @@ fun GuideMainContent(
             }
         },
         bottomBar = {
-            if (!isEditingProfile) {
-                BottomNavigationBar(
-                    selectedDestination = selectedDestination,
-                    destinations = guideDestinations,
-                    onDestinationSelected = onDestinationSelected,
-                )
-            }
+            BottomNavigationBar(
+                selectedDestination = selectedDestination,
+                destinations = guideDestinations,
+                onDestinationSelected = onDestinationSelected,
+            )
         },
         modifier = modifier
     ) { paddingValues ->
@@ -129,9 +118,6 @@ fun GuideMainContent(
             }
             BottomNavDestination.PROFILE -> {
                 ProfileScreen(
-                    onLogout = onLogout,
-                    onAccountDeleted = onAccountDeleted,
-                    onEditingStateChange = onEditingStateChange,
                     onSeeMore = { onDestinationSelected(BottomNavDestination.GUIDE_DASHBOARD) },
                     userViewModel = userViewModel,
                     modifier = Modifier.padding(paddingValues)

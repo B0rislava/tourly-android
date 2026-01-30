@@ -23,7 +23,6 @@ import com.tourly.app.login.domain.UserRole
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel(),
-    onAccountDeleted: () -> Unit,
     onSeeMore: () -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
@@ -51,11 +50,6 @@ fun ProfileScreen(
                 ProfileContent(
                     user = state.user,
                     onSeeMore = onSeeMore,
-                    onDeleteAccount = {
-                        userViewModel.deleteAccount {
-                            onAccountDeleted()
-                        }
-                    },
                     tours = state.tours
                 )
             }

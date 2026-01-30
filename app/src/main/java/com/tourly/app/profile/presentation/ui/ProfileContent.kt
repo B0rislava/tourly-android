@@ -11,7 +11,6 @@ fun ProfileContent(
     modifier: Modifier = Modifier,
     user: User,
     onSeeMore: () -> Unit = {},
-    onDeleteAccount: () -> Unit = {},
     tours: List<Tour> = emptyList()
 ) {
     if (user.role == UserRole.GUIDE) {
@@ -19,13 +18,11 @@ fun ProfileContent(
             user = user,
             tours = tours,
             onSeeMore = onSeeMore,
-            onDeleteAccount = onDeleteAccount,
             modifier = modifier
         )
     } else {
         TravelerProfileContent(
             user = user,
-            onDeleteAccount = onDeleteAccount,
             modifier = modifier
         )
     }
