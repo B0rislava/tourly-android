@@ -27,7 +27,7 @@ class UserRepositoryImpl @Inject constructor(
     private val authApiService: AuthApiService,
     private val tokenManager: TokenManager,
     private val client: HttpClient,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : UserRepository {
 
     override suspend fun getUserProfile(): Result<User> {
@@ -47,7 +47,7 @@ class UserRepositoryImpl @Inject constructor(
             val response = authApiService.updateProfile(request)
             when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
                 is Result.Success -> {
-                    tokenManager.saveToken(result.data.token)
+                    tokenManager.saveToken(result.data.accessToken)
                     Result.Success(UserMapper.mapToDomain(result.data.user))
                 }
                 is Result.Error -> result
