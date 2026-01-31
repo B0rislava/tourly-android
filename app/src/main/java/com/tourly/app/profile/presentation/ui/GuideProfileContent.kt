@@ -308,7 +308,6 @@ private fun GuideProfileContentPreview() {
                 reviewsCount = 45,
                 meetingPoint = "Serdika Metro Station",
                 imageUrl = null,
-                cancellationPolicy = "Free cancellation up to 24 hours before.",
                 whatsIncluded = "Water, Snacks",
                 guideBio = null,
                 guideRating = 4.9,

@@ -55,7 +55,6 @@ fun GuideCard(tour: Tour) {
                         Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFF9800), modifier = Modifier.size(14.dp))
                         Text(text = " ${tour.guideRating}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                     }
-                    Text(text = "${tour.guideToursCompleted} tours completed", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 }
                 Button(
                     onClick = { /* Message */ },
