@@ -168,6 +168,10 @@ class CreateTourViewModel @Inject constructor(
         _uiState.update { it.copy(scheduledDate = date, dateError = null) }
     }
 
+    fun onStartTimeChanged(time: java.time.LocalTime?) {
+        _uiState.update { it.copy(startTime = time, timeError = null) }
+    }
+
     fun onImageSelected(uri: android.net.Uri?) {
         _uiState.update { it.copy(imageUri = uri) }
     }
@@ -230,6 +234,7 @@ class CreateTourViewModel @Inject constructor(
             scheduledDate = state.scheduledDate?.let {
                 Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
             },
+            startTime = state.startTime,
             latitude = state.latitude,
             longitude = state.longitude,
             meetingPoint = state.meetingPointAddress.ifBlank { null },

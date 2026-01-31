@@ -15,6 +15,7 @@ data class CreateTourResponseDto(
     val availableSpots: Int = maxGroupSize,
     val pricePerPerson: Double,
     val scheduledDate: String,
+    val startTime: String? = null,
     val createdAt: String,
     val status: String,
     val rating: Double = 0.0,

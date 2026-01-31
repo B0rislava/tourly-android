@@ -1,6 +1,8 @@
 package com.tourly.app.create_tour.presentation.state
 
+import android.net.Uri
 import com.tourly.app.core.domain.model.Tag
+import java.time.LocalTime
 
 data class CreateTourUiState(
     val title: String = "",
@@ -11,10 +13,11 @@ data class CreateTourUiState(
     val pricePerPerson: String = "",
     val whatsIncluded: String = "",
     val scheduledDate: Long? = null,
+    val startTime: LocalTime? = null,
     val latitude: Double? = null,
     val longitude: Double? = null,
     val meetingPointAddress: String = "",
-    val imageUri: android.net.Uri? = null,
+    val imageUri: Uri? = null,
 
     val availableTags: List<Tag> = emptyList(),
     val selectedTagIds: Set<Long> = emptySet(),
@@ -26,6 +29,7 @@ data class CreateTourUiState(
     val maxGroupSizeError: String? = null,
     val priceError: String? = null,
     val dateError: String? = null,
+    val timeError: String? = null,
     val meetingPointAddressError: String? = null,
 
     val isLoading: Boolean = false,

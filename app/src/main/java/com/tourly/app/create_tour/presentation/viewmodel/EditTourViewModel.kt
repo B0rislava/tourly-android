@@ -79,6 +79,7 @@ class EditTourViewModel @Inject constructor(
                             scheduledDate = tour.scheduledDate.let {
                                 LocalDate.parse(it).atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
                             },
+                            startTime = tour.startTime?.let { java.time.LocalTime.parse(it) },
                             latitude = tour.latitude,
                             longitude = tour.longitude,
                             meetingPointAddress = tour.meetingPoint ?: "",
@@ -138,6 +139,10 @@ class EditTourViewModel @Inject constructor(
 
     fun onScheduledDateChanged(date: Long?) {
         _uiState.update { it.copy(scheduledDate = date, dateError = null) }
+    }
+
+    fun onStartTimeChanged(time: java.time.LocalTime?) {
+        _uiState.update { it.copy(startTime = time, timeError = null) }
     }
 
     fun onImageSelected(uri: Uri?) {
@@ -272,6 +277,7 @@ class EditTourViewModel @Inject constructor(
             scheduledDate = state.scheduledDate?.let {
                 Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
             },
+            startTime = state.startTime,
             latitude = state.latitude,
             longitude = state.longitude,
             meetingPoint = state.meetingPointAddress.ifBlank { null },

@@ -2,6 +2,7 @@ package com.tourly.app.create_tour.domain.model
 
 import android.net.Uri
 import java.time.LocalDate
+import java.time.LocalTime
 
 data class CreateTourParams(
     val title: String,
@@ -12,6 +13,7 @@ data class CreateTourParams(
     val pricePerPerson: Double,
     val whatsIncluded: String?,
     val scheduledDate: LocalDate?,
+    val startTime: LocalTime?,
     val latitude: Double? = null,
     val longitude: Double? = null,
     val meetingPoint: String? = null,

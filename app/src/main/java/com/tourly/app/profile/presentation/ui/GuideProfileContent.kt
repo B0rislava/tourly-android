@@ -311,8 +311,8 @@ private fun GuideProfileContentPreview() {
                 whatsIncluded = "Water, Snacks",
                 guideBio = null,
                 guideRating = 4.9,
-                guideToursCompleted = 245,
-                guideImageUrl = null
+                guideImageUrl = null,
+                startTime = "10:00"
             )
         ),
         onSeeMore = {}
