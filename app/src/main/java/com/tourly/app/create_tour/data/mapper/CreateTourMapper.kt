@@ -1,4 +1,4 @@
-package com.tourly.app.create_tour.domain.mapper
+package com.tourly.app.create_tour.data.mapper
 
 import com.tourly.app.create_tour.data.dto.CreateTourRequestDto
 import com.tourly.app.create_tour.domain.model.CreateTourParams
@@ -15,6 +15,7 @@ class CreateTourMapper @Inject constructor() {
             pricePerPerson = params.pricePerPerson,
             whatsIncluded = params.whatsIncluded,
             scheduledDate = params.scheduledDate?.toString(),
+            startTime = params.startTime?.toString(),
             latitude = params.latitude,
             longitude = params.longitude,
             meetingPoint = params.meetingPoint,
