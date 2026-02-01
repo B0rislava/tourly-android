@@ -6,7 +6,6 @@ data class Message(
     val id: String,
     val senderId: Long,
     val senderName: String,
-    val senderImageUrl: String?,
     val content: String,
     val timestamp: LocalDateTime,
     val isFromMe: Boolean
