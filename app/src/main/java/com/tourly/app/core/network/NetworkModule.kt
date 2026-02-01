@@ -24,8 +24,8 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.isSuccess
-import com.tourly.app.core.network.model.RefreshTokenRequestDto
-import com.tourly.app.core.network.model.RefreshTokenResponseDto
+import com.tourly.app.login.data.dto.RefreshTokenRequestDto
+import com.tourly.app.login.data.dto.RefreshTokenResponseDto
 import io.ktor.http.contentType
 import io.ktor.http.encodedPath
 import com.tourly.app.BuildConfig

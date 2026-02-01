@@ -1,16 +1,11 @@
 package com.tourly.app.create_tour.presentation.viewmodel
 
-import android.content.Context
-import android.location.Geocoder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.libraries.places.api.model.AutocompletePrediction
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.model.RectangularBounds
+import com.tourly.app.core.domain.model.LocationPrediction
+import com.tourly.app.core.domain.usecase.GetAddressFromCoordinatesUseCase
+import com.tourly.app.core.domain.usecase.GetPlaceDetailsUseCase
+import com.tourly.app.core.domain.usecase.SearchLocationsUseCase
 import com.tourly.app.core.network.Result
 import com.tourly.app.create_tour.domain.model.CreateTourParams
 import com.tourly.app.create_tour.domain.usecase.CreateTourUseCase
@@ -19,7 +14,6 @@ import com.tourly.app.create_tour.presentation.util.CreateTourEvent
 import com.tourly.app.create_tour.presentation.util.InputFormatter
 import com.tourly.app.home.domain.usecase.GetAllTagsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +23,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,11 +30,10 @@ class CreateTourViewModel @Inject constructor(
     private val createTourUseCase: CreateTourUseCase,
     private val getAllTagsUseCase: GetAllTagsUseCase,
     private val inputFormatter: InputFormatter,
-    private val placesClient: PlacesClient,
-    @param:ApplicationContext private val context: Context
+    private val searchLocationsUseCase: SearchLocationsUseCase,
+    private val getPlaceDetailsUseCase: GetPlaceDetailsUseCase,
+    private val getAddressFromCoordinatesUseCase: GetAddressFromCoordinatesUseCase
 ) : ViewModel() {
-
-    private val geocoder = Geocoder(context, Locale.getDefault())
 
     init {
         loadTags()
@@ -50,8 +42,8 @@ class CreateTourViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CreateTourUiState())
     val uiState: StateFlow<CreateTourUiState> = _uiState.asStateFlow()
 
-    private val _addressPredictions = MutableStateFlow<List<AutocompletePrediction>>(emptyList())
-    val addressPredictions: StateFlow<List<AutocompletePrediction>> = _addressPredictions.asStateFlow()
+    private val _addressPredictions = MutableStateFlow<List<LocationPrediction>>(emptyList())
+    val addressPredictions: StateFlow<List<LocationPrediction>> = _addressPredictions.asStateFlow()
 
     private val _events = Channel<CreateTourEvent>()
     val events = _events.receiveAsFlow()
@@ -70,55 +62,43 @@ class CreateTourViewModel @Inject constructor(
     }
 
 
-    fun onLocationSelected(prediction: AutocompletePrediction) {
+    fun onLocationSelected(prediction: LocationPrediction) {
         // Immediate update with prediction text
         _uiState.update { 
             it.copy(
-                meetingPointAddress = prediction.getFullText(null).toString(),
+                meetingPointAddress = prediction.description,
                 locationError = null
             )
         }
         
-        val placeFields = listOf(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION, Place.Field.FORMATTED_ADDRESS, Place.Field.ADDRESS_COMPONENTS)
-        val request = FetchPlaceRequest.newInstance(prediction.placeId, placeFields)
-
-        placesClient.fetchPlace(request)
-            .addOnSuccessListener { response ->
-                val place = response.place
-                val location = place.location
-                
-                // Extract City and Country
-                var city = ""
-                var country = ""
-                place.addressComponents?.asList()?.forEach { component ->
-                    if (component.types.contains("locality")) {
-                        city = component.name
+        viewModelScope.launch {
+            when (val result = getPlaceDetailsUseCase(prediction.id)) {
+                is Result.Success -> {
+                    val place = result.data
+                    
+                    // Fallback for Title/Location display: City, Country
+                    val generalLocation = if (place.city.isNotEmpty() && place.country.isNotEmpty()) {
+                        "${place.city}, ${place.country}"
+                    } else {
+                        place.city.ifEmpty { place.name }
                     }
-                    if (component.types.contains("country")) {
-                        country = component.name
-                    }
-                }
-                
-                // Fallback for Title/Location display: City, Country
-                val generalLocation = if (city.isNotEmpty() && country.isNotEmpty()) {
-                    "$city, $country"
-                } else {
-                    place.addressComponents?.asList()?.find { it.types.contains("administrative_area_level_1") }?.name
-                        ?: place.displayName
-                        ?: ""
-                }
 
-                _uiState.update { 
-                    it.copy(
-                        meetingPointAddress = place.formattedAddress ?: prediction.getFullText(null).toString(),
-                        location = generalLocation,
-                        latitude = location?.latitude,
-                        longitude = location?.longitude,
-                        locationError = null
-                    )
+                    _uiState.update { 
+                        it.copy(
+                            meetingPointAddress = place.address.ifEmpty { prediction.description },
+                            location = generalLocation,
+                            latitude = place.latitude,
+                            longitude = place.longitude,
+                            locationError = null
+                        )
+                    }
+                    _addressPredictions.value = emptyList()
                 }
-                _addressPredictions.value = emptyList()
+                is Result.Error -> {
+                    // TODO: Handle error
+                }
             }
+        }
     }
 
     fun onMeetingPointAddressChanged(address: String) {
@@ -132,33 +112,19 @@ class CreateTourViewModel @Inject constructor(
             return
         }
 
-        val locationBias = _uiState.value.let { state ->
-            if (state.latitude != null && state.longitude != null) {
-                val lat = state.latitude
-                val lng = state.longitude
-                RectangularBounds.newInstance(
-                    LatLng(lat - 0.1, lng - 0.1),
-                    LatLng(lat + 0.1, lng + 0.1)
-                )
-            } else {
-                null
+        viewModelScope.launch {
+            val state = _uiState.value
+            val result = searchLocationsUseCase(query, state.latitude, state.longitude)
+
+            when (result) {
+                is Result.Success -> {
+                    _addressPredictions.value = result.data
+                }
+                is Result.Error -> {
+                    _addressPredictions.value = emptyList()
+                }
             }
         }
-
-        val requestBuilder = FindAutocompletePredictionsRequest.builder()
-            .setQuery(query)
-        
-        if (locationBias != null) {
-            requestBuilder.setLocationBias(locationBias)
-        }
-
-        placesClient.findAutocompletePredictions(requestBuilder.build())
-            .addOnSuccessListener { response ->
-                _addressPredictions.value = response.autocompletePredictions
-            }
-            .addOnFailureListener {
-                _addressPredictions.value = emptyList()
-            }
     }
 
 
@@ -168,35 +134,18 @@ class CreateTourViewModel @Inject constructor(
     }
 
     private fun reverseGeocode(latitude: Double, longitude: Double) {
-        if (android.os.Build.VERSION.SDK_INT >= 33) {
-            geocoder.getFromLocation(latitude, longitude, 1) { addresses ->
-                val address = addresses.firstOrNull()
-                if (address != null) {
-                    val fullAddress = address.getAddressLine(0) ?: ""
-                    val city = address.locality ?: ""
-                    val country = address.countryName ?: ""
-                    val generalLocation = if (city.isNotEmpty() && country.isNotEmpty()) "$city, $country" else city.ifEmpty { country }
-                    
+        viewModelScope.launch {
+            when (val result = getAddressFromCoordinatesUseCase(latitude, longitude)) {
+                is Result.Success -> {
+                    val addressContent = result.data
                     _uiState.update { it.copy(
-                        meetingPointAddress = fullAddress,
-                        location = generalLocation.ifEmpty { it.location }
+                        meetingPointAddress = addressContent.fullAddress,
+                        location = addressContent.displayLocation.ifEmpty { it.location }
                     ) }
                 }
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-            val address = addresses?.firstOrNull()
-            if (address != null) {
-                val fullAddress = address.getAddressLine(0) ?: ""
-                val city = address.locality ?: ""
-                val country = address.countryName ?: ""
-                val generalLocation = if (city.isNotEmpty() && country.isNotEmpty()) "$city, $country" else city.ifEmpty { country }
-
-                _uiState.update { it.copy(
-                    meetingPointAddress = fullAddress,
-                    location = generalLocation.ifEmpty { it.location }
-                ) }
+                is Result.Error -> {
+                    // TODO: Handle error
+                }
             }
         }
     }
@@ -217,6 +166,10 @@ class CreateTourViewModel @Inject constructor(
 
     fun onScheduledDateChanged(date: Long?) {
         _uiState.update { it.copy(scheduledDate = date, dateError = null) }
+    }
+
+    fun onStartTimeChanged(time: java.time.LocalTime?) {
+        _uiState.update { it.copy(startTime = time, timeError = null) }
     }
 
     fun onImageSelected(uri: android.net.Uri?) {
@@ -281,6 +234,7 @@ class CreateTourViewModel @Inject constructor(
             scheduledDate = state.scheduledDate?.let {
                 Instant.ofEpochMilli(it).atZone(ZoneId.of("UTC")).toLocalDate()
             },
+            startTime = state.startTime,
             latitude = state.latitude,
             longitude = state.longitude,
             meetingPoint = state.meetingPointAddress.ifBlank { null },
@@ -292,20 +246,20 @@ class CreateTourViewModel @Inject constructor(
     private fun handleError(error: Result.Error) {
         _uiState.update { state ->
             val message = error.message
-            when {
-                message.contains("Title") ->
+            when (error.code) {
+                "INVALID_TITLE" ->
                     state.copy(isLoading = false, titleError = message)
-                message.contains("Description") ->
+                "INVALID_DESCRIPTION" ->
                     state.copy(isLoading = false, descriptionError = message)
-                message.contains("Location") ->
+                "INVALID_LOCATION" ->
                     state.copy(isLoading = false, locationError = message)
-                message.contains("Duration") ->
+                "INVALID_DURATION", "INVALID_DURATION_RANGE" ->
                     state.copy(isLoading = false, durationError = message)
-                message.contains("group size") ->
+                "INVALID_GROUP_SIZE" ->
                     state.copy(isLoading = false, maxGroupSizeError = message)
-                message.contains("Price") ->
+                "INVALID_PRICE" ->
                     state.copy(isLoading = false, priceError = message)
-                message.contains("Date") ->
+                "DATE_REQUIRED", "DATE_IN_PAST" ->
                     state.copy(isLoading = false, dateError = message)
                 else ->
                     state.copy(isLoading = false, createTourError = message)

@@ -3,8 +3,8 @@ package com.tourly.app.core.network.api
 import android.net.Uri
 import android.content.Context
 import android.provider.OpenableColumns.DISPLAY_NAME
-import com.tourly.app.home.domain.model.TourFilters
-import com.tourly.app.core.network.model.CreateTourRequestDto
+import com.tourly.app.create_tour.data.dto.CreateTourRequestDto
+import com.tourly.app.core.domain.model.TourFilters
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData

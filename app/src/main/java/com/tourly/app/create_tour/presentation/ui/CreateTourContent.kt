@@ -22,20 +22,28 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.tourly.app.core.domain.model.LocationPrediction
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
@@ -52,10 +60,12 @@ import com.tourly.app.create_tour.presentation.ui.components.TagSelector
 import com.tourly.app.create_tour.presentation.ui.components.TourDatePickerDialog
 import com.tourly.app.home.presentation.ui.components.SectionTitle
 import java.time.Instant
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTourContent(
     modifier: Modifier = Modifier,
@@ -67,10 +77,11 @@ fun CreateTourContent(
     onPriceChanged: (String) -> Unit,
     onWhatsIncludedChanged: (String) -> Unit,
     onScheduledDateChanged: (Long?) -> Unit,
+    onStartTimeChanged: (LocalTime?) -> Unit,
     onTagToggled: (Long) -> Unit,
     onImageSelected: () -> Unit,
-    onLocationPredictionClick: (AutocompletePrediction) -> Unit,
-    addressPredictions: List<AutocompletePrediction>,
+    onLocationPredictionClick: (LocationPrediction) -> Unit,
+    addressPredictions: List<LocationPrediction>,
     onMeetingPointAddressChanged: (String) -> Unit,
     onMeetingPointSelected: (Double, Double) -> Unit,
     onCreateTour: () -> Unit,
@@ -190,28 +201,98 @@ fun CreateTourContent(
                 showDatePicker = false
             }
         )
+        
+        var showTimePicker by remember { mutableStateOf(false) }
+
+        if (showTimePicker) {
+            val timePickerState = rememberTimePickerState(
+                initialHour = state.startTime?.hour ?: 12,
+                initialMinute = state.startTime?.minute ?: 0,
+                is24Hour = true
+            )
+            
+            var showingPicker by remember { mutableStateOf(true) }
+
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { showTimePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            onStartTimeChanged(LocalTime.of(timePickerState.hour, timePickerState.minute))
+                            showTimePicker = false
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showTimePicker = false }) {
+                        Text("Cancel")
+                    }
+                },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        androidx.compose.material3.IconButton(
+                            onClick = { showingPicker = !showingPicker }
+                        ) {
+                            androidx.compose.material3.Icon(
+                                imageVector = if (showingPicker) Icons.Outlined.Keyboard else Icons.Outlined.AccessTime,
+                                contentDescription = "Toggle input mode"
+                            )
+                        }
+                        if (showingPicker) {
+                            TimePicker(state = timePickerState)
+                        } else {
+                            TimeInput(state = timePickerState)
+                        }
+                    }
+                }
+            )
+        }
 
         SectionTitle(
             title = stringResource(id = R.string.tour_date),
             icon = Icons.Outlined.CalendarToday
         )
-        Box {
-            CustomTextField(
-                value = state.scheduledDate?.let {
-                    Instant.ofEpochMilli(it)
-                        .atZone(ZoneId.of("UTC"))
-                        .toLocalDate()
-                        .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-                } ?: "",
-                onValueChange = {},
-                placeholder = stringResource(id = R.string.tour_date_example),
-                error = state.dateError
-            )
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clickable { showDatePicker = true }
-            )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                CustomTextField(
+                    value = state.scheduledDate?.let {
+                        Instant.ofEpochMilli(it)
+                            .atZone(ZoneId.of("UTC"))
+                            .toLocalDate()
+                            .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+                    } ?: "",
+                    onValueChange = {},
+                    placeholder = stringResource(id = R.string.tour_date_example),
+                    error = state.dateError,
+                )
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { showDatePicker = true }
+                )
+            }
+            
+            Box(modifier = Modifier.weight(1f)) {
+                CustomTextField(
+                    value = state.startTime?.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)) ?: "",
+                    onValueChange = {},
+                    placeholder = "10:00 AM", // TODO: String resource
+                    error = state.timeError,
+                )
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { showTimePicker = true }
+                )
+            }
         }
 
         Row(

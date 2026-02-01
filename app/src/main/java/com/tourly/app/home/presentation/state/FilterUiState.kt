@@ -1,8 +1,8 @@
 package com.tourly.app.home.presentation.state
 
-import com.google.android.libraries.places.api.model.AutocompletePrediction
-import com.tourly.app.home.domain.model.Tag
-import com.tourly.app.home.domain.model.TourFilters
+import com.tourly.app.core.domain.model.LocationPrediction
+import com.tourly.app.core.domain.model.Tag
+import com.tourly.app.core.domain.model.TourFilters
 import java.time.LocalDate
 
 data class FilterUiState(
@@ -14,7 +14,7 @@ data class FilterUiState(
     val maxPrice: Double? = null,
     val selectedDate: LocalDate? = null,
     val selectedLocation: String? = null,
-    val addressPredictions: List<AutocompletePrediction> = emptyList(),
+    val addressPredictions: List<LocationPrediction> = emptyList(),
     val isExpanded: Boolean = false
 ) {
     val hasActiveFilters: Boolean

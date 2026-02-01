@@ -1,8 +1,8 @@
 package com.tourly.app.home.data.mapper
 
 import com.tourly.app.core.network.mapper.TagMapper
-import com.tourly.app.core.network.model.CreateTourResponseDto
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.home.data.dto.CreateTourResponseDto
+import com.tourly.app.core.domain.model.Tour
 
 object TourMapper {
     fun toDomain(dto: CreateTourResponseDto): Tour {
@@ -18,17 +18,16 @@ object TourMapper {
             availableSpots = dto.availableSpots,
             pricePerPerson = dto.pricePerPerson,
             scheduledDate = dto.scheduledDate,
+            startTime = dto.startTime,
             createdAt = dto.createdAt,
             status = dto.status,
             rating = dto.rating,
             reviewsCount = dto.reviewsCount,
             meetingPoint = dto.meetingPoint,
             imageUrl = dto.imageUrl,
-            cancellationPolicy = dto.cancellationPolicy,
             whatsIncluded = dto.whatsIncluded,
             guideBio = dto.guideBio,
             guideRating = dto.guideRating,
-            guideToursCompleted = dto.guideToursCompleted,
             guideImageUrl = dto.guideImageUrl,
             latitude = dto.latitude,
             longitude = dto.longitude,

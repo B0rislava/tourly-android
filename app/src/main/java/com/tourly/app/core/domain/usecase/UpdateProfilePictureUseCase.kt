@@ -8,7 +8,7 @@ import com.tourly.app.core.network.Result
 class UpdateProfilePictureUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
-    suspend operator fun invoke(fileBytes: ByteArray): Result<User> {
-        return repository.uploadProfilePicture(fileBytes)
+    suspend operator fun invoke(uriString: String): Result<User> {
+        return repository.uploadProfilePicture(uriString)
     }
 }

@@ -1,7 +1,7 @@
 package com.tourly.app.home.presentation.ui.components
 
 import com.tourly.app.core.presentation.ui.components.UserAvatar
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,7 +55,6 @@ fun GuideCard(tour: Tour) {
                         Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFF9800), modifier = Modifier.size(14.dp))
                         Text(text = " ${tour.guideRating}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                     }
-                    Text(text = "${tour.guideToursCompleted} tours completed", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 }
                 Button(
                     onClick = { /* Message */ },

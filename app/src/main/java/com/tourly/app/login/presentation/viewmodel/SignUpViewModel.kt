@@ -160,7 +160,7 @@ class SignUpViewModel @Inject constructor(
                     }
                     is Result.Error -> {
                         // If user is not found (meaning new user and no role provided), show dialog
-                        if (result.message.contains("not registered", ignoreCase = true)) {
+                        if (result.code == "TY-7") {
                              _uiState.update { state ->
                                 state.copy(
                                     isLoading = false,

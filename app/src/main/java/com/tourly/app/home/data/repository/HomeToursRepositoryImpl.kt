@@ -3,14 +3,14 @@ package com.tourly.app.home.data.repository
 import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.api.TourApiService
-import com.tourly.app.core.network.model.CreateTourResponseDto
+import com.tourly.app.home.data.dto.CreateTourResponseDto
 import com.tourly.app.home.data.mapper.TourMapper
 import com.tourly.app.home.domain.repository.HomeToursRepository
 import com.tourly.app.core.network.mapper.TagMapper
-import com.tourly.app.core.network.model.TagDto
-import com.tourly.app.home.domain.model.Tag
-import com.tourly.app.home.domain.model.TourFilters
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.home.data.dto.TagDto
+import com.tourly.app.core.domain.model.Tag
+import com.tourly.app.core.domain.model.TourFilters
+import com.tourly.app.core.domain.model.Tour
 import javax.inject.Inject
 
 class HomeToursRepositoryImpl @Inject constructor(

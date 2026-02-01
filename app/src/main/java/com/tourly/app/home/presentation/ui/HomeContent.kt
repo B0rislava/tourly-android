@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
-import com.tourly.app.home.domain.model.TourFilters
+import com.tourly.app.core.domain.model.TourFilters
 import com.tourly.app.home.presentation.state.FilterUiState
 import com.tourly.app.home.presentation.state.HomeUiState
 import com.tourly.app.home.presentation.ui.components.EmptyState

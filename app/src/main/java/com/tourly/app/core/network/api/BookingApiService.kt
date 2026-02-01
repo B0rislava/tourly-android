@@ -1,6 +1,6 @@
 package com.tourly.app.core.network.api
 
-import com.tourly.app.core.network.model.BookTourRequestDto
+import com.tourly.app.home.data.dto.BookTourRequestDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.post

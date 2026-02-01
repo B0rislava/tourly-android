@@ -1,7 +1,7 @@
 package com.tourly.app.core.mapper
 
 import com.tourly.app.core.domain.model.Booking
-import com.tourly.app.core.network.model.BookingResponseDto
+import com.tourly.app.home.data.dto.BookingResponseDto
 import javax.inject.Inject
 
 class BookingMapper @Inject constructor() {

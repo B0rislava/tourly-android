@@ -35,7 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.ui.components.TourlyAlertDialog
 
 @Composable

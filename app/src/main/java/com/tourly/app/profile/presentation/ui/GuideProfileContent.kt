@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
 import androidx.compose.foundation.lazy.LazyRow
@@ -308,12 +308,11 @@ private fun GuideProfileContentPreview() {
                 reviewsCount = 45,
                 meetingPoint = "Serdika Metro Station",
                 imageUrl = null,
-                cancellationPolicy = "Free cancellation up to 24 hours before.",
                 whatsIncluded = "Water, Snacks",
                 guideBio = null,
                 guideRating = 4.9,
-                guideToursCompleted = 245,
-                guideImageUrl = null
+                guideImageUrl = null,
+                startTime = "10:00"
             )
         ),
         onSeeMore = {}

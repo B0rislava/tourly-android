@@ -1,11 +1,13 @@
 package com.tourly.app.core.data.repository
 
+import android.content.Context
+import androidx.core.net.toUri
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.tourly.app.core.network.api.AuthApiService
-import com.tourly.app.core.network.model.UserDto
-import com.tourly.app.core.network.model.LoginResponseDto
-import com.tourly.app.core.network.model.UpdateProfileRequestDto
+import com.tourly.app.profile.data.dto.UserDto
+import com.tourly.app.login.data.dto.LoginResponseDto
+import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.storage.TokenManager
 import io.ktor.client.HttpClient
@@ -14,6 +16,7 @@ import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.NetworkResponseMapper
 import kotlinx.coroutines.flow.map
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.data.mapper.UserMapper
@@ -23,7 +26,8 @@ import kotlinx.coroutines.flow.Flow
 class UserRepositoryImpl @Inject constructor(
     private val authApiService: AuthApiService,
     private val tokenManager: TokenManager,
-    private val client: HttpClient
+    private val client: HttpClient,
+    @param:ApplicationContext private val context: Context
 ) : UserRepository {
 
     override suspend fun getUserProfile(): Result<User> {
@@ -43,7 +47,7 @@ class UserRepositoryImpl @Inject constructor(
             val response = authApiService.updateProfile(request)
             when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
                 is Result.Success -> {
-                    tokenManager.saveToken(result.data.token)
+                    tokenManager.saveToken(result.data.accessToken)
                     Result.Success(UserMapper.mapToDomain(result.data.user))
                 }
                 is Result.Error -> result
@@ -54,7 +58,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<User> {
+    private suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<User> {
         return try {
             val response = authApiService.uploadProfilePicture(fileBytes)
             when (val result = NetworkResponseMapper.map<UserDto>(response)) {
@@ -63,6 +67,21 @@ class UserRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        }
+    }
+
+    override suspend fun uploadProfilePicture(uriString: String): Result<User> {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uriString.toUri())
+            val bytes = inputStream?.use { it.readBytes() }
+            
+            if (bytes != null) {
+                uploadProfilePicture(bytes)
+            } else {
+                Result.Error(code = "FILE_ERROR", message = "Failed to read image file")
+            }
+        } catch (e: Exception) {
+            Result.Error(code = "FILE_ERROR", message = e.message ?: "Error processing image")
         }
     }
 

@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
-import com.tourly.app.home.domain.model.Tour
+import com.tourly.app.core.domain.model.Tour
 
 @Composable
 fun GuideTourCard(

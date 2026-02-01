@@ -104,6 +104,7 @@ fun EditTourScreen(
             onPriceChanged = viewModel::onPriceChanged,
             onWhatsIncludedChanged = viewModel::onWhatsIncludedChanged,
             onScheduledDateChanged = viewModel::onScheduledDateChanged,
+            onStartTimeChanged = viewModel::onStartTimeChanged,
             onTagToggled = viewModel::onTagToggled,
             onImageSelected = {
                 imagePickerLauncher.launch(

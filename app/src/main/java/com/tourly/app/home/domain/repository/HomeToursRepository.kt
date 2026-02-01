@@ -1,9 +1,9 @@
 package com.tourly.app.home.domain.repository
 
 import com.tourly.app.core.network.Result
-import com.tourly.app.home.domain.model.Tag
-import com.tourly.app.home.domain.model.Tour
-import com.tourly.app.home.domain.model.TourFilters
+import com.tourly.app.core.domain.model.Tag
+import com.tourly.app.core.domain.model.Tour
+import com.tourly.app.core.domain.model.TourFilters
 
 interface HomeToursRepository {
     suspend fun getAllTags(): Result<List<Tag>>
