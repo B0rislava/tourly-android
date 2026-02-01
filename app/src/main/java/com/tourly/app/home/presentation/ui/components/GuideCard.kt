@@ -1,5 +1,7 @@
 package com.tourly.app.home.presentation.ui.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.domain.model.Tour
 import androidx.compose.foundation.layout.Column
@@ -28,11 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GuideCard(tour: Tour) {
+fun GuideCard(
+    tour: Tour,
+    onGuideClick: (Long) -> Unit = {}
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onGuideClick(tour.tourGuideId) }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -57,9 +64,9 @@ fun GuideCard(tour: Tour) {
                     }
                 }
                 Button(
-                    onClick = { /* Message */ },
+                    onClick = { /* TODO: Message */ },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onSurface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray)
+                    border = BorderStroke(1.dp, Color.LightGray)
                 ) {
                     Text("Message")
                 }

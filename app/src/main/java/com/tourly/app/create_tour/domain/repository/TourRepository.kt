@@ -9,6 +9,8 @@ interface TourRepository {
     
     suspend fun getMyTours(): Result<List<Tour>>
     
+    suspend fun getToursByGuideId(guideId: Long): Result<List<Tour>>
+    
     suspend fun updateTour(id: Long, params: CreateTourParams): Result<Tour>
     
     suspend fun deleteTour(id: Long): Result<Unit>

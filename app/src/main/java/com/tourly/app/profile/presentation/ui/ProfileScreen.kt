@@ -2,8 +2,10 @@ package com.tourly.app.profile.presentation.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,43 +24,57 @@ import com.tourly.app.login.domain.UserRole
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
+    userId: Long? = null,
     userViewModel: UserViewModel = hiltViewModel(),
-    onSeeMore: () -> Unit = {}
+    onSeeMore: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        userViewModel.refreshBookings()
+    LaunchedEffect(userId) {
+        if (userId != null && userId != -1L) {
+            userViewModel.fetchOtherUserProfile(userId)
+        } else {
+            userViewModel.refreshBookings(forceOwnProfile = true)
+        }
     }
 
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        when (val state = userState) {
-            is UserUiState.Idle -> {
-                Text(
-                    text = "No user data available",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = OutfitFamily
-                )
-            }
-            is UserUiState.Loading -> {
-                CircularProgressIndicator()
-            }
-            is UserUiState.Success -> {
-                ProfileContent(
-                    user = state.user,
-                    onSeeMore = onSeeMore,
-                    tours = state.tours
-                )
-            }
-            is UserUiState.Error -> {
-                Text(
-                    text = "Error: ${state.message}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.error
-                )
+    Scaffold(
+        modifier = modifier.fillMaxSize()
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            when (val state = userState) {
+                is UserUiState.Idle -> {
+                    Text(
+                        text = "No user data available",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontFamily = OutfitFamily
+                    )
+                }
+                is UserUiState.Loading -> {
+                    CircularProgressIndicator()
+                }
+                is UserUiState.Success -> {
+                    ProfileContent(
+                        user = state.user,
+                        isOwnProfile = state.isOwnProfile,
+                        onSeeMore = onSeeMore,
+                        onBackClick = onBackClick,
+                        tours = state.tours
+                    )
+                }
+                is UserUiState.Error -> {
+                    Text(
+                        text = "Error: ${state.message}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

@@ -35,7 +35,7 @@ sealed interface Route: NavKey {
     data class Chat(val userId: String) : Route, NavKey
     
     @Serializable
-    data class Profile(val userId: String) : Route, NavKey
+    data class Profile(val userId: Long) : Route, NavKey
     
     // Other Routes
     @Serializable

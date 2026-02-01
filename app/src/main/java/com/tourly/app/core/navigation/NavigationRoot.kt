@@ -212,6 +212,9 @@ fun NavigationRoot(
                             onEditTour = { tourId ->
                                 backStack.add(Route.EditTour(tourId))
                             },
+                            onGuideClick = { guideId ->
+                                backStack.add(Route.Profile(guideId))
+                            },
                             onBackClick = {
                                 backStack.removeLastOrNull()
                             }
@@ -237,6 +240,15 @@ fun NavigationRoot(
                 is Route.Notifications -> {
                     NavEntry(key) {
                         NotificationScreen(
+                            onBackClick = { backStack.removeLastOrNull() }
+                        )
+                    }
+                }
+                is Route.Profile -> {
+                    NavEntry(key) {
+                        com.tourly.app.profile.presentation.ui.ProfileScreen(
+                            userId = key.userId,
+                            onSeeMore = { /* Handle if needed */ },
                             onBackClick = { backStack.removeLastOrNull() }
                         )
                     }

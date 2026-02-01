@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,8 +27,10 @@ import com.tourly.app.profile.presentation.ui.components.ProfileHeader
 
 @Composable
 fun TravelerProfileContent(
+    modifier: Modifier = Modifier,
     user: User,
-    modifier: Modifier = Modifier
+    isOwnProfile: Boolean = true,
+    onBackClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -35,12 +41,27 @@ fun TravelerProfileContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (!isOwnProfile) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Start
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        }
+
         ProfileHeader(
             firstName = user.firstName,
             lastName = user.lastName,
             email = user.email,
             role = user.role,
-            profilePictureUrl = user.profilePictureUrl
+            profilePictureUrl = user.profilePictureUrl,
+            isOwnProfile = isOwnProfile
         )
 
 

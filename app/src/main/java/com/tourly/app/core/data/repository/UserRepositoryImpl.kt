@@ -42,6 +42,18 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getUserProfile(userId: Long): Result<User> {
+        return try {
+            val response = authApiService.getProfileById(userId)
+            when (val result = NetworkResponseMapper.map<UserDto>(response)) {
+                is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
+                is Result.Error -> result
+            }
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        }
+    }
+
     override suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<User> {
         return try {
             val response = authApiService.updateProfile(request)

@@ -35,6 +35,13 @@ class TourRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getToursByGuideId(guideId: Long): Result<List<Tour>> {
+        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getToursByGuideId(guideId))) {
+            is Result.Success -> Result.Success(TourMapper.toDomainList(result.data))
+            is Result.Error -> result
+        }
+    }
+
     override suspend fun updateTour(id: Long, params: CreateTourParams): Result<Tour> {
         return when (val result = NetworkResponseMapper.map<CreateTourResponseDto>(
             apiService.updateTour(context, id, mapper.toDto(params), params.imageUri)

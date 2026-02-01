@@ -66,6 +66,10 @@ class TourApiService @Inject constructor(
         return client.get("tours/my")
     }
 
+    suspend fun getToursByGuideId(guideId: Long): HttpResponse {
+        return client.get("tours/guide/$guideId")
+    }
+
     suspend fun getAllTags(): HttpResponse {
         return client.get("tags")
     }

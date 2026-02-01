@@ -67,6 +67,7 @@ fun TourDetailsContent(
     tour: Tour,
     userRole: UserRole? = null,
     onBackClick: () -> Unit,
+    onGuideClick: (Long) -> Unit = {},
     onEditTour: (Long) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
@@ -218,7 +219,7 @@ fun TourDetailsContent(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                GuideCard(tour)
+                GuideCard(tour, onGuideClick = onGuideClick)
 
                 Spacer(modifier = Modifier.height(32.dp))
 

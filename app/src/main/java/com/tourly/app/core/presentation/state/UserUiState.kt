@@ -10,6 +10,7 @@ sealed interface UserUiState {
     data object Loading : UserUiState
     data class Success(
         val user: User,
+        val isOwnProfile: Boolean = true,
         val isEditing: Boolean = false,
         val editState: EditProfileUiState = EditProfileUiState(),
         val bookings: List<Booking> = emptyList(),

@@ -39,14 +39,15 @@ import com.tourly.app.login.domain.UserRole
 
 @Composable
 fun ProfileHeader(
+    modifier: Modifier = Modifier,
     firstName: String,
     lastName: String,
     email: String,
     role: UserRole,
     profilePictureUrl: String?,
-    modifier: Modifier = Modifier
+    isOwnProfile: Boolean = true,
 ) {
-    val hasIncompleteName = lastName.isBlank()
+    val hasIncompleteName = isOwnProfile && lastName.isBlank()
     var showTooltip by remember { mutableStateOf(false) }
 
     Column(

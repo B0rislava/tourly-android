@@ -30,6 +30,7 @@ fun TourDetailsScreen(
     viewModel: TourDetailsViewModel,
     userRole: UserRole?,
     onBackClick: () -> Unit,
+    onGuideClick: (Long) -> Unit = {},
     onBookingSuccess: () -> Unit = {},
     onEditTour: (Long) -> Unit = {}
 ) {
@@ -96,7 +97,8 @@ fun TourDetailsScreen(
                         tour = state.tour,
                         userRole = userRole,
                         onEditTour = onEditTour,
-                        onBackClick = onBackClick
+                        onBackClick = onBackClick,
+                        onGuideClick = onGuideClick
                     )
                     
                     if (showBookingDialog) {

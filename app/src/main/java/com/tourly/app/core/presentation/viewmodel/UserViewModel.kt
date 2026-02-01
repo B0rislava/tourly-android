@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.usecase.CancelBookingUseCase
 import com.tourly.app.core.domain.usecase.GetMyBookingsUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
+import com.tourly.app.core.domain.usecase.GetUserProfileByIdUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
 import com.tourly.app.create_tour.domain.usecase.GetMyToursUseCase
+import com.tourly.app.create_tour.domain.usecase.GetUserToursUseCase
 import com.tourly.app.create_tour.domain.usecase.DeleteTourUseCase
 import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import com.tourly.app.core.presentation.state.UserUiState
@@ -24,17 +26,21 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.lifecycle.SavedStateHandle
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
+    private val getUserProfileByIdUseCase: GetUserProfileByIdUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
     private val getMyBookingsUseCase: GetMyBookingsUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
     private val getMyToursUseCase: GetMyToursUseCase,
+    private val getUserToursUseCase: GetUserToursUseCase,
     private val deleteTourUseCase: DeleteTourUseCase,
-    private val observeAuthStateUseCase: ObserveAuthStateUseCase
+    private val observeAuthStateUseCase: ObserveAuthStateUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UserUiState>(UserUiState.Idle)
@@ -50,7 +56,12 @@ class UserViewModel @Inject constructor(
     }
 
     init {
-        observeToken()
+        val userId = savedStateHandle.get<Long>("userId")
+        if (userId != null && userId != -1L) {
+             fetchOtherUserProfile(userId)
+        } else {
+            observeToken()
+        }
     }
 
     private fun observeToken() {
@@ -60,8 +71,10 @@ class UserViewModel @Inject constructor(
                 .collect { isLoggedIn ->
                     if (isLoggedIn) {
                         val currentState = _uiState.value
-                        if (currentState !is UserUiState.Success || currentState.user.email == "") {
-                             fetchUserProfile()
+                        if (currentState !is UserUiState.Success || currentState.isOwnProfile) {
+                             if (currentState !is UserUiState.Success || currentState.user.email == "") {
+                                 fetchUserProfile()
+                             }
                         }
                     } else {
                         _uiState.value = UserUiState.Idle
@@ -70,23 +83,53 @@ class UserViewModel @Inject constructor(
         }
     }
 
+
+    fun refreshBookings(forceOwnProfile: Boolean = false) {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            
+            // If we force own profile or aren't in a success state yet, fetch appropriate profile
+            if (forceOwnProfile || currentState !is UserUiState.Success) {
+                val userId = savedStateHandle.get<Long>("userId")
+                if (userId != null && userId != -1L && !forceOwnProfile) {
+                    fetchOtherUserProfile(userId)
+                } else {
+                    fetchUserProfile()
+                }
+                return@launch
+            }
+
+            if (currentState.isOwnProfile) {
+                if (currentState.user.role == UserRole.TRAVELER) {
+                    fetchBookings()
+                } else {
+                    fetchTours()
+                }
+            } else {
+                // Fetch other user's tours if they are a guide
+                if (currentState.user.role == UserRole.GUIDE) {
+                    fetchOtherUserTours(currentState.user.id)
+                }
+            }
+        }
+    }
+
     private suspend fun fetchUserProfile() {
         val currentState = _uiState.value
-        if (currentState !is UserUiState.Success) {
+        // If we are currently showing someone else's profile, we MUST reload everything
+        if (currentState !is UserUiState.Success || !currentState.isOwnProfile) {
             _uiState.value = UserUiState.Loading
         }
         
         when (val result = getUserProfileUseCase()) {
             is Result.Success -> {
                 val user = result.data
-                _uiState.value = when (val current = _uiState.value) {
-                    is UserUiState.Success -> current.copy(
-                        user = user,
-                        bookings = if (user.role == UserRole.TRAVELER) current.bookings else emptyList(),
-                        tours = if (user.role == UserRole.GUIDE) current.tours else emptyList()
-                    )
-                    else -> UserUiState.Success(user)
-                }
+                _uiState.value = UserUiState.Success(
+                    user = user,
+                    isOwnProfile = true, // Always true for this method
+                    bookings = if (user.role == UserRole.TRAVELER) (currentState as? UserUiState.Success)?.bookings ?: emptyList() else emptyList(),
+                    tours = if (user.role == UserRole.GUIDE) (currentState as? UserUiState.Success)?.tours ?: emptyList() else emptyList()
+                )
                 
                 if (user.role == UserRole.TRAVELER) {
                     fetchBookings()
@@ -100,19 +143,37 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun refreshBookings() {
+    fun fetchOtherUserProfile(userId: Long) {
         viewModelScope.launch {
-            // If we're already success, just fetch
-            val currentState = _uiState.value
-            if (currentState is UserUiState.Success) {
-                if (currentState.user.role == UserRole.TRAVELER) {
-                    fetchBookings()
-                } else {
-                    fetchTours()
+            _uiState.value = UserUiState.Loading
+            when (val result = getUserProfileByIdUseCase(userId)) {
+                is Result.Success -> {
+                    val user = result.data
+                    _uiState.value = UserUiState.Success(
+                        user = user,
+                        isOwnProfile = false
+                    )
+                    if (user.role == UserRole.GUIDE) {
+                        fetchOtherUserTours(userId)
+                    }
                 }
-            } else {
-                // If not success, try full profile fetch which will fetch specific data too
-                fetchUserProfile()
+                is Result.Error -> {
+                    _uiState.value = UserUiState.Error(result.message)
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchOtherUserTours(userId: Long) {
+        when (val result = getUserToursUseCase(userId)) {
+            is Result.Success -> {
+                val current = _uiState.value
+                if (current is UserUiState.Success) {
+                    _uiState.value = current.copy(tours = result.data)
+                }
+            }
+            is Result.Error -> {
+                // TODO: Handle error
             }
         }
     }

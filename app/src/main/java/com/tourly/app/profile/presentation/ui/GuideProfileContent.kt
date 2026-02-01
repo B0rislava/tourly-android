@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.WorkspacePremium
@@ -39,13 +40,16 @@ import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.IconButton
 
 @Composable
 fun GuideProfileContent(
     modifier: Modifier = Modifier,
     user: User,
+    isOwnProfile: Boolean = true,
     tours: List<Tour>,
     onSeeMore: () -> Unit,
+    onBackClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -56,12 +60,27 @@ fun GuideProfileContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (!isOwnProfile) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        }
+        
         ProfileHeader(
             firstName = user.firstName,
             lastName = user.lastName,
             email = user.email,
             role = user.role,
-            profilePictureUrl = user.profilePictureUrl
+            profilePictureUrl = user.profilePictureUrl,
+            isOwnProfile = isOwnProfile
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -147,7 +166,7 @@ fun GuideProfileContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "My Tours",
+                    text = if (isOwnProfile) "My Tours" else "Tours",
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold
