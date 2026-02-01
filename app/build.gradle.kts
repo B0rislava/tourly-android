@@ -113,6 +113,13 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.auth)
 
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.websockets)
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.ktor)
+    implementation(libs.krossbow.stomp.kxserialization)
+    implementation(libs.krossbow.stomp.kxserialization.json)
+
     implementation(libs.google.tink.android)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.credentials)

@@ -6,8 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -19,6 +20,8 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.hildan.krossbow.stomp.StompClient
+import org.hildan.krossbow.websocket.ktor.KtorWebSocketClient
 import javax.inject.Singleton
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -39,7 +42,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideHttpClient(tokenManager: TokenManager): HttpClient {
-        return HttpClient(Android) {
+        return HttpClient(OkHttp) {
+            install(WebSockets)
+
             install(ContentNegotiation) {
                 json(Json {
                     prettyPrint = true
@@ -83,7 +88,7 @@ object NetworkModule {
                             val refreshToken = currentRefreshToken ?: return@refreshTokens null
                             
                             try {
-                                val refreshClient = HttpClient(Android) {
+                                val refreshClient = HttpClient(OkHttp) {
                                     install(ContentNegotiation) {
                                          json(Json { ignoreUnknownKeys = true })
                                     }
@@ -140,5 +145,11 @@ object NetworkModule {
                 contentType(ContentType.Application.Json)
             }
         }
+    }
+
+    @Provides
+    @Singleton
+    fun provideStompClient(httpClient: HttpClient): StompClient {
+        return StompClient(KtorWebSocketClient(httpClient))
     }
 }
