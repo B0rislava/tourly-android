@@ -27,6 +27,7 @@ import com.tourly.app.chat.presentation.viewmodel.ChatViewModel
 @Composable
 fun ChatContent(
     viewModel: ChatViewModel,
+    onChatClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -60,7 +61,10 @@ fun ChatContent(
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             items(state.chats) { chat ->
-                                TourChatCard(chat = chat, onClick = { /* TODO: Navigate to chat */ })
+                                TourChatCard(
+                                    chat = chat, 
+                                    onClick = { onChatClick(chat.id) }
+                                )
                             }
                         }
                     }

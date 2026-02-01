@@ -49,4 +49,7 @@ sealed interface Route: NavKey {
 
     @Serializable
     data object ChangePassword : Route, NavKey
+
+    @Serializable
+    data class GroupChat(val tourId: Long) : Route, NavKey
 }

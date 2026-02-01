@@ -21,6 +21,7 @@ fun MainScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onTourClick: (Long) -> Unit,
+    onChatClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel()
 ) {
@@ -46,6 +47,7 @@ fun MainScreen(
         onNavigateToSettings = onNavigateToSettings,
         onLogout = onLogout,
         onTourClick = onTourClick,
+        onChatClick = onChatClick,
         onNavigateToNotifications = onNavigateToNotifications,
         userViewModel = userViewModel
     )

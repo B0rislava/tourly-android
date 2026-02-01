@@ -4,21 +4,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.tourly.app.chat.presentation.viewmodel.ChatViewModel
+import com.tourly.app.chat.presentation.viewmodel.GroupChatViewModel
 
 @Composable
-fun ChatScreen(
-    onChatClick: (Long) -> Unit,
+fun GroupChatScreen(
+    tourId: Long,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = hiltViewModel()
+    viewModel: GroupChatViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.loadChats()
+    LaunchedEffect(tourId) {
+        viewModel.setTourId(tourId)
     }
-    
-    ChatContent(
+
+    GroupChatContent(
         viewModel = viewModel,
-        onChatClick = onChatClick,
+        onBackClick = onBackClick,
         modifier = modifier
     )
 }

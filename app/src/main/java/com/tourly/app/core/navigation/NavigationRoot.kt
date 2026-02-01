@@ -122,6 +122,9 @@ fun NavigationRoot(
                             onTourClick = { tourId ->
                                 backStack.add(Route.TourDetails(tourId))
                             },
+                            onChatClick = { tourId ->
+                                backStack.add(Route.GroupChat(tourId))
+                            },
                             userViewModel = userViewModel
                         )
                     }
@@ -147,6 +150,9 @@ fun NavigationRoot(
                             },
                             onEditTour = { tourId ->
                                 backStack.add(Route.EditTour(tourId))
+                            },
+                            onChatClick = { tourId ->
+                                backStack.add(Route.GroupChat(tourId))
                             },
                             userViewModel = userViewModel
                         )
@@ -250,6 +256,16 @@ fun NavigationRoot(
                             userId = key.userId,
                             onSeeMore = { /* Handle if needed */ },
                             onBackClick = { backStack.removeLastOrNull() }
+                        )
+                    }
+                }
+                is Route.GroupChat -> {
+                    NavEntry(key) {
+                        com.tourly.app.chat.presentation.ui.GroupChatScreen(
+                            tourId = key.tourId,
+                            onBackClick = {
+                                backStack.removeLastOrNull()
+                            }
                         )
                     }
                 }

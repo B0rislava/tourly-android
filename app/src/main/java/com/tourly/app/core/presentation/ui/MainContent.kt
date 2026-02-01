@@ -32,6 +32,7 @@ fun MainContent(
     onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
     onTourClick: (Long) -> Unit,
+    onChatClick: (Long) -> Unit,
     onNavigateToNotifications: () -> Unit,
     userViewModel: UserViewModel
 ) {
@@ -87,6 +88,7 @@ fun MainContent(
             }
             BottomNavDestination.CHAT -> {
                 ChatScreen(
+                    onChatClick = onChatClick,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
