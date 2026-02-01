@@ -8,6 +8,7 @@ import com.tourly.app.chat.presentation.state.GroupChatUiState
 import com.tourly.app.core.network.Result
 import com.tourly.app.home.domain.usecase.GetTourDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -26,8 +27,9 @@ class GroupChatViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(GroupChatUiState())
     val uiState = _uiState.asStateFlow()
 
+    private var messagesJob: Job? = null
+
     fun setTourId(id: Long) {
-        if (tourId == id) return
         tourId = id
         fetchTourTitle()
         observeMessages()
@@ -50,8 +52,14 @@ class GroupChatViewModel @Inject constructor(
     private fun observeMessages() {
         if (tourId == -1L) return
         
-        viewModelScope.launch {
+        messagesJob?.cancel()
+        messagesJob = viewModelScope.launch {
             getMessagesUseCase(tourId).collect { messages ->
+                println("GroupChatViewModel: Received ${messages.size} messages")
+                if (messages.isNotEmpty()) {
+                    val last = messages.last()
+                    println("GroupChatViewModel: Last msg: id=${last.id}, content='${last.content}', senderId=${last.senderId}, isFromMe=${last.isFromMe}")
+                }
                 _uiState.update { it.copy(messages = messages) }
             }
         }

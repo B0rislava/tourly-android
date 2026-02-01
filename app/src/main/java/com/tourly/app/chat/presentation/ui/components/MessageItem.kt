@@ -22,6 +22,7 @@ fun MessageItem(
     message: Message,
     modifier: Modifier = Modifier
 ) {
+    println("MessageItem: Rendering msg ${message.id}: isFromMe=${message.isFromMe}, content='${message.content}'")
     val alignment = if (message.isFromMe) Alignment.CenterEnd else Alignment.CenterStart
     val bubbleColor = if (message.isFromMe) {
         MaterialTheme.colorScheme.primary
