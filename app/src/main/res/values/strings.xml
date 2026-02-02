@@ -124,8 +124,27 @@
     <string name="upcoming_tours">Upcoming Tours</string>
     <string name="past_tours">Past Tours</string>
     <string name="my_tours">My Tours</string>
+    <string name="manage_bookings_saved">Manage your bookings and saved tours</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="past">Past</string>
+    <string name="saved_short">Saved</string>
+    <string name="saved_tours">Saved Tours</string>
     <string name="no_tours_created">You haven\'t created any tours yet.</string>
     <string name="back">Back</string>
+    <string name="guide_dashboard">Guide Dashboard</string>
+    <string name="tours">Tours</string>
+    <string name="bookings">Bookings</string>
+    <string name="reviews">Reviews</string>
+    <string name="rating">Rating</string>
+    <string name="welcome_back_user">Welcome back, %1$s!</string>
+    <string name="this_year">This year</string>
+    <string name="reviews_plural">%1$d reviews</string>
+    <string name="no_bookings_found">No bookings found</string>
+    <string name="no_reviews_dashboard">No reviews yet</string>
+    <string name="active">Active</string>
+    <string name="guests_plural">%1$d guests</string>
+    <string name="total_bookings">%1$d total bookings</string>
+    <string name="unknown_user">Unknown</string>
 
     <!-- Settings -->
     <string name="profile_settings">Profile Settings</string>
@@ -172,6 +191,7 @@
     <string name="edit_tour">Edit Tour</string>
     <string name="share">Share</string>
     <string name="favorite">Favorite</string>
+    <string name="saved">Saved</string>
     <string name="places_count">Places: %1$d / %2$d</string>
     <string name="your_guide">Your guide</string>
     <string name="about_this_tour">About this tour</string>

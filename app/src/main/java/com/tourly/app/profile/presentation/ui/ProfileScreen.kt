@@ -26,7 +26,6 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     userId: Long? = null,
     userViewModel: UserViewModel = hiltViewModel(),
-    onSeeMore: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
@@ -63,7 +62,6 @@ fun ProfileScreen(
                     ProfileContent(
                         user = state.user,
                         isOwnProfile = state.isOwnProfile,
-                        onSeeMore = onSeeMore,
                         onBackClick = onBackClick,
                         tours = state.tours,
                         onFollowClick = { userViewModel.toggleFollow() }

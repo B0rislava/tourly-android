@@ -1,4 +1,4 @@
-package com.tourly.app.home.presentation.ui.components
+package com.tourly.app.core.presentation.ui.components
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -29,6 +29,7 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -53,7 +54,6 @@ import androidx.compose.ui.unit.sp
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.Tour
-import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.util.Formatters
 import java.util.Locale.getDefault
 
@@ -146,6 +146,26 @@ fun TourItemCard(
                             fontFamily = OutfitFamily,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
+                    }
+                }
+
+                // Saved Indicator (top-left)
+                if (tour.isSaved) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(12.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
+                    ) {
+                        Box(modifier = Modifier.padding(6.dp)) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = stringResource(id = R.string.saved),
+                                tint = Color.Red,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }

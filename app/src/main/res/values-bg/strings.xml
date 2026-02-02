@@ -127,10 +127,29 @@
     <string name="no_keep">Не, запази</string>
     <string name="upcoming_tours">Предстоящи обиколки</string>
     <string name="past_tours">Минали обиколки</string>
-    <string name="my_tours">Моите обиколки</string>
+    <string name="my_tours">Моите туристически обиколки</string>
+    <string name="manage_bookings_saved">Управлявайте резервациите и запазените си обиколки</string>
+    <string name="upcoming">Предстоящи</string>
+    <string name="past">Минали</string>
+    <string name="saved_short">Запазени</string>
+    <string name="saved_tours">Запазени обиколки</string>
     <string name="no_tours_created">Все още не сте създали нито една обиколка.</string>
 
     <string name="back">Назад</string>
+    <string name="guide_dashboard">Табло на гида</string>
+    <string name="tours">Обиколки</string>
+    <string name="bookings">Резервации</string>
+    <string name="reviews">Отзиви</string>
+    <string name="rating">Рейтинг</string>
+    <string name="welcome_back_user">Добре дошли отново, %1$s!</string>
+    <string name="this_year">Тази година</string>
+    <string name="reviews_plural">%1$d отзива</string>
+    <string name="no_bookings_found">Няма намерени резервации</string>
+    <string name="no_reviews_dashboard">Все още няма отзиви</string>
+    <string name="active">Активна</string>
+    <string name="guests_plural">%1$d гости</string>
+    <string name="total_bookings">%1$d общо резервации</string>
+    <string name="unknown_user">Неизвестен</string>
 
 
     <!-- Settings -->
@@ -179,6 +198,7 @@
 
     <string name="share">Сподели</string>
     <string name="favorite">Любим</string>
+    <string name="saved">Запазено</string>
     <string name="places_count">Места: %1$d / %2$d</string>
     <string name="your_guide">Вашият гид</string>
     <string name="about_this_tour">За тази обиколка</string>

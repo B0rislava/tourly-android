@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LocationOn
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.tourly.app.R
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.domain.model.Review
@@ -72,7 +74,8 @@ fun TourDetailsContent(
     userRole: UserRole? = null,
     onBackClick: () -> Unit,
     onGuideClick: (Long) -> Unit = {},
-    onEditTour: (Long) -> Unit = {}
+    onEditTour: (Long) -> Unit = {},
+    onToggleSave: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -88,7 +91,12 @@ fun TourDetailsContent(
                 .height(300.dp)
         ) {
             AsyncImage(
-                model = tour.imageUrl ?: R.drawable.tour_placeholder,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(tour.imageUrl ?: R.drawable.tour_placeholder)
+                    .crossfade(true)
+                    .placeholder(R.drawable.tour_placeholder)
+                    .error(R.drawable.tour_placeholder)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -142,15 +150,15 @@ fun TourDetailsContent(
                         )
                     }
                     IconButton(
-                        onClick = { /* Favorite */ },
+                        onClick = onToggleSave,
                         modifier = Modifier
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                             .size(40.dp)
                     ) {
                         Icon(
-                            Icons.Default.FavoriteBorder,
+                            if (tour.isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = stringResource(id = R.string.favorite),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = if (tour.isSaved) Color.Red else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }

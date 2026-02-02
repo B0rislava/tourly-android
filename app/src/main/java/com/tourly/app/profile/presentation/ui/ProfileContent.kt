@@ -11,7 +11,6 @@ fun ProfileContent(
     modifier: Modifier = Modifier,
     user: User,
     isOwnProfile: Boolean = true,
-    onSeeMore: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onFollowClick: () -> Unit = {},
     tours: List<Tour> = emptyList()
@@ -21,7 +20,6 @@ fun ProfileContent(
             user = user,
             isOwnProfile = isOwnProfile,
             tours = tours,
-            onSeeMore = onSeeMore,
             onBackClick = onBackClick,
             onFollowClick = onFollowClick,
             modifier = modifier

@@ -9,21 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -37,8 +32,6 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import com.tourly.app.profile.presentation.ui.components.ProfileStatItem
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.res.stringResource
@@ -52,7 +45,6 @@ fun GuideProfileContent(
     user: User,
     isOwnProfile: Boolean = true,
     tours: List<Tour>,
-    onSeeMore: () -> Unit,
     onFollowClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
@@ -185,105 +177,9 @@ fun GuideProfileContent(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // Tours Section
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = if (isOwnProfile) stringResource(id = R.string.my_tours) else stringResource(id = R.string.available_tours),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontFamily = OutfitFamily,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                if (tours.isNotEmpty()) {
-                    TextButton(onClick = onSeeMore) {
-                        Text(text = stringResource(id = R.string.see_more), fontFamily = OutfitFamily)
-                    }
-                }
-
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            if (tours.isEmpty()) {
-                Text(
-                    text = stringResource(id = R.string.no_tours_created),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = OutfitFamily,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            } else {
-
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(tours) { tour ->
-                        CompactTourCard(tour = tour)
-                    }
-                }
-            }
-        }
+        
         
         Spacer(modifier = Modifier.height(32.dp))
-    }
-}
-
-@Composable
-fun CompactTourCard(
-    tour: Tour,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.width(240.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = tour.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = OutfitFamily,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = tour.location,
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = OutfitFamily,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = String.format(getDefault(), "%.1f ★", tour.rating),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontFamily = OutfitFamily
-                )
-
-                Text(
-                    text = "$${tour.pricePerPerson.toInt()}",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontFamily = OutfitFamily
-                )
-            }
-        }
     }
 }
 
@@ -331,7 +227,6 @@ private fun GuideProfileContentPreview() {
                 guideImageUrl = null,
                 startTime = "10:00"
             )
-        ),
-        onSeeMore = {}
+        )
     )
 }

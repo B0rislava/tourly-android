@@ -10,7 +10,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
@@ -43,7 +42,10 @@ fun GuideMainContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
 
-            if (selectedDestination != BottomNavDestination.GUIDE_HOME) {
+            if (selectedDestination != BottomNavDestination.GUIDE_HOME &&
+                selectedDestination != BottomNavDestination.GUIDE_DASHBOARD &&
+                selectedDestination != BottomNavDestination.CHAT
+            ) {
                 SimpleTopBar(
                     title = selectedDestination.label,
                     navigationIcon = {
@@ -95,20 +97,17 @@ fun GuideMainContent(
                 )
             }
             BottomNavDestination.GUIDE_DASHBOARD -> {
-                LaunchedEffect(Unit) {
-                    userViewModel.refreshBookings()
-                }
                 DashboardScreen(
-                    userViewModel = userViewModel,
                     onEditTour = onEditTour,
                     onCreateTour = { onDestinationSelected(BottomNavDestination.CREATE_TOUR) },
+                    onTourClick = onTourClick,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
             BottomNavDestination.CREATE_TOUR -> {
                 CreateTourScreen(
                     snackbarHostState = snackbarHostState,
-                    onCreateTourSuccess = { userViewModel.refreshBookings() },
+                    onCreateTourSuccess = { /* Dashboard will refresh on next visit */ },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -120,7 +119,6 @@ fun GuideMainContent(
             }
             BottomNavDestination.PROFILE -> {
                 ProfileScreen(
-                    onSeeMore = { onDestinationSelected(BottomNavDestination.GUIDE_DASHBOARD) },
                     userViewModel = userViewModel,
                     modifier = Modifier.padding(paddingValues)
                 )

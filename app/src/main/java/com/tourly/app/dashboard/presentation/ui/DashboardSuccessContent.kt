@@ -196,7 +196,7 @@ internal fun DashboardSuccessContent(
                                 title = booking.tourTitle,
                                 thumbnailUrl = booking.tourImageUrl,
                                 location = booking.tourLocation,
-                                date = Formatters.formatDate(booking.tourScheduledDate),
+                                date = Formatters.formatDate(booking.tourScheduledDate ?: ""),
                                 status = booking.status,
                                 onClick = { onTourClick(booking.tourId) },
                                  action1Text = when (selectedTab) {

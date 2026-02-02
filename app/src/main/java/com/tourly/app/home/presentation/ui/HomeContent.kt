@@ -31,7 +31,7 @@ import com.tourly.app.home.presentation.ui.components.EmptyState
 import com.tourly.app.home.presentation.ui.components.ErrorState
 import com.tourly.app.home.presentation.ui.components.HomeFilterSection
 import com.tourly.app.home.presentation.ui.components.HomeHeaderSection
-import com.tourly.app.home.presentation.ui.components.TourItemCard
+import com.tourly.app.core.presentation.ui.components.TourItemCard
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)

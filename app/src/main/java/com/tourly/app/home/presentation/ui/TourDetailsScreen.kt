@@ -22,6 +22,7 @@ import com.tourly.app.home.presentation.ui.components.BookingDialog
 import com.tourly.app.home.presentation.ui.components.BottomPriceBar
 import com.tourly.app.home.presentation.viewmodel.TourDetailsUiState
 import com.tourly.app.home.presentation.viewmodel.TourDetailsViewModel
+import com.tourly.app.home.presentation.viewmodel.TourDetailsEvent
 
 import com.tourly.app.login.domain.UserRole
 
@@ -37,27 +38,22 @@ fun TourDetailsScreen(
     onBookingSuccess: () -> Unit = {},
     onEditTour: (Long) -> Unit = {}
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState: TourDetailsUiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     var showBookingDialog by remember { mutableStateOf(false) }
 
-    // Handle booking side effects
-    if (uiState is TourDetailsUiState.Success) {
-        val state = uiState as TourDetailsUiState.Success
-        
-        LaunchedEffect(state.isBookingSuccess) {
-            if (state.isBookingSuccess) {
-                showBookingDialog = false
-                snackbarHostState.showSnackbar("Tour booked successfully!")
-                onBookingSuccess()
-                viewModel.resetBookingState()
-            }
-        }
-        
-        LaunchedEffect(state.bookingError) {
-            state.bookingError?.let { error ->
-                snackbarHostState.showSnackbar(error)
-                viewModel.resetBookingState()
+    // Handle one-time UI events
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is TourDetailsEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
+                is TourDetailsEvent.BookingSuccess -> {
+                    showBookingDialog = false
+                    snackbarHostState.showSnackbar("Tour booked successfully!")
+                    onBookingSuccess()
+                }
             }
         }
     }
@@ -102,7 +98,8 @@ fun TourDetailsScreen(
                         userRole = userRole,
                         onEditTour = onEditTour,
                         onBackClick = onBackClick,
-                        onGuideClick = onGuideClick
+                        onGuideClick = onGuideClick,
+                        onToggleSave = { viewModel.toggleSaveTour(state.tour.id) }
                     )
                     
                     if (showBookingDialog) {
