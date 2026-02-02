@@ -253,7 +253,6 @@ fun NavigationRoot(
                             NavEntry(key) {
                                 ProfileScreen(
                                     userId = key.userId,
-                                    onSeeMore = { /*TODO*/ },
                                     onBackClick = { backStack.removeLastOrNull() }
                                 )
                             }
