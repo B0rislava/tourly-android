@@ -24,11 +24,15 @@ import androidx.compose.material3.TextButton
 @Composable
 fun BookedToursSection(
     bookings: List<Booking>,
-    onCancelBooking: (Long) -> Unit = {}
+    title: String = "My Bookings",
+    onCancelBooking: (Long) -> Unit = {},
+    onRateClick: (Long) -> Unit = {},
+    onCompleteBooking: (Long) -> Unit = {},
+    showRateButton: Boolean = false
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "My Bookings",
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             fontFamily = OutfitFamily,
             fontWeight = FontWeight.Bold
@@ -38,7 +42,7 @@ fun BookedToursSection(
 
         if (bookings.isEmpty()) {
             Text(
-                text = "You haven't booked any tours yet.",
+                text = "No tours found in this section.",
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = OutfitFamily,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -47,7 +51,10 @@ fun BookedToursSection(
             bookings.forEach { booking ->
                 BookingCard(
                     booking = booking,
-                    onCancelClick = { onCancelBooking(booking.id) }
+                    onCancelClick = { onCancelBooking(booking.id) },
+                    onRateClick = { onRateClick(booking.id) },
+                    onCompleteClick = { onCompleteBooking(booking.id) },
+                    showRateButton = showRateButton
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -58,7 +65,10 @@ fun BookedToursSection(
 @Composable
 fun BookingCard(
     booking: Booking,
-    onCancelClick: () -> Unit = {}
+    onCancelClick: () -> Unit = {},
+    onRateClick: () -> Unit = {},
+    onCompleteClick: () -> Unit = {},
+    showRateButton: Boolean = false
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -83,13 +93,23 @@ fun BookingCard(
                     modifier = Modifier.weight(1f)
                 )
 
-                if (booking.status == "CONFIRMED") {
-                    TextButton(onClick = onCancelClick) {
-                        Text(
-                            text = "Cancel",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                Row {
+                    if (booking.status == "CONFIRMED") {
+                        TextButton(onClick = onCompleteClick) {
+                            Text(
+                                text = "Dev: Complete",
+                                color = MaterialTheme.colorScheme.tertiary,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                        
+                        TextButton(onClick = onCancelClick) {
+                            Text(
+                                text = "Cancel",
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
                 }
             }
@@ -126,7 +146,8 @@ fun BookingCard(
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
             ) {
                 Text(
                     text = booking.status,
@@ -138,14 +159,26 @@ fun BookingCard(
                         MaterialTheme.colorScheme.error
                 )
                 
-                Text(
-                    text = "$${booking.totalPrice.toInt()}",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontFamily = OutfitFamily,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                if (showRateButton && booking.status == "COMPLETED" && !booking.hasReview) {
+                    TextButton(onClick = onRateClick) {
+                        Text(
+                            text = "Rate Experience",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "$${booking.totalPrice.toInt()}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontFamily = OutfitFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
     }
 }
+

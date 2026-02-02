@@ -26,6 +26,8 @@ fun DashboardScreen(
         onDeleteTour = userViewModel::deleteTour,
         onEditTour = onEditTour,
         onCreateTour = onCreateTour,
+        onRateTour = userViewModel::rateTour,
+        onCompleteBooking = userViewModel::completeBooking,
         modifier = modifier
     )
 }

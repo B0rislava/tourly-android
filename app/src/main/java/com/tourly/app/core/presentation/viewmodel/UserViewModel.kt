@@ -27,6 +27,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.lifecycle.SavedStateHandle
+import com.tourly.app.core.domain.repository.BookingRepository
+import com.tourly.app.reviews.domain.repository.ReviewRepository
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
@@ -40,6 +42,8 @@ class UserViewModel @Inject constructor(
     private val getUserToursUseCase: GetUserToursUseCase,
     private val deleteTourUseCase: DeleteTourUseCase,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
+    private val reviewRepository: ReviewRepository,
+    private val bookingRepository: BookingRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -52,6 +56,20 @@ class UserViewModel @Inject constructor(
     fun showMessage(message: String) {
         viewModelScope.launch {
             _events.send(message)
+        }
+    }
+
+    fun completeBooking(id: Long) {
+        viewModelScope.launch {
+            when (val result = bookingRepository.completeBooking(id)) {
+                is Result.Success -> {
+                    _events.send("Booking completed successfully (Dev Mode)")
+                    fetchBookings()
+                }
+                is Result.Error -> {
+                    _events.send(result.message)
+                }
+            }
         }
     }
 
@@ -232,6 +250,20 @@ class UserViewModel @Inject constructor(
                 is Result.Success -> {
                     _events.send("Tour deleted successfully")
                     fetchTours()
+                }
+                is Result.Error -> {
+                    _events.send(result.message)
+                }
+            }
+        }
+    }
+
+    fun rateTour(bookingId: Long, tourRating: Int, guideRating: Int, comment: String) {
+        viewModelScope.launch {
+            when (val result = reviewRepository.createReview(bookingId, tourRating, guideRating, comment)) {
+                is Result.Success -> {
+                    _events.send("Thank you for your feedback!")
+                    fetchBookings()
                 }
                 is Result.Error -> {
                     _events.send(result.message)

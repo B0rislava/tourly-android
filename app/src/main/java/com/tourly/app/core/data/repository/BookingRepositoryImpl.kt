@@ -36,4 +36,11 @@ class BookingRepositoryImpl @Inject constructor(
             is Result.Error -> result
         }
     }
+
+    override suspend fun completeBooking(id: Long): Result<Unit> {
+        return when (val result = NetworkResponseMapper.map<Unit>(apiService.completeBooking(id))) {
+            is Result.Success -> Result.Success(Unit)
+            is Result.Error -> result
+        }
+    }
 }

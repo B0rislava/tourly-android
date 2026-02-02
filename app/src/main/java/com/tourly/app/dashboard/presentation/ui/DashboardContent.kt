@@ -45,6 +45,8 @@ fun DashboardContent(
     onDeleteTour: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
     onCreateTour: () -> Unit,
+    onRateTour: (Long, Int, Int, String) -> Unit, // bookingId, tourRating, guideRating, comment
+    onCompleteBooking: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -62,6 +64,8 @@ fun DashboardContent(
                     onDeleteTour = onDeleteTour,
                     onEditTour = onEditTour,
                     onCreateTour = onCreateTour,
+                    onRateTour = onRateTour,
+                    onCompleteBooking = onCompleteBooking,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -89,11 +93,14 @@ private fun DashboardSuccessContent(
     onDeleteTour: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
     onCreateTour: () -> Unit,
+    onRateTour: (Long, Int, Int, String) -> Unit,
+    onCompleteBooking: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
     var tourToDelete by remember { mutableStateOf<Tour?>(null) }
     var bookingToCancel by remember { mutableStateOf<Booking?>(null) }
+    var showRateDialog by remember { mutableStateOf<Booking?>(null) }
 
     if (tourToDelete != null) {
         TourlyAlertDialog(
@@ -122,6 +129,18 @@ private fun DashboardSuccessContent(
         )
     }
 
+    if (showRateDialog != null) {
+        com.tourly.app.bookings.presentation.ui.RateExperienceDialog(
+            onDismissRequest = { showRateDialog = null },
+            onConfirm = { tourRating, guideRating, comment ->
+                showRateDialog?.id?.let { bookingId ->
+                    onRateTour(bookingId, tourRating, guideRating, comment)
+                }
+                showRateDialog = null
+            }
+        )
+    }
+
     Column(
         modifier = modifier
             .verticalScroll(scrollState)
@@ -129,12 +148,37 @@ private fun DashboardSuccessContent(
     ) {
 
         if (uiState.user.role == UserRole.TRAVELER) {
+            val upcomingBookings = uiState.bookings
+                .filter { it.status != "COMPLETED" && it.status != "CANCELLED" }
+                .sortedBy { it.tourScheduledDate }
+            
+            val pastBookings = uiState.bookings
+                .filter { it.status == "COMPLETED" }
+                .sortedByDescending { it.tourScheduledDate }
+
             BookedToursSection(
-                bookings = uiState.bookings.filter { it.status == "CONFIRMED" },
+                title = "Upcoming Tours",
+                bookings = upcomingBookings,
                 onCancelBooking = { bookingId ->
                     bookingToCancel = uiState.bookings.find { it.id == bookingId }
-                }
+                },
+                onCompleteBooking = onCompleteBooking,
+                showRateButton = false
             )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            BookedToursSection(
+                title = "Past Tours",
+                bookings = pastBookings,
+                onCancelBooking = {}, 
+                onRateClick = { bookingId ->
+                    showRateDialog = uiState.bookings.find { it.id == bookingId }
+                },
+                onCompleteBooking = onCompleteBooking,
+                showRateButton = true
+            )
+
         } else {
             // Guide Dashboard
             Row(
@@ -182,3 +226,4 @@ private fun DashboardSuccessContent(
         }
     }
 }
+
