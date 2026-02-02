@@ -1,5 +1,6 @@
 package com.tourly.app.home.presentation.ui.components
 
+import androidx.compose.foundation.clickable
 import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.domain.model.Tour
 import androidx.compose.foundation.layout.Column
@@ -13,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,11 +27,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GuideCard(tour: Tour) {
+fun GuideCard(
+    tour: Tour,
+    onGuideClick: (Long) -> Unit = {}
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onGuideClick(tour.tourGuideId) }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -55,13 +59,6 @@ fun GuideCard(tour: Tour) {
                         Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFF9800), modifier = Modifier.size(14.dp))
                         Text(text = " ${tour.guideRating}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                     }
-                }
-                Button(
-                    onClick = { /* Message */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onSurface),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray)
-                ) {
-                    Text("Message")
                 }
             }
             if (!tour.guideBio.isNullOrEmpty()) {

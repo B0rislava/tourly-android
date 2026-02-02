@@ -9,6 +9,20 @@
     <string name="enter_new_password">Enter New Password</string>
     <string name="new_password">New Password</string>
     <string name="enter_confirm_password">Enter Confirm Password</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="mark_all_read">Mark all as read</string>
+    <string name="no_notifications">No notifications yet</string>
+    <string name="notification_new_booking_title">New Booking</string>
+    <string name="notification_booking_cancelled_title">Booking Cancelled</string>
+    <string name="notification_tour_cancelled_title">Tour Cancelled</string>
+    <string name="notification_follow_title">New Follower</string>
+    <string name="notification_new_tour_title">New Tour</string>
+    <string name="notification_follow_msg">%1$s started following you</string>
+    <string name="notification_new_booking_msg">%1$s booked %2$s spot(s) for your tour \'%3$s\'</string>
+    <string name="notification_new_tour_msg">%1$s created a new tour: \'%2$s\'</string>
+    <string name="notification_booking_cancelled_traveler_msg">Your booking for \'%1$s\' has been cancelled.</string>
+    <string name="notification_booking_cancelled_guide_msg">%1$s cancelled their booking for your tour \'%2$s\'.</string>
+    <string name="notification_tour_cancelled_msg">The tour \'%1$s\' has been cancelled by the guide.</string>
 
     <string name="enter_full_name">Enter Full Name</string>
     <string name="full_name">Full Name</string>
@@ -35,7 +49,7 @@
     <string name="settings">Settings</string>
 
     <string name="profile_title">Profile</string>
-    <string name="tour_images">Images</string>
+    <string name="tour_image">Image</string>
     <string name="tour_title">Title</string>
     <string name="tour_title_example">e.g., Hidden Gems of Old Town</string>
     <string name="tour_description">Description</string>
@@ -65,5 +79,156 @@
     <string name="google_sign_up">Sign up with Google</string>
     <string name="agree_terms">I Agree With The Terms And Conditions</string>
     <string name="confirm_password">Confirm Password</string>
+
+    <!-- Home -->
+    <string name="no_results_found">No results found</string>
+    <string name="no_results_description">We couldn\'t find any tours matching \"%1$s\". Try adjusting your search.</string>
+    <string name="no_tours_found">No tours found</string>
+    <string name="no_tours_description">Try clearing your filters or selecting a different category.</string>
+    <string name="available_tours">Available Tours</string>
+    <string name="search_hint">Search destinations, tours…</string>
+    <string name="clear_all_filters">Clear all filters</string>
+
+    <string name="good_morning">Good morning</string>
+    <string name="good_afternoon">Good afternoon</string>
+    <string name="good_evening">Good evening</string>
+    <string name="your_group_chats">Your Group Chats</string>
+    <string name="group_chat">Group Chat</string>
+    <string name="incomplete_profile_tooltip">Please add your last name in Edit Profile</string>
+    <string name="no_tours_in_section">No tours found in this section.</string>
+    <string name="rate_experience">Rate Experience</string>
+    <string name="people_count">%1$d people</string>
+    <string name="date_label">Date: %1$s</string>
+    <string name="apply">Apply</string>
+    <string name="clear">Clear</string>
+    <string name="sort_by">Sort…</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="price_asc">Price: Low → High</string>
+    <string name="price_desc">Price: High → Low</string>
+    <string name="duration_asc">Duration: Short → Long</string>
+    <string name="duration_desc">Duration: Long → Short</string>
+    <string name="price_range">Price Range</string>
+    <string name="select_location">Select Location</string>
+    <string name="enter_location_hint">Enter city or country…</string>
+
+
+    <!-- Dashboard -->
+    <string name="login_to_see_dashboard">Please log in to see your dashboard</string>
+    <string name="delete_tour">Delete Tour</string>
+    <string name="delete_tour_confirmation">Are you sure you want to delete \"%1$s\"? This action cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="cancel_booking">Cancel Booking</string>
+    <string name="cancel_booking_confirmation">Are you sure you want to cancel your booking for \"%1$s\"?</string>
+    <string name="yes_cancel">Yes, Cancel</string>
+    <string name="no_keep">No, Keep</string>
+    <string name="upcoming_tours">Upcoming Tours</string>
+    <string name="past_tours">Past Tours</string>
+    <string name="my_tours">My Tours</string>
+    <string name="manage_bookings_saved">Manage your bookings and saved tours</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="past">Past</string>
+    <string name="saved_short">Saved</string>
+    <string name="saved_tours">Saved Tours</string>
+    <string name="no_tours_created">You haven\'t created any tours yet.</string>
+    <string name="back">Back</string>
+    <string name="guide_dashboard">Guide Dashboard</string>
+    <string name="tours">Tours</string>
+    <string name="bookings">Bookings</string>
+    <string name="reviews">Reviews</string>
+    <string name="rating">Rating</string>
+    <string name="welcome_back_user">Welcome back, %1$s!</string>
+    <string name="this_year">This year</string>
+    <string name="reviews_plural">%1$d reviews</string>
+    <string name="no_bookings_found">No bookings found</string>
+    <string name="no_reviews_dashboard">No reviews yet</string>
+    <string name="active">Active</string>
+    <string name="guests_plural">%1$d guests</string>
+    <string name="total_bookings">%1$d total bookings</string>
+    <string name="unknown_user">Unknown</string>
+
+    <!-- Settings -->
+    <string name="profile_settings">Profile Settings</string>
+    <string name="profile_details">Profile Details</string>
+    <string name="preferences">Preferences</string>
+    <string name="notifications">Notifications</string>
+    <string name="theme">Theme</string>
+    <string name="language">Language</string>
+    <string name="choose_theme">Choose Theme</string>
+    <string name="system_default">System Default</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="choose_language">Choose Language</string>
+    <string name="english">English</string>
+    <string name="bulgarian">Bulgarian</string>
+    <string name="cancel">Cancel</string>
+    <string name="book_now">Book Now</string>
+    <string name="message">Message</string>
+
+    <!-- Tags -->
+    <string name="tag_adventure">Adventure</string>
+    <string name="tag_culture">Culture</string>
+    <string name="tag_nature">Nature</string>
+    <string name="tag_food">Food</string>
+    <string name="tag_relax">Relax</string>
+    <string name="tag_history">History</string>
+    <string name="tag_sports">Sports</string>
+    <string name="tag_wildlife">Wildlife</string>
+    <string name="tag_photography">Photography</string>
+    <string name="tag_nightlife">Nightlife</string>
+
+    <string name="start_time">Start Time</string>
+    <string name="duration_label">Duration</string>
+
+    <!-- Edit Profile -->
+    <string name="edit_photo">Edit photo</string>
+    <string name="personal">Personal</string>
+    <string name="bio">Bio</string>
+    <string name="certifications">Certifications</string>
+    <string name="contact">Contact</string>
+    <string name="save">Save</string>
+
+    <!-- Tour Details -->
+    <string name="edit_tour">Edit Tour</string>
+    <string name="share">Share</string>
+    <string name="favorite">Favorite</string>
+    <string name="saved">Saved</string>
+    <string name="places_count">Places: %1$d / %2$d</string>
+    <string name="your_guide">Your guide</string>
+    <string name="about_this_tour">About this tour</string>
+    <string name="meeting_location">Meeting Location</string>
+    <string name="meeting_point">Meeting Point</string>
+    <string name="open_in_maps">Open in Maps</string>
+    <string name="cancellation_policy">Cancellation Policy</string>
+    <string name="policy_full_refund">Full refund: Cancel up to 7 days before</string>
+    <string name="policy_partial_refund">50%% refund: Cancel 3–7 days before</string>
+    <string name="policy_no_refund">No refund: Cancellations within 3 days</string>
+    <string name="reviews_count">Reviews (%1$d)</string>
+    <string name="no_reviews_yet">No reviews yet.</string>
+
+    <!-- Create Tour -->
+    <string name="enter_meeting_address">Enter meeting address (e.g. ul. Orfey 2, Sofia)</string>
+    <string name="toggle_input_mode">Toggle input mode</string>
+    <string name="time_example">10:00 AM</string>
+    <string name="ok">OK</string>
+
+    <!-- Roles -->
+    <string name="traveler">Traveler</string>
+    <string name="guide">Guide</string>
+    <string name="member">Member</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_pending">Pending</string>
+
+
+    <!-- Profile -->
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="follow">Follow</string>
+    <string name="about_me">About me</string>
+    <string name="see_more">See More</string>
+    <string name="fully_booked">Fully Booked</string>
+    <string name="per_person">/ person</string>
+
 
 </resources>

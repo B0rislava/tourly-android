@@ -22,38 +22,38 @@ import com.tourly.app.home.presentation.ui.components.BookingDialog
 import com.tourly.app.home.presentation.ui.components.BottomPriceBar
 import com.tourly.app.home.presentation.viewmodel.TourDetailsUiState
 import com.tourly.app.home.presentation.viewmodel.TourDetailsViewModel
+import com.tourly.app.home.presentation.viewmodel.TourDetailsEvent
 
 import com.tourly.app.login.domain.UserRole
+
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 
 @Composable
 fun TourDetailsScreen(
     viewModel: TourDetailsViewModel,
     userRole: UserRole?,
     onBackClick: () -> Unit,
+    onGuideClick: (Long) -> Unit = {},
     onBookingSuccess: () -> Unit = {},
     onEditTour: (Long) -> Unit = {}
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState: TourDetailsUiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     var showBookingDialog by remember { mutableStateOf(false) }
 
-    // Handle booking side effects
-    if (uiState is TourDetailsUiState.Success) {
-        val state = uiState as TourDetailsUiState.Success
-        
-        LaunchedEffect(state.isBookingSuccess) {
-            if (state.isBookingSuccess) {
-                showBookingDialog = false
-                snackbarHostState.showSnackbar("Tour booked successfully!")
-                onBookingSuccess()
-                viewModel.resetBookingState()
-            }
-        }
-        
-        LaunchedEffect(state.bookingError) {
-            state.bookingError?.let { error ->
-                snackbarHostState.showSnackbar(error)
-                viewModel.resetBookingState()
+    // Handle one-time UI events
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is TourDetailsEvent.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(event.message)
+                }
+                is TourDetailsEvent.BookingSuccess -> {
+                    showBookingDialog = false
+                    snackbarHostState.showSnackbar("Tour booked successfully!")
+                    onBookingSuccess()
+                }
             }
         }
     }
@@ -68,7 +68,7 @@ fun TourDetailsScreen(
                 
                 BottomPriceBar(
                     price = tour.pricePerPerson,
-                    buttonText = if (canBook) "Book Now" else "Fully Booked",
+                    buttonText = if (canBook) stringResource(id = R.string.book_now) else stringResource(id = R.string.fully_booked),
                     isButtonEnabled = canBook,
                     onButtonClick = { showBookingDialog = true }
                 )
@@ -94,9 +94,12 @@ fun TourDetailsScreen(
                 is TourDetailsUiState.Success -> {
                     TourDetailsContent(
                         tour = state.tour,
+                        reviews = state.reviews,
                         userRole = userRole,
                         onEditTour = onEditTour,
-                        onBackClick = onBackClick
+                        onBackClick = onBackClick,
+                        onGuideClick = onGuideClick,
+                        onToggleSave = { viewModel.toggleSaveTour(state.tour.id) }
                     )
                     
                     if (showBookingDialog) {

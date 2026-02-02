@@ -22,6 +22,7 @@ fun GuideMainScreen(
     onNavigateToNotifications: () -> Unit,
     onTourClick: (Long) -> Unit,
     onEditTour: (Long) -> Unit,
+    onChatClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel()
 ) {
@@ -48,6 +49,7 @@ fun GuideMainScreen(
         onLogout = onLogout,
         onTourClick = onTourClick,
         onEditTour = onEditTour,
+        onChatClick = onChatClick,
         onNavigateToNotifications = onNavigateToNotifications,
         userViewModel = userViewModel
     )

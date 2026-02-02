@@ -1,31 +1,45 @@
 package com.tourly.app.dashboard.presentation.ui
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.tourly.app.core.presentation.viewmodel.UserViewModel
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.tourly.app.dashboard.presentation.viewmodel.DashboardViewModel
 
 @Composable
 fun DashboardScreen(
-    userViewModel: UserViewModel,
     onEditTour: (Long) -> Unit,
     onCreateTour: () -> Unit,
-    modifier: Modifier = Modifier
+    onTourClick: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: DashboardViewModel = hiltViewModel()
 ) {
-    val uiState by userViewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        userViewModel.refreshBookings()
+        viewModel.loadDashboardData()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
     }
 
     DashboardContent(
         uiState = uiState,
-        onCancelBooking = userViewModel::cancelBooking,
-        onDeleteTour = userViewModel::deleteTour,
+        onCancelBooking = viewModel::cancelBooking,
+        onDeleteTour = viewModel::deleteTour,
         onEditTour = onEditTour,
         onCreateTour = onCreateTour,
+        onTourClick = onTourClick,
+        onRateTour = viewModel::rateTour,
+        onCompleteBooking = viewModel::completeBooking,
         modifier = modifier
     )
 }

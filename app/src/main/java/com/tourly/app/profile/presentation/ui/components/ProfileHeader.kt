@@ -36,17 +36,20 @@ import androidx.compose.ui.window.Popup
 import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 
 @Composable
 fun ProfileHeader(
+    modifier: Modifier = Modifier,
     firstName: String,
     lastName: String,
     email: String,
     role: UserRole,
     profilePictureUrl: String?,
-    modifier: Modifier = Modifier
+    isOwnProfile: Boolean = true,
 ) {
-    val hasIncompleteName = lastName.isBlank()
+    val hasIncompleteName = isOwnProfile && lastName.isBlank()
     var showTooltip by remember { mutableStateOf(false) }
 
     Column(
@@ -92,7 +95,7 @@ fun ProfileHeader(
                 Box {
                     Icon(
                         imageVector = Icons.Default.Error,
-                        contentDescription = "Incomplete profile",
+                        contentDescription = stringResource(id = R.string.incomplete_profile_tooltip),
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier
                             .size(20.dp)
@@ -112,7 +115,7 @@ fun ProfileHeader(
                                 tonalElevation = 2.dp
                             ) {
                                 Text(
-                                    text = "Please add your last name in Edit Profile",
+                                    text = stringResource(id = R.string.incomplete_profile_tooltip),
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                                     style = MaterialTheme.typography.bodySmall,
                                     fontFamily = OutfitFamily,

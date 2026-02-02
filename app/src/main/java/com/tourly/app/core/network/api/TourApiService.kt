@@ -66,6 +66,10 @@ class TourApiService @Inject constructor(
         return client.get("tours/my")
     }
 
+    suspend fun getToursByGuideId(guideId: Long): HttpResponse {
+        return client.get("tours/guide/$guideId")
+    }
+
     suspend fun getAllTags(): HttpResponse {
         return client.get("tags")
     }
@@ -138,6 +142,14 @@ class TourApiService @Inject constructor(
 
     suspend fun deleteTour(id: Long): HttpResponse {
         return client.delete("tours/$id")
+    }
+
+    suspend fun toggleSaveTour(id: Long): HttpResponse {
+        return client.post("tours/$id/toggle-save")
+    }
+
+    suspend fun getSavedTours(): HttpResponse {
+        return client.get("tours/saved")
     }
 
     private fun getFileName(context: Context, uri: Uri): String? {

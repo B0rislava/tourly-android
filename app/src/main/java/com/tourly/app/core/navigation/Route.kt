@@ -35,7 +35,7 @@ sealed interface Route: NavKey {
     data class Chat(val userId: String) : Route, NavKey
     
     @Serializable
-    data class Profile(val userId: String) : Route, NavKey
+    data class Profile(val userId: Long) : Route, NavKey
     
     // Other Routes
     @Serializable
@@ -49,4 +49,7 @@ sealed interface Route: NavKey {
 
     @Serializable
     data object ChangePassword : Route, NavKey
+
+    @Serializable
+    data class GroupChat(val tourId: Long) : Route, NavKey
 }

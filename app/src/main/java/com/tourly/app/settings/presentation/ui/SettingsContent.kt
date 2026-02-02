@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tourly.app.core.domain.model.AppLanguage
 import com.tourly.app.core.domain.model.ThemeMode
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
@@ -60,8 +61,10 @@ import com.tourly.app.settings.presentation.ui.components.SettingsProfileCard
 fun SettingsContent(
     user: User?,
     themeMode: ThemeMode,
+    currentLanguage: AppLanguage,
     onNavigateBack: () -> Unit,
     onSetThemeMode: (ThemeMode) -> Unit,
+    onSetLanguage: (AppLanguage) -> Unit,
     onLogout: () -> Unit,
     onNavigateProfileDetails: () -> Unit,
     onNavigatePassword: () -> Unit,
@@ -71,7 +74,7 @@ fun SettingsContent(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
-    var currentLanguage by remember { mutableStateOf("English") }
+
 
     if (showThemeDialog) {
         ThemeSelectionDialog(
@@ -85,28 +88,13 @@ fun SettingsContent(
     }
 
     if (showLanguageDialog) {
-        AlertDialog(
-            onDismissRequest = { showLanguageDialog = false },
-            title = { Text(text = "Choose Language", fontFamily = OutfitFamily) },
-            text = {
-                Column {
-                    listOf("English", "Bulgarian").forEach { language ->
-                        ThemeOption(
-                            text = language,
-                            selected = language == currentLanguage,
-                            onClick = {
-                                currentLanguage = language
-                                showLanguageDialog = false
-                            }
-                        )
-                    }
-                }
+        LanguageSelectionDialog(
+            currentLanguage = currentLanguage,
+            onLanguageSelected = {
+                onSetLanguage(it)
+                showLanguageDialog = false
             },
-            confirmButton = {
-                TextButton(onClick = { showLanguageDialog = false }) {
-                    Text("Cancel", fontFamily = OutfitFamily)
-                }
-            }
+            onDismissRequest = { showLanguageDialog = false }
         )
     }
 
@@ -119,7 +107,7 @@ fun SettingsContent(
             },
             title = stringResource(id = R.string.delete_account),
             text = stringResource(id = R.string.delete_account_confirmation),
-            confirmButtonText = "Delete",
+            confirmButtonText = stringResource(id = R.string.delete),
             isDestructive = true
         )
     }
@@ -129,7 +117,7 @@ fun SettingsContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(id = R.string.settings),
                         style = MaterialTheme.typography.titleLarge,
                         fontFamily = OutfitFamily,
                         fontWeight = FontWeight.Bold
@@ -139,7 +127,7 @@ fun SettingsContent(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 },
@@ -167,7 +155,7 @@ fun SettingsContent(
 
             item {
                 Text(
-                    text = "Profile Settings",
+                    text = stringResource(id = R.string.profile_settings),
                     style = MaterialTheme.typography.titleMedium,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.SemiBold,
@@ -178,46 +166,48 @@ fun SettingsContent(
                 SettingsGroup {
                     SettingsItem(
                         icon = Icons.Outlined.Person,
-                        title = "Profile Details",
+                        title = stringResource(id = R.string.profile_details),
                         onClick = onNavigateProfileDetails
                     )
                     HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
                     SettingsItem(
                         icon = Icons.Outlined.Lock,
-                        title = "Password",
+                        title = stringResource(id = R.string.password),
                         onClick = onNavigatePassword
                     )
                 }
             }
 
+
             item {
                 Text(
-                    text = "Preferences",
+                    text = stringResource(id = R.string.preferences),
                     style = MaterialTheme.typography.titleMedium,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SettingsGroup {
                     SettingsItem(
                         icon = Icons.Outlined.Notifications,
-                        title = "Notifications",
+                        title = stringResource(id = R.string.notifications),
                         onClick = onNavigateNotifications
                     )
                     HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
                     SettingsItem(
                         icon = Icons.Outlined.DarkMode,
-                        title = "Theme",
+                        title = stringResource(id = R.string.theme),
                         onClick = { showThemeDialog = true },
                         showNavigateIcon = true,
                         trailingContent = {
                             Text(
                                 text = when(themeMode) {
-                                    ThemeMode.SYSTEM -> "System"
-                                    ThemeMode.LIGHT -> "Light"
-                                    ThemeMode.DARK -> "Dark"
+                                    ThemeMode.SYSTEM -> stringResource(id = R.string.system_default)
+                                    ThemeMode.LIGHT -> stringResource(id = R.string.light)
+                                    ThemeMode.DARK -> stringResource(id = R.string.dark)
                                 },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -228,11 +218,14 @@ fun SettingsContent(
                     HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
                     SettingsItem(
                         icon = Icons.Outlined.Language,
-                        title = "Language",
+                        title = stringResource(id = R.string.language),
                         onClick = { showLanguageDialog = true },
                          trailingContent = {
                             Text(
-                                text = currentLanguage,
+                                text = when(currentLanguage) {
+                                    AppLanguage.ENGLISH -> stringResource(id = R.string.english)
+                                    AppLanguage.BULGARIAN -> stringResource(id = R.string.bulgarian)
+                                },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontFamily = OutfitFamily
@@ -261,7 +254,7 @@ fun SettingsContent(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Log out",
+                        text = stringResource(id = R.string.logout),
                         style = MaterialTheme.typography.bodyLarge,
                         fontFamily = OutfitFamily
                     )
@@ -287,7 +280,7 @@ fun SettingsContent(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Delete Account",
+                        text = stringResource(id = R.string.delete_account),
                         style = MaterialTheme.typography.bodyLarge,
                         fontFamily = OutfitFamily
                     )
@@ -300,28 +293,65 @@ fun SettingsContent(
 }
 
 @Composable
+fun LanguageSelectionDialog(
+    currentLanguage: AppLanguage,
+    onLanguageSelected: (AppLanguage) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                text = stringResource(id = R.string.choose_language),
+                fontFamily = OutfitFamily
+            )
+        },
+        text = {
+            Column {
+                AppLanguage.entries.forEach { language ->
+                    ThemeOption(
+                        text = when (language) {
+                            AppLanguage.ENGLISH -> stringResource(id = R.string.english)
+                            AppLanguage.BULGARIAN -> stringResource(id = R.string.bulgarian)
+                        },
+                        selected = language == currentLanguage,
+                        onClick = { onLanguageSelected(language) }
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(id = R.string.cancel), fontFamily = OutfitFamily)
+            }
+        }
+    )
+}
+
+@Composable
 fun ThemeSelectionDialog(
+
     currentMode: ThemeMode,
     onThemeSelected: (ThemeMode) -> Unit,
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text(text = "Choose Theme", fontFamily = OutfitFamily) },
+        title = { Text(text = stringResource(id = R.string.choose_theme), fontFamily = OutfitFamily) },
         text = {
             Column {
                 ThemeOption(
-                    text = "System Default",
+                    text = stringResource(id = R.string.system_default),
                     selected = currentMode == ThemeMode.SYSTEM,
                     onClick = { onThemeSelected(ThemeMode.SYSTEM) }
                 )
                 ThemeOption(
-                    text = "Light",
+                    text = stringResource(id = R.string.light),
                     selected = currentMode == ThemeMode.LIGHT,
                     onClick = { onThemeSelected(ThemeMode.LIGHT) }
                 )
                 ThemeOption(
-                    text = "Dark",
+                    text = stringResource(id = R.string.dark),
                     selected = currentMode == ThemeMode.DARK,
                     onClick = { onThemeSelected(ThemeMode.DARK) }
                 )
@@ -329,10 +359,11 @@ fun ThemeSelectionDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismissRequest) {
-                Text("Cancel", fontFamily = OutfitFamily)
+                Text(stringResource(id = R.string.cancel), fontFamily = OutfitFamily)
             }
         }
     )
+
 }
 
 @Composable

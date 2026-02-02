@@ -116,7 +116,7 @@ fun EditProfileContent(
             
             Icon(
                 imageVector = Icons.Default.Edit,
-                contentDescription = "Edit photo",
+                contentDescription = stringResource(id = R.string.edit_photo),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .size(32.dp)
@@ -132,7 +132,7 @@ fun EditProfileContent(
 
         // Personal Section
         Text(
-            text = "Personal",
+            text = stringResource(id = R.string.personal),
             style = MaterialTheme.typography.titleLarge,
             fontFamily = OutfitFamily,
             modifier = Modifier.fillMaxWidth()
@@ -161,12 +161,15 @@ fun EditProfileContent(
         EditProfileTextField(
             value = state.bio,
             onValueChange = onBioChange,
-            label = "Bio",
+            label = stringResource(id = R.string.bio),
             isError = state.bioError != null,
             supportingText = state.bioError,
             minLines = 3,
             maxLines = 5,
-            singleLine = false
+            singleLine = false,
+            keyboardOptions = KeyboardOptions(
+                autoCorrectEnabled = false
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -174,19 +177,22 @@ fun EditProfileContent(
         EditProfileTextField(
             value = state.certifications,
             onValueChange = onCertificationsChange,
-            label = "Certifications",
+            label = stringResource(id = R.string.certifications),
             isError = state.certificationsError != null,
             supportingText = state.certificationsError,
             minLines = 2,
             maxLines = 4,
-            singleLine = false
+            singleLine = false,
+            keyboardOptions = KeyboardOptions(
+                autoCorrectEnabled = false
+            )
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Email & Password Section
         Text(
-            text = "Contact",
+            text = stringResource(id = R.string.contact),
             style = MaterialTheme.typography.titleLarge,
             fontFamily = OutfitFamily,
             modifier = Modifier.fillMaxWidth()
@@ -229,7 +235,7 @@ fun EditProfileContent(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Save",
+                    text = stringResource(id = R.string.save),
                     fontFamily = OutfitFamily
                 )
             }

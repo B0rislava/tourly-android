@@ -2,6 +2,7 @@ package com.tourly.app.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.R
 import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.network.Result
@@ -68,7 +69,7 @@ class HomeViewModel @Inject constructor(
     private val _userProfile = MutableStateFlow<User?>(null)
     val userProfile = _userProfile.asStateFlow()
 
-    private val _greeting = MutableStateFlow("")
+    private val _greeting = MutableStateFlow(R.string.good_morning)
     val greeting = _greeting.asStateFlow()
 
     private val _unreadCount = MutableStateFlow(0)
@@ -217,10 +218,9 @@ class HomeViewModel @Inject constructor(
     private fun updateGreeting() {
         val currentHour = LocalTime.now(clock).hour
         _greeting.value = when (currentHour) {
-            // TODO: Extract strings
-            in 5..11 -> "Good morning"
-            in 12..17 -> "Good afternoon"
-            else -> "Good evening"
+            in 5..11 -> R.string.good_morning
+            in 12..17 -> R.string.good_afternoon
+            else -> R.string.good_evening
         }
     }
 

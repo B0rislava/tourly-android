@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.repository.ThemeRepository
 import com.tourly.app.core.domain.usecase.LogoutUseCase
+import com.tourly.app.core.domain.repository.LanguageRepository
 import com.tourly.app.core.domain.usecase.ObserveAuthStateUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.network.Result
@@ -24,21 +25,26 @@ class MainViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
-    themeRepository: ThemeRepository
+    themeRepository: ThemeRepository,
+    languageRepository: LanguageRepository
 ) : ViewModel() {
+
 
     private val _sessionState = MutableStateFlow<SessionState>(SessionState.Loading)
     
     val uiState: StateFlow<MainActivityUiState> = combine(
         _sessionState,
-        themeRepository.themeMode
-    ) { session, mode ->
+        themeRepository.themeMode,
+        languageRepository.currentLanguage
+    ) { session, themeMode, appLanguage ->
+
         when (session) {
             is SessionState.Loading -> MainActivityUiState.Loading
             is SessionState.Success -> MainActivityUiState.Success(
                 isUserLoggedIn = session.isLoggedIn,
                 userRole = session.userRole,
-                themeMode = mode
+                themeMode = themeMode,
+                appLanguage = appLanguage
             )
         }
     }.stateIn(

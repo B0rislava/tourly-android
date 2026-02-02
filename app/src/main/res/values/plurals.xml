@@ -1,0 +1,15 @@
+<resources>
+    <plurals name="tour_count">
+        <item quantity="one">%1$d tour</item>
+        <item quantity="other">%1$d tours</item>
+    </plurals>
+    <plurals name="reviews_label">
+        <item quantity="one">%1$d review</item>
+        <item quantity="other">%1$d reviews</item>
+    </plurals>
+    <plurals name="spots_left">
+        <item quantity="one">%1$d spot left</item>
+        <item quantity="other">%1$d spots left</item>
+    </plurals>
+
+</resources>

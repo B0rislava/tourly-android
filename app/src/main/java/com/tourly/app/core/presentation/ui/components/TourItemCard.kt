@@ -1,4 +1,4 @@
-package com.tourly.app.home.presentation.ui.components
+package com.tourly.app.core.presentation.ui.components
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -29,12 +29,15 @@ import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,8 +54,8 @@ import androidx.compose.ui.unit.sp
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.Tour
-import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.util.Formatters
+import java.util.Locale.getDefault
 
 @Composable
 fun TourItemCard(
@@ -131,18 +134,38 @@ fun TourItemCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "4.9",
+                            text = String.format(getDefault(), "%.1f", tour.rating),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = OutfitFamily,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "(128)",
+                            text = "(${tour.reviewsCount})",
                             fontSize = 12.sp,
                             fontFamily = OutfitFamily,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
+                    }
+                }
+
+                // Saved Indicator (top-left)
+                if (tour.isSaved) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(12.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
+                    ) {
+                        Box(modifier = Modifier.padding(6.dp)) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = stringResource(id = R.string.saved),
+                                tint = Color.Red,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -241,7 +264,15 @@ fun TourItemCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = if (tour.availableSpots > 0) "${tour.availableSpots} spots left" else "Fully Booked",
+                            text = if (tour.availableSpots > 0) {
+                                pluralStringResource(
+                                    id = R.plurals.spots_left,
+                                    count = tour.availableSpots,
+                                    tour.availableSpots
+                                )
+                            } else {
+                                stringResource(id = R.string.fully_booked)
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = OutfitFamily,
                             color = if (tour.availableSpots > 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
@@ -276,7 +307,7 @@ fun TourItemCard(
 
                     // Price
                     Text(
-                        text = "$${tour.pricePerPerson.toInt()}/person",
+                        text = "$${tour.pricePerPerson.toInt()}${stringResource(id = R.string.per_person)}",
                         style = MaterialTheme.typography.titleLarge,
                         fontFamily = OutfitFamily,
                         fontWeight = FontWeight.Bold,

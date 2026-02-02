@@ -10,19 +10,25 @@ import com.tourly.app.login.domain.UserRole
 fun ProfileContent(
     modifier: Modifier = Modifier,
     user: User,
-    onSeeMore: () -> Unit = {},
+    isOwnProfile: Boolean = true,
+    onBackClick: () -> Unit = {},
+    onFollowClick: () -> Unit = {},
     tours: List<Tour> = emptyList()
 ) {
     if (user.role == UserRole.GUIDE) {
         GuideProfileContent(
             user = user,
+            isOwnProfile = isOwnProfile,
             tours = tours,
-            onSeeMore = onSeeMore,
+            onBackClick = onBackClick,
+            onFollowClick = onFollowClick,
             modifier = modifier
         )
     } else {
         TravelerProfileContent(
             user = user,
+            isOwnProfile = isOwnProfile,
+            onBackClick = onBackClick,
             modifier = modifier
         )
     }

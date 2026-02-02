@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tourly.app.core.domain.model.TourFilters
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.home.presentation.state.FilterUiState
 import java.time.LocalDate
 
@@ -112,8 +114,7 @@ fun HomeFilterSection(
                 )
                 Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    // TODO: Extract text
-                    text = "Clear all filters",
+                    text = stringResource(id = R.string.clear_all_filters),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelLarge
                 )

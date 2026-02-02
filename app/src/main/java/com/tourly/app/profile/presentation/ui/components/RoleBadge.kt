@@ -21,7 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
-import java.util.Locale
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 
 @Composable
 fun RoleBadge(
@@ -35,8 +36,9 @@ fun RoleBadge(
         UserRole.TRAVELER -> Icons.Outlined.CardTravel
     }
     
-    val roleText = role.name.lowercase().replaceFirstChar {
-        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
+    val roleText = when (role) {
+        UserRole.GUIDE -> stringResource(id = R.string.guide)
+        UserRole.TRAVELER -> stringResource(id = R.string.traveler)
     }
 
     Row(

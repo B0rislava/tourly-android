@@ -19,7 +19,10 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
+import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.TourFilters
 import com.tourly.app.home.presentation.state.FilterUiState
@@ -28,7 +31,7 @@ import com.tourly.app.home.presentation.ui.components.EmptyState
 import com.tourly.app.home.presentation.ui.components.ErrorState
 import com.tourly.app.home.presentation.ui.components.HomeFilterSection
 import com.tourly.app.home.presentation.ui.components.HomeHeaderSection
-import com.tourly.app.home.presentation.ui.components.TourItemCard
+import com.tourly.app.core.presentation.ui.components.TourItemCard
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,8 +49,9 @@ fun HomeContent(
     onLocationSelected: (String?) -> Unit,
     onClearFilters: () -> Unit,
     onRefresh: () -> Unit,
-    greeting: String,
+    greeting: Int,
     userName: String,
+
     isRefreshing: Boolean,
     onTourClick: (Long) -> Unit,
     onNotifyClick: () -> Unit,
@@ -68,7 +72,7 @@ fun HomeContent(
             // 1. Header Section (Always visible)
             item {
                 HomeHeaderSection(
-                    greeting = greeting,
+                    greeting = stringResource(id = greeting),
                     userName = userName,
                     onNotifyClick = onNotifyClick,
                     unreadCount = unreadCount,
@@ -131,9 +135,8 @@ fun HomeContent(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 32.dp),
-                                        // TODO: Strings.xml
-                                        title = "No results found",
-                                        description = "We couldn't find any tours matching \"$searchQuery\". Try adjusting your search."
+                                        title = stringResource(id = R.string.no_results_found),
+                                        description = stringResource(id = R.string.no_results_description, searchQuery)
                                     )
                                 }
                                 filterUiState.hasActiveFilters -> {
@@ -141,9 +144,8 @@ fun HomeContent(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 32.dp),
-                                        // TODO: Extract text
-                                        title = "No tours found",
-                                        description = "Try clearing your filters or selecting a different category."
+                                        title = stringResource(id = R.string.no_tours_found),
+                                        description = stringResource(id = R.string.no_tours_description)
                                     )
                                 }
                                 else -> {
@@ -170,7 +172,7 @@ fun HomeContent(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Text(
-                                        text = "Available Tours",
+                                        text = stringResource(id = R.string.available_tours),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontFamily = OutfitFamily
                                     )
@@ -181,11 +183,16 @@ fun HomeContent(
                                         shape = RoundedCornerShape(12.dp)
                                     ) {
                                         Text(
-                                            text = "${uiState.tours.size} tour${if(uiState.tours.size != 1) "s" else ""}",
+                                            text = pluralStringResource(
+                                                id = R.plurals.tour_count,
+                                                count = uiState.tours.size,
+                                                uiState.tours.size
+                                            ),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                         )
+
                                     }
                                 }
                             }

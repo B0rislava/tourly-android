@@ -11,5 +11,8 @@ data class Booking(
     val bookingDate: String,
     val status: String,
     val pricePerPerson: Double,
-    val totalPrice: Double
+    val totalPrice: Double,
+    val hasReview: Boolean = false,
+    val customerName: String? = null,
+    val customerImageUrl: String? = null
 )

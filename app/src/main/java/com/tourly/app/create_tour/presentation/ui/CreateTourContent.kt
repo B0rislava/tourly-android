@@ -23,7 +23,10 @@ import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,7 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom
 import com.google.android.gms.maps.model.LatLng
 import com.tourly.app.core.domain.model.LocationPrediction
 import com.google.maps.android.compose.GoogleMap
@@ -59,10 +62,11 @@ import com.tourly.app.create_tour.presentation.ui.components.PricingRow
 import com.tourly.app.create_tour.presentation.ui.components.TagSelector
 import com.tourly.app.create_tour.presentation.ui.components.TourDatePickerDialog
 import com.tourly.app.home.presentation.ui.components.SectionTitle
-import java.time.Instant
+import java.time.Instant.ofEpochMilli
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ofLocalizedDate
+import java.time.format.DateTimeFormatter.ofLocalizedTime
 import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,7 +100,7 @@ fun CreateTourContent(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         SectionTitle(
-            title = stringResource(id = R.string.tour_images),
+            title = stringResource(id = R.string.tour_image),
             icon = Icons.Outlined.Image
         )
         AddPhotoPlaceholder(
@@ -129,7 +133,7 @@ fun CreateTourContent(
         )
 
         val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(
+            position = fromLatLngZoom(
                 LatLng(state.latitude ?: 42.6977, state.longitude ?: 23.3219),
                 15f
             )
@@ -137,7 +141,7 @@ fun CreateTourContent(
 
         LaunchedEffect(state.latitude, state.longitude) {
             if (state.latitude != null && state.longitude != null) {
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                cameraPositionState.position = fromLatLngZoom(
                     LatLng(state.latitude, state.longitude),
                     15f
                 )
@@ -168,7 +172,7 @@ fun CreateTourContent(
                 if (state.latitude != null && state.longitude != null) {
                     Marker(
                         state = markerState,
-                        title = "Meeting Point",
+                        title = stringResource(id = R.string.meeting_point),
                         draggable = true
                     )
                 }
@@ -184,7 +188,7 @@ fun CreateTourContent(
             onValueChange = onMeetingPointAddressChanged,
             predictions = addressPredictions,
             onPredictionClick = onLocationPredictionClick,
-            placeholder = "Enter meeting address (e.g. Varba 10, Sofia)",
+            placeholder = stringResource(id = R.string.enter_meeting_address),
             error = state.locationError
         )
 
@@ -213,7 +217,7 @@ fun CreateTourContent(
             
             var showingPicker by remember { mutableStateOf(true) }
 
-            androidx.compose.material3.AlertDialog(
+            AlertDialog(
                 onDismissRequest = { showTimePicker = false },
                 confirmButton = {
                     TextButton(
@@ -222,27 +226,29 @@ fun CreateTourContent(
                             showTimePicker = false
                         }
                     ) {
-                        Text("OK")
+                        Text(stringResource(id = R.string.ok))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showTimePicker = false }) {
-                        Text("Cancel")
+                        Text(stringResource(id = R.string.cancel))
                     }
                 },
+
                 text = {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        androidx.compose.material3.IconButton(
+                        IconButton(
                             onClick = { showingPicker = !showingPicker }
                         ) {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 imageVector = if (showingPicker) Icons.Outlined.Keyboard else Icons.Outlined.AccessTime,
-                                contentDescription = "Toggle input mode"
+                                contentDescription = stringResource(id = R.string.toggle_input_mode)
                             )
                         }
+
                         if (showingPicker) {
                             TimePicker(state = timePickerState)
                         } else {
@@ -264,10 +270,10 @@ fun CreateTourContent(
             Box(modifier = Modifier.weight(1f)) {
                 CustomTextField(
                     value = state.scheduledDate?.let {
-                        Instant.ofEpochMilli(it)
+                        ofEpochMilli(it)
                             .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
-                            .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+                            .format(ofLocalizedDate(FormatStyle.MEDIUM))
                     } ?: "",
                     onValueChange = {},
                     placeholder = stringResource(id = R.string.tour_date_example),
@@ -282,11 +288,12 @@ fun CreateTourContent(
             
             Box(modifier = Modifier.weight(1f)) {
                 CustomTextField(
-                    value = state.startTime?.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)) ?: "",
+                    value = state.startTime?.format(ofLocalizedTime(FormatStyle.SHORT)) ?: "",
                     onValueChange = {},
-                    placeholder = "10:00 AM", // TODO: String resource
+                    placeholder = stringResource(id = R.string.time_example),
                     error = state.timeError,
                 )
+
                 Box(
                     modifier = Modifier
                         .matchParentSize()

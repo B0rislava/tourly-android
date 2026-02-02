@@ -2,17 +2,17 @@ package com.tourly.app.core.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tourly.app.core.domain.usecase.CancelBookingUseCase
-import com.tourly.app.core.domain.usecase.GetMyBookingsUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
+import com.tourly.app.core.domain.usecase.GetUserProfileByIdUseCase
 import com.tourly.app.core.domain.usecase.UpdateUserProfileUseCase
 import com.tourly.app.core.domain.usecase.UpdateProfilePictureUseCase
+import com.tourly.app.core.domain.usecase.ObserveAuthStateUseCase
+import com.tourly.app.core.domain.usecase.ToggleFollowUseCase
 import com.tourly.app.create_tour.domain.usecase.GetMyToursUseCase
-import com.tourly.app.create_tour.domain.usecase.DeleteTourUseCase
-import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
+import com.tourly.app.create_tour.domain.usecase.GetUserToursUseCase
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.network.Result
-import com.tourly.app.core.domain.usecase.ObserveAuthStateUseCase
+import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,17 +24,19 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.lifecycle.SavedStateHandle
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val getUserProfileUseCase: GetUserProfileUseCase,
+    private val getUserProfileByIdUseCase: GetUserProfileByIdUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
-    private val getMyBookingsUseCase: GetMyBookingsUseCase,
-    private val cancelBookingUseCase: CancelBookingUseCase,
     private val getMyToursUseCase: GetMyToursUseCase,
-    private val deleteTourUseCase: DeleteTourUseCase,
-    private val observeAuthStateUseCase: ObserveAuthStateUseCase
+    private val getUserToursUseCase: GetUserToursUseCase,
+    private val observeAuthStateUseCase: ObserveAuthStateUseCase,
+    private val toggleFollowUseCase: ToggleFollowUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UserUiState>(UserUiState.Idle)
@@ -49,8 +51,14 @@ class UserViewModel @Inject constructor(
         }
     }
 
+
     init {
-        observeToken()
+        val userId = savedStateHandle.get<Long>("userId")
+        if (userId != null && userId != -1L) {
+             fetchOtherUserProfile(userId)
+        } else {
+            observeToken()
+        }
     }
 
     private fun observeToken() {
@@ -60,8 +68,10 @@ class UserViewModel @Inject constructor(
                 .collect { isLoggedIn ->
                     if (isLoggedIn) {
                         val currentState = _uiState.value
-                        if (currentState !is UserUiState.Success || currentState.user.email == "") {
-                             fetchUserProfile()
+                        if (currentState !is UserUiState.Success || currentState.isOwnProfile) {
+                             if (currentState !is UserUiState.Success || currentState.user.email == "") {
+                                 fetchUserProfile()
+                             }
                         }
                     } else {
                         _uiState.value = UserUiState.Idle
@@ -70,27 +80,52 @@ class UserViewModel @Inject constructor(
         }
     }
 
+
+    fun refreshBookings(forceOwnProfile: Boolean = false) {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            
+            // If we force own profile or aren't in a success state yet, fetch appropriate profile
+            if (forceOwnProfile || currentState !is UserUiState.Success) {
+                val userId = savedStateHandle.get<Long>("userId")
+                if (userId != null && userId != -1L && !forceOwnProfile) {
+                    fetchOtherUserProfile(userId)
+                } else {
+                    fetchUserProfile()
+                }
+                return@launch
+            }
+
+            if (currentState.isOwnProfile) {
+                if (currentState.user.role == UserRole.GUIDE) {
+                    fetchTours()
+                }
+            } else {
+                // Fetch other user's tours if they are a guide
+                if (currentState.user.role == UserRole.GUIDE) {
+                    fetchOtherUserTours(currentState.user.id)
+                }
+            }
+        }
+    }
+
     private suspend fun fetchUserProfile() {
         val currentState = _uiState.value
-        if (currentState !is UserUiState.Success) {
+        // If we are currently showing someone else's profile, we MUST reload everything
+        if (currentState !is UserUiState.Success || !currentState.isOwnProfile) {
             _uiState.value = UserUiState.Loading
         }
         
         when (val result = getUserProfileUseCase()) {
             is Result.Success -> {
                 val user = result.data
-                _uiState.value = when (val current = _uiState.value) {
-                    is UserUiState.Success -> current.copy(
-                        user = user,
-                        bookings = if (user.role == UserRole.TRAVELER) current.bookings else emptyList(),
-                        tours = if (user.role == UserRole.GUIDE) current.tours else emptyList()
-                    )
-                    else -> UserUiState.Success(user)
-                }
+                _uiState.value = UserUiState.Success(
+                    user = user,
+                    isOwnProfile = true, // Always true for this method
+                    tours = if (user.role == UserRole.GUIDE) (currentState as? UserUiState.Success)?.tours ?: emptyList() else emptyList()
+                )
                 
-                if (user.role == UserRole.TRAVELER) {
-                    fetchBookings()
-                } else if (user.role == UserRole.GUIDE) {
+                if (user.role == UserRole.GUIDE) {
                     fetchTours()
                 }
             }
@@ -100,39 +135,42 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun refreshBookings() {
+
+    fun fetchOtherUserProfile(userId: Long) {
         viewModelScope.launch {
-            // If we're already success, just fetch
-            val currentState = _uiState.value
-            if (currentState is UserUiState.Success) {
-                if (currentState.user.role == UserRole.TRAVELER) {
-                    fetchBookings()
-                } else {
-                    fetchTours()
+            _uiState.value = UserUiState.Loading
+            when (val result = getUserProfileByIdUseCase(userId)) {
+                is Result.Success -> {
+                    val user = result.data
+                    _uiState.value = UserUiState.Success(
+                        user = user,
+                        isOwnProfile = false
+                    )
+                    if (user.role == UserRole.GUIDE) {
+                        fetchOtherUserTours(userId)
+                    }
                 }
-            } else {
-                // If not success, try full profile fetch which will fetch specific data too
-                fetchUserProfile()
+                is Result.Error -> {
+                    _uiState.value = UserUiState.Error(result.message)
+                }
             }
         }
     }
 
-    private suspend fun fetchBookings() {
-        val currentState = _uiState.value
-        if (currentState is UserUiState.Success) {
-            when (val result = getMyBookingsUseCase()) {
-                is Result.Success -> {
-                    val current = _uiState.value
-                    if (current is UserUiState.Success) {
-                        _uiState.value = current.copy(bookings = result.data)
-                    }
+    private suspend fun fetchOtherUserTours(userId: Long) {
+        when (val result = getUserToursUseCase(userId)) {
+            is Result.Success -> {
+                val current = _uiState.value
+                if (current is UserUiState.Success) {
+                    _uiState.value = current.copy(tours = result.data)
                 }
-                is Result.Error -> {
-                    // TODO: Handle error
-                }
+            }
+            is Result.Error -> {
+                // TODO: Handle error
             }
         }
     }
+
 
     private suspend fun fetchTours() {
         val currentState = _uiState.value
@@ -151,30 +189,31 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun cancelBooking(id: Long) {
-        viewModelScope.launch {
-            when (val result = cancelBookingUseCase(id)) {
-                is Result.Success -> {
-                    _events.send("Booking cancelled successfully")
-                    fetchBookings()
-                }
-                is Result.Error -> {
-                    _events.send(result.message)
-                }
-            }
-        }
-    }
 
-    fun deleteTour(id: Long) {
+
+    fun toggleFollow() {
+        val currentState = _uiState.value
+        if (currentState !is UserUiState.Success) return
+        val user = currentState.user
+
         viewModelScope.launch {
-            when (val result = deleteTourUseCase(id)) {
-                is Result.Success -> {
-                    _events.send("Tour deleted successfully")
-                    fetchTours()
-                }
-                is Result.Error -> {
-                    _events.send(result.message)
-                }
+            // Optimistic update
+            val newIsFollowing = !user.isFollowing
+            val newCount = if (newIsFollowing) user.followerCount + 1 else user.followerCount - 1
+            
+            _uiState.value = currentState.copy(
+                user = user.copy(
+                    isFollowing = newIsFollowing,
+                    followerCount = newCount.coerceAtLeast(0)
+                )
+            )
+
+            val result = toggleFollowUseCase(user.id, newIsFollowing)
+
+            if (result is Result.Error) {
+                // Revert logic could be simpler or just reload
+                _uiState.value = currentState // Revert to original state
+                _events.send("Failed to update follow status: ${result.message}")
             }
         }
     }

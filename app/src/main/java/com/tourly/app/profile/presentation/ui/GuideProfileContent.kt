@@ -1,6 +1,5 @@
 package com.tourly.app.profile.presentation.ui
 
-import java.util.Locale
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,25 +9,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,15 +32,21 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import com.tourly.app.profile.presentation.ui.components.ProfileStatItem
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
+import com.tourly.app.R
+import java.util.Locale.getDefault
 
 @Composable
 fun GuideProfileContent(
     modifier: Modifier = Modifier,
     user: User,
+    isOwnProfile: Boolean = true,
     tours: List<Tour>,
-    onSeeMore: () -> Unit,
+    onFollowClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -56,12 +57,28 @@ fun GuideProfileContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (!isOwnProfile) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back)
+                    )
+                }
+
+            }
+        }
+        
         ProfileHeader(
             firstName = user.firstName,
             lastName = user.lastName,
             email = user.email,
             role = user.role,
-            profilePictureUrl = user.profilePictureUrl
+            profilePictureUrl = user.profilePictureUrl,
+            isOwnProfile = isOwnProfile
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -71,31 +88,50 @@ fun GuideProfileContent(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            GuideStatItem(
+            ProfileStatItem(
                 icon = Icons.Default.Star,
-                value = String.format(Locale.getDefault(), "%.1f", user.rating),
-                label = "${user.reviewsCount} reviews",
+                value = String.format(getDefault(), "%.1f", user.rating),
+                label = pluralStringResource(
+                    id = R.plurals.reviews_label,
+                    count = user.reviewsCount,
+                    user.reviewsCount
+                ),
                 modifier = Modifier.weight(1f)
             )
-            GuideStatItem(
+            ProfileStatItem(
                 icon = Icons.Default.People,
                 value = "${user.followerCount}",
-                label = "Followers",
+                label = stringResource(id = R.string.followers),
                 modifier = Modifier.weight(1f)
             )
-            GuideStatItem(
+            ProfileStatItem(
                 icon = Icons.Default.WorkspacePremium,
                 value = "${tours.size}",
-                label = "Tours",
+                label = stringResource(id = R.string.available_tours),
                 modifier = Modifier.weight(1f)
             )
+
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Primary Actions
-
-
+        if (!isOwnProfile) {
+            Button(
+                onClick = onFollowClick,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (user.isFollowing) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
+                    contentColor = if (user.isFollowing) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = if (user.isFollowing) stringResource(id = R.string.following) else stringResource(id = R.string.follow),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontFamily = OutfitFamily
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -103,13 +139,14 @@ fun GuideProfileContent(
         if (!user.bio.isNullOrBlank()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "About me",
+                    text = stringResource(id = R.string.about_me),
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
+
                     text = user.bio,
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = OutfitFamily,
@@ -123,13 +160,14 @@ fun GuideProfileContent(
         if (!user.certifications.isNullOrBlank()) {
              Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Certifications",
+                    text = stringResource(id = R.string.certifications),
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
+
                     text = user.certifications,
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = OutfitFamily,
@@ -139,137 +177,12 @@ fun GuideProfileContent(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // Tours Section
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "My Tours",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontFamily = OutfitFamily,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                if (tours.isNotEmpty()) {
-                    TextButton(onClick = onSeeMore) {
-                        Text(text = "See more", fontFamily = OutfitFamily)
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            if (tours.isEmpty()) {
-                Text(
-                    text = "You haven't created any tours yet.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = OutfitFamily,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            } else {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(tours) { tour ->
-                        CompactTourCard(tour = tour)
-                    }
-                }
-            }
-        }
+        
         
         Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
-@Composable
-fun CompactTourCard(
-    tour: Tour,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.width(240.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = tour.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontFamily = OutfitFamily,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = tour.location,
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = OutfitFamily,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "${tour.rating} ★",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontFamily = OutfitFamily
-                )
-                Text(
-                    text = "$${tour.pricePerPerson.toInt()}",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontFamily = OutfitFamily
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun GuideStatItem(
-    icon: ImageVector,
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            fontFamily = OutfitFamily
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            fontFamily = OutfitFamily,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -314,7 +227,6 @@ private fun GuideProfileContentPreview() {
                 guideImageUrl = null,
                 startTime = "10:00"
             )
-        ),
-        onSeeMore = {}
+        )
     )
 }

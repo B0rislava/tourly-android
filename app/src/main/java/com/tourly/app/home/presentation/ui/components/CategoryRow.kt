@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.tourly.app.core.presentation.util.TagUtils
 import com.tourly.app.core.domain.model.Tag
 import androidx.compose.ui.unit.dp
 
@@ -34,7 +35,7 @@ fun CategoryRow(
                 onClick = { onTagToggle(tag.name) },
                 label = {
                     Text(
-                        text = tag.displayName,
+                        text = TagUtils.getTranslatedName(tag),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 4.dp)
                     )

@@ -1,6 +1,8 @@
 package com.tourly.app.profile.presentation.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,11 +27,16 @@ import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
+import com.tourly.app.profile.presentation.ui.components.ProfileStatItem
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 
 @Composable
 fun TravelerProfileContent(
+    modifier: Modifier = Modifier,
     user: User,
-    modifier: Modifier = Modifier
+    isOwnProfile: Boolean = true,
+    onBackClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -35,13 +47,45 @@ fun TravelerProfileContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (!isOwnProfile) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back)
+                    )
+                }
+            }
+        }
+
         ProfileHeader(
             firstName = user.firstName,
             lastName = user.lastName,
             email = user.email,
             role = user.role,
-            profilePictureUrl = user.profilePictureUrl
+            profilePictureUrl = user.profilePictureUrl,
+            isOwnProfile = isOwnProfile
         )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Stats Section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ProfileStatItem(
+                icon = Icons.Default.People,
+                value = "${user.followingCount}",
+                label = stringResource(id = R.string.following),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
 
 
@@ -49,7 +93,7 @@ fun TravelerProfileContent(
         if (!user.bio.isNullOrBlank()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "About me",
+                    text = stringResource(id = R.string.about_me),
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold
@@ -81,3 +125,4 @@ private fun TravelerProfileContentPreview() {
         )
     )
 }
+

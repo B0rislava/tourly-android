@@ -76,6 +76,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -112,6 +113,13 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.auth)
+
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.websockets)
+    implementation(libs.krossbow.stomp.core)
+    implementation(libs.krossbow.websocket.ktor)
+    implementation(libs.krossbow.stomp.kxserialization)
+    implementation(libs.krossbow.stomp.kxserialization.json)
 
     implementation(libs.google.tink.android)
     implementation(libs.androidx.datastore.preferences)

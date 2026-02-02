@@ -19,7 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tourly.app.R
 import com.tourly.app.login.domain.UserRole
 
 @Composable
@@ -60,7 +62,7 @@ fun RoleSelector(
 
         Row(modifier = Modifier.fillMaxSize()) {
             RoleButton(
-                text = "Traveler",
+                text = stringResource(id = R.string.traveler),
                 icon = Icons.Outlined.CardTravel,
                 isActive = selectedRole == UserRole.TRAVELER,
                 onClick = { onRoleSelected(UserRole.TRAVELER) },
@@ -68,7 +70,7 @@ fun RoleSelector(
             )
 
             RoleButton(
-                text = "Guide",
+                text = stringResource(id = R.string.guide),
                 icon = Icons.Outlined.Explore,
                 isActive = selectedRole == UserRole.GUIDE,
                 onClick = { onRoleSelected(UserRole.GUIDE) },

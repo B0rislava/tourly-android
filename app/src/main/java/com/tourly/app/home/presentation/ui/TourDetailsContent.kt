@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LocationOn
@@ -53,21 +54,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.tourly.app.R
 import com.tourly.app.core.domain.model.Tour
+import com.tourly.app.core.domain.model.Review
 import com.tourly.app.home.presentation.ui.components.GuideCard
 import com.tourly.app.home.presentation.ui.components.InfoRow
-import androidx.core.net.toUri
+import com.tourly.app.home.presentation.ui.components.ReviewItem
 
 import com.tourly.app.login.domain.UserRole
 
 @Composable
 fun TourDetailsContent(
     tour: Tour,
+    reviews: List<Review> = emptyList(),
     userRole: UserRole? = null,
     onBackClick: () -> Unit,
-    onEditTour: (Long) -> Unit = {}
+    onGuideClick: (Long) -> Unit = {},
+    onEditTour: (Long) -> Unit = {},
+    onToggleSave: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -83,7 +91,12 @@ fun TourDetailsContent(
                 .height(300.dp)
         ) {
             AsyncImage(
-                model = tour.imageUrl ?: R.drawable.tour_placeholder,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(tour.imageUrl ?: R.drawable.tour_placeholder)
+                    .crossfade(true)
+                    .placeholder(R.drawable.tour_placeholder)
+                    .error(R.drawable.tour_placeholder)
+                    .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -99,10 +112,14 @@ fun TourDetailsContent(
                 IconButton(
                     onClick = onBackClick,
                     modifier = Modifier
-                        .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                         .size(40.dp)
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -110,35 +127,43 @@ fun TourDetailsContent(
                         IconButton(
                             onClick = { onEditTour(tour.id) },
                             modifier = Modifier
-                                .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                                 .size(40.dp)
                         ) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit Tour")
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(id = R.string.edit_tour),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                     IconButton(
                         onClick = { /* Share */ },
                         modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                             .size(40.dp)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = "Share")
+                        Icon(
+                            Icons.Default.Share,
+                            contentDescription = stringResource(id = R.string.share),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                     IconButton(
-                        onClick = { /* Favorite */ },
+                        onClick = onToggleSave,
                         modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                             .size(40.dp)
                     ) {
-                        Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite")
+                        Icon(
+                            if (tour.isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = stringResource(id = R.string.favorite),
+                            tint = if (tour.isSaved) Color.Red else MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             }
         }
-
-        // Content Card (overlapping the image slightly using negative offset or just placing it below)
-        // Design shows a card overlaying the bottom of the image.
-        // We can achieve this by having the Column continue with a Surface that has top rounded corners and negative offset.
 
         Surface(
             modifier = Modifier
@@ -163,7 +188,8 @@ fun TourDetailsContent(
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = Color(0xFFFFF0E3) // Light Orange
+                        color = Color(0xFFFFF0E3)
+                        // TODO: Remove hardcoded colors
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -198,12 +224,22 @@ fun TourDetailsContent(
                     InfoRow(icon = Icons.Default.CalendarToday, text = tour.scheduledDate) // Needs formatting
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+                if (!tour.startTime.isNullOrEmpty()) {
+                    InfoRow(
+                        icon = Icons.Default.AccessTime,
+                        text = "${stringResource(id = R.string.start_time)}: ${tour.startTime}"
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    InfoRow(icon = Icons.Default.AccessTime, text = tour.duration)
+                    InfoRow(
+                        icon = Icons.Default.AccessTime,
+                        text = "${stringResource(id = R.string.duration_label)}: ${tour.duration}"
+                    )
                     InfoRow(
                         icon = Icons.Default.Groups, 
-                        text = "Places: ${tour.availableSpots} / ${tour.maxGroupSize}",
+                        text = stringResource(id = R.string.places_count, tour.availableSpots, tour.maxGroupSize),
                         textColor = if (tour.availableSpots > 0) Color.Gray else MaterialTheme.colorScheme.error
                     )
                 }
@@ -212,19 +248,18 @@ fun TourDetailsContent(
 
                 // Guide Section
                 Text(
-                    // TODO: strings.xml
-                    text = "Your guide",
+                    text = stringResource(id = R.string.your_guide),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                GuideCard(tour)
+                GuideCard(tour, onGuideClick = onGuideClick)
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // About Section
                 Text(
-                    text = "About this tour",
+                    text = stringResource(id = R.string.about_this_tour),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -239,7 +274,7 @@ fun TourDetailsContent(
 
                 // Meeting Location (Static Map)
                 Text(
-                    text = "Meeting Location",
+                    text = stringResource(id = R.string.meeting_location),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -268,7 +303,7 @@ fun TourDetailsContent(
                 ) {
                     Marker(
                         state = markerState,
-                        title = "Meeting Point",
+                        title = stringResource(id = R.string.meeting_point),
                         draggable = false
                     )
                 }
@@ -289,7 +324,7 @@ fun TourDetailsContent(
                         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
                         context.startActivity(mapIntent)
                     }) {
-                        Text("Open in Maps")
+                        Text(stringResource(id = R.string.open_in_maps))
                     }
                 }
 
@@ -297,7 +332,7 @@ fun TourDetailsContent(
 
                 // What's included
                 Text(
-                    text = "What's included",
+                    text = stringResource(id = R.string.tour_included),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -331,7 +366,7 @@ fun TourDetailsContent(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Cancellation Policy",
+                        text = stringResource(id = R.string.cancellation_policy),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -340,9 +375,9 @@ fun TourDetailsContent(
 
                 // Render policy points
                 val policies = listOf(
-                    "Full refund: Cancel up to 7 days before",
-                    "50% refund: Cancel 3-7 days before",
-                    "No refund: Cancellations within 3 days"
+                    stringResource(id = R.string.policy_full_refund),
+                    stringResource(id = R.string.policy_partial_refund),
+                    stringResource(id = R.string.policy_no_refund)
                 )
                 policies.forEach { policy ->
                     Row(modifier = Modifier.padding(vertical = 4.dp)) {
@@ -356,12 +391,27 @@ fun TourDetailsContent(
 
                 // Reviews Preview
                 Text(
-                    text = "Reviews (${tour.reviewsCount})",
+                    text = stringResource(id = R.string.reviews_count, tour.reviewsCount),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                // Add review items here...
+                
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (reviews.isEmpty()) {
+                    Text(
+                        text = stringResource(id = R.string.no_reviews_yet),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
+                } else {
+                    reviews.forEach { review ->
+                        ReviewItem(review)
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
         }
     }
 }
+

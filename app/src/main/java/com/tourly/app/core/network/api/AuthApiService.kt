@@ -40,6 +40,10 @@ class AuthApiService @Inject constructor(
         return client.get("users/me")
     }
 
+    suspend fun getProfileById(userId: Long): HttpResponse {
+        return client.get("users/$userId")
+    }
+
     suspend fun updateProfile(request: UpdateProfileRequestDto): HttpResponse {
         return client.put("users/me") {
             contentType(ContentType.Application.Json)
@@ -89,5 +93,13 @@ class AuthApiService @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun followUser(userId: Long): HttpResponse {
+        return client.post("users/$userId/follow")
+    }
+
+    suspend fun unfollowUser(userId: Long): HttpResponse {
+        return client.delete("users/$userId/follow")
     }
 }

@@ -89,7 +89,10 @@ fun PricingRow(
                         textAlign = androidx.compose.ui.text.style.TextAlign.End,
                         fontFamily = OutfitFamily
                     ),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        autoCorrectEnabled = false
+                    ),
                     isError = isError
                 )
             }
