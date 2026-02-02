@@ -31,6 +31,7 @@ object TourMapper {
             guideImageUrl = dto.guideImageUrl,
             latitude = dto.latitude,
             longitude = dto.longitude,
+            isSaved = dto.isSaved,
             tags = dto.tags.map { TagMapper.toDomain(it) }
         )
     }

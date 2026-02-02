@@ -9,4 +9,6 @@ interface HomeToursRepository {
     suspend fun getAllTags(): Result<List<Tag>>
     suspend fun getAllTours(filters: TourFilters): Result<List<Tour>>
     suspend fun getTourDetails(id: Long): Result<Tour>
+    suspend fun toggleSaveTour(id: Long): Result<Boolean>
+    suspend fun getSavedTours(): Result<List<Tour>>
 }

@@ -144,6 +144,14 @@ class TourApiService @Inject constructor(
         return client.delete("tours/$id")
     }
 
+    suspend fun toggleSaveTour(id: Long): HttpResponse {
+        return client.post("tours/$id/toggle-save")
+    }
+
+    suspend fun getSavedTours(): HttpResponse {
+        return client.get("tours/saved")
+    }
+
     private fun getFileName(context: Context, uri: Uri): String? {
         return context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             val nameIndex = cursor.getColumnIndex(DISPLAY_NAME)

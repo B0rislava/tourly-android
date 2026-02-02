@@ -10,5 +10,6 @@ data class Review(
     val tourRating: Int,
     val guideRating: Int,
     val comment: String?,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
+    val tourTitle: String? = null
 )

@@ -37,4 +37,15 @@ class HomeToursRepositoryImpl @Inject constructor(
             is Result.Error -> result
         }
     }
+
+    override suspend fun toggleSaveTour(id: Long): Result<Boolean> {
+        return NetworkResponseMapper.map(apiService.toggleSaveTour(id))
+    }
+
+    override suspend fun getSavedTours(): Result<List<Tour>> {
+        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getSavedTours())) {
+            is Result.Success -> Result.Success(TourMapper.toDomainList(result.data))
+            is Result.Error -> result
+        }
+    }
 }

@@ -73,6 +73,20 @@ class ReviewRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getMyReviews(): Result<List<Review>> {
+        return try {
+            val response = httpClient.get("${BuildConfig.BASE_URL}reviews/my")
+            if (response.status.value in 200..299) {
+                val dtos = response.body<List<ReviewDto>>()
+                Result.Success(dtos.map { mapDtoToDomain(it) })
+            } else {
+                Result.Error(code = response.status.value.toString(), message = "Failed to fetch reviews")
+            }
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        }
+    }
+
     private fun mapDtoToDomain(dto: ReviewDto): Review {
         return Review(
             id = dto.id,
@@ -82,7 +96,8 @@ class ReviewRepositoryImpl @Inject constructor(
             tourRating = dto.tourRating,
             guideRating = dto.guideRating,
             comment = dto.comment,
-            createdAt = try { LocalDateTime.parse(dto.createdAt) } catch (e: Exception) { LocalDateTime.now() }
+            createdAt = try { LocalDateTime.parse(dto.createdAt) } catch (e: Exception) { LocalDateTime.now() },
+            tourTitle = dto.tourTitle
         )
     }
 }

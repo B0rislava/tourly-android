@@ -18,7 +18,9 @@ class BookingMapper @Inject constructor() {
             status = dto.status,
             pricePerPerson = dto.pricePerPerson,
             totalPrice = dto.totalPrice,
-            hasReview = dto.hasReview
+            hasReview = dto.hasReview,
+            customerName = dto.customerName,
+            customerImageUrl = dto.customerImageUrl
         )
     }
 }

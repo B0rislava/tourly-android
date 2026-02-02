@@ -10,5 +10,6 @@ data class ReviewDto(
     val tourRating: Int,
     val guideRating: Int,
     val comment: String?,
-    val createdAt: String
+    val createdAt: String,
+    val tourTitle: String? = null
 )

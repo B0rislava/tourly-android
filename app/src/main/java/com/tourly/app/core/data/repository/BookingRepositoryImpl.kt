@@ -30,6 +30,13 @@ class BookingRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getGuideBookings(): Result<List<Booking>> {
+        return when (val result = NetworkResponseMapper.map<List<BookingResponseDto>>(apiService.getGuideBookings())) {
+            is Result.Success -> Result.Success(result.data.map { mapper.toDomain(it) })
+            is Result.Error -> result
+        }
+    }
+
     override suspend fun cancelBooking(id: Long): Result<Unit> {
         return when (val result = NetworkResponseMapper.map<Unit>(apiService.cancelBooking(id))) {
             is Result.Success -> Result.Success(Unit)

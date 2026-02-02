@@ -7,13 +7,21 @@ import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.domain.model.Review
 import com.tourly.app.home.domain.usecase.GetTourDetailsUseCase
 import com.tourly.app.home.domain.usecase.BookTourUseCase
-import com.tourly.app.reviews.domain.repository.ReviewRepository
+import com.tourly.app.home.domain.usecase.ToggleSaveTourUseCase
+import com.tourly.app.reviews.domain.usecase.GetTourReviewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed interface TourDetailsEvent {
+    data class ShowSnackbar(val message: String) : TourDetailsEvent
+    data object BookingSuccess : TourDetailsEvent
+}
 
 sealed interface TourDetailsUiState {
     data object Loading : TourDetailsUiState
@@ -22,8 +30,7 @@ sealed interface TourDetailsUiState {
         val tour: Tour,
         val reviews: List<Review> = emptyList(),
         val isBooking: Boolean = false,
-        val bookingError: String? = null,
-        val isBookingSuccess: Boolean = false
+        val isSavingTour: Boolean = false
     ) : TourDetailsUiState
 }
 
@@ -31,11 +38,54 @@ sealed interface TourDetailsUiState {
 class TourDetailsViewModel @Inject constructor(
     private val getTourDetailsUseCase: GetTourDetailsUseCase,
     private val bookTourUseCase: BookTourUseCase,
-    private val reviewRepository: ReviewRepository
+    private val toggleSaveTourUseCase: ToggleSaveTourUseCase,
+    private val getTourReviewsUseCase: GetTourReviewsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TourDetailsUiState>(TourDetailsUiState.Loading)
     val uiState: StateFlow<TourDetailsUiState> = _uiState.asStateFlow()
+
+    private val _events = Channel<TourDetailsEvent>()
+    val events = _events.receiveAsFlow()
+
+    fun toggleSaveTour(tourId: Long) {
+        val currentState = _uiState.value
+        if (currentState !is TourDetailsUiState.Success) return
+
+        val tour = currentState.tour
+        val newIsSaved = !tour.isSaved
+
+        // Optimistic update
+        _uiState.value = currentState.copy(
+            tour = tour.copy(isSaved = newIsSaved),
+            isSavingTour = true
+        )
+
+        viewModelScope.launch {
+            when (val result = toggleSaveTourUseCase(tourId)) {
+                is Result.Success -> {
+                    val current = _uiState.value
+                    if (current is TourDetailsUiState.Success) {
+                        _uiState.value = current.copy(
+                            tour = tour.copy(isSaved = result.data),
+                            isSavingTour = false
+                        )
+                    }
+                }
+                is Result.Error -> {
+                    val current = _uiState.value
+                    if (current is TourDetailsUiState.Success) {
+                        // Revert optimistic update
+                        _uiState.value = current.copy(
+                            tour = tour,
+                            isSavingTour = false
+                        )
+                    }
+                    _events.send(TourDetailsEvent.ShowSnackbar(result.message))
+                }
+            }
+        }
+    }
 
     fun loadTour(id: Long) {
         viewModelScope.launch {
@@ -44,7 +94,7 @@ class TourDetailsViewModel @Inject constructor(
                 is Result.Success -> {
                     val tour = result.data
                     // Fetch reviews
-                    val reviews = when (val reviewResult = reviewRepository.getReviewsForTour(id)) {
+                    val reviews = when (val reviewResult = getTourReviewsUseCase(id)) {
                         is Result.Success -> reviewResult.data
                         else -> emptyList() // Ignore error for now, show tour
                     }
@@ -62,42 +112,36 @@ class TourDetailsViewModel @Inject constructor(
         if (currentState !is TourDetailsUiState.Success) return
 
         viewModelScope.launch {
-            _uiState.value = currentState.copy(isBooking = true, bookingError = null)
+            _uiState.value = currentState.copy(isBooking = true)
 
             when (val result = bookTourUseCase(tourId, numberOfParticipants)) {
                 is Result.Success -> {
                     // Reload tour to update available spots
                     val reloadResult = getTourDetailsUseCase(tourId)
-                    if (reloadResult is Result.Success) {
-                        _uiState.value = currentState.copy(
-                            tour = reloadResult.data,
-                            isBooking = false,
-                            isBookingSuccess = true
-                        )
-                    } else {
-                        // Even if reload fails, booking was success
-                        _uiState.value = currentState.copy(isBooking = false, isBookingSuccess = true)
+                    val current = _uiState.value
+                    if (current is TourDetailsUiState.Success) {
+                        if (reloadResult is Result.Success) {
+                            _uiState.value = current.copy(
+                                tour = reloadResult.data,
+                                isBooking = false
+                            )
+                        } else {
+                            // Even if reload fails, booking was success
+                            _uiState.value = current.copy(isBooking = false)
+                        }
                     }
+                    _events.send(TourDetailsEvent.BookingSuccess)
                 }
                 is Result.Error -> {
-                    _uiState.value = currentState.copy(
-                        isBooking = false,
-                        bookingError = result.message
-                    )
+                    val current = _uiState.value
+                    if (current is TourDetailsUiState.Success) {
+                        _uiState.value = current.copy(isBooking = false)
+                    }
+                    _events.send(TourDetailsEvent.ShowSnackbar(result.message))
                 }
             }
         }
     }
 
-    fun resetBookingState() {
-        val currentState = _uiState.value
-        if (currentState is TourDetailsUiState.Success) {
-            _uiState.value = currentState.copy(
-                isBooking = false,
-                bookingError = null,
-                isBookingSuccess = false
-            )
-        }
-    }
 }
 

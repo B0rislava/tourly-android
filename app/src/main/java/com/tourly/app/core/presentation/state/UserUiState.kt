@@ -14,7 +14,8 @@ sealed interface UserUiState {
         val isEditing: Boolean = false,
         val editState: EditProfileUiState = EditProfileUiState(),
         val bookings: List<Booking> = emptyList(),
-        val tours: List<Tour> = emptyList()
+        val tours: List<Tour> = emptyList(),
+        val savedTours: List<Tour> = emptyList()
     ) : UserUiState
     data class Error(val message: String) : UserUiState
 }
