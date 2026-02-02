@@ -8,6 +8,7 @@ data class ChatMessageDto(
     val tourId: Long,
     val senderId: Long,
     val senderName: String,
+    val senderRole: String? = null,
     val content: String,
     val timestamp: String // ISO LocalDateTime string
 )

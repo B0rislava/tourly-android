@@ -8,5 +8,6 @@ data class Message(
     val senderName: String,
     val content: String,
     val timestamp: LocalDateTime,
-    val isFromMe: Boolean
+    val isFromMe: Boolean,
+    val isGuide: Boolean = false
 )

@@ -5,6 +5,7 @@ import com.tourly.app.chat.data.dto.ChatMessageDto
 import com.tourly.app.chat.domain.model.Message
 import com.tourly.app.chat.domain.repository.ChatRepository
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
+import com.tourly.app.home.domain.usecase.GetTourDetailsUseCase
 import com.tourly.app.core.network.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -39,7 +40,8 @@ import javax.inject.Singleton
 class ChatRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
     private val stompClient: StompClient,
-    private val getUserProfileUseCase: GetUserProfileUseCase
+    private val getUserProfileUseCase: GetUserProfileUseCase,
+    private val getTourDetailsUseCase: GetTourDetailsUseCase
 ) : ChatRepository {
 
     private var stompSession: StompSessionWithKxSerialization? = null
@@ -101,6 +103,14 @@ class ChatRepositoryImpl @Inject constructor(
     override fun getMessages(tourId: Long): Flow<List<Message>> = callbackFlow {
         val userId = ensureValidUserId()
         println("ChatRepository: Starting message flow with userId=$userId for tour=$tourId")
+
+        // Fetch tour details to get guide ID
+        var tourGuideId = -1L
+        val tourResult = getTourDetailsUseCase(tourId)
+        if (tourResult is Result.Success) {
+            tourGuideId = tourResult.data.tourGuideId
+            println("ChatRepository: Found tour guide ID: $tourGuideId")
+        }
 
         // 1. Fetch History Always (Refresh)
         launch {
@@ -176,10 +186,9 @@ class ChatRepositoryImpl @Inject constructor(
         // 3. Reactive mapping
         val job = _currentUserId
             .filter { it != -1L }
-            .combine(_messages) { userId, messages ->
-                // println("ChatRepository: Mapping messages for tour $tourId with userId=$userId")
+            .combine(_messages) { uid, messages ->
                 val dtos = messages[tourId] ?: emptyList()
-                dtos.map { mapDtoToDomain(it, userId) }
+                dtos.map { mapDtoToDomain(it, uid, tourGuideId) }
             }
             .onEach { messages ->
                 // println("ChatRepository: Emitting ${messages.size} messages")
@@ -234,9 +243,10 @@ class ChatRepositoryImpl @Inject constructor(
         _messages.value = emptyMap() // Clear cache to prevent stale messages across users
     }
 
-    private fun mapDtoToDomain(dto: ChatMessageDto, currentUserId: Long): Message {
+    private fun mapDtoToDomain(dto: ChatMessageDto, currentUserId: Long, tourGuideId: Long): Message {
         val isFromMe = dto.senderId == currentUserId
-        println("ChatRepository: Mapping msg ${dto.id}: sender=${dto.senderId}, myId=$currentUserId -> isFromMe=$isFromMe (content='${dto.content}')")
+        val isGuide = (dto.senderId == tourGuideId) || dto.senderRole.equals("GUIDE", ignoreCase = true)
+
         return Message(
             id = dto.id?.toString() ?: randomUUID().toString(),
             senderId = dto.senderId,
@@ -247,7 +257,8 @@ class ChatRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 LocalDateTime.now()
             },
-            isFromMe = isFromMe
+            isFromMe = isFromMe,
+            isGuide = isGuide
         )
     }
 }
