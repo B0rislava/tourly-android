@@ -15,14 +15,18 @@ object TagUtils {
         val resourceId = when (tag.name.lowercase()) {
             "adventure" -> R.string.tag_adventure
             "nature" -> R.string.tag_nature
-            "historical" -> R.string.tag_historical
-            "urban" -> R.string.tag_urban
+            "historical" -> R.string.tag_history
+            "history" -> R.string.tag_history
+            "urban" -> R.string.tag_culture
             "food" -> R.string.tag_food
-            "hiking" -> R.string.tag_hiking
+            "hiking" -> R.string.tag_nature
             "culture" -> R.string.tag_culture
-            "architecture" -> R.string.tag_architecture
+            "architecture" -> R.string.tag_culture
             "nightlife" -> R.string.tag_nightlife
             "photography" -> R.string.tag_photography
+            "relax" -> R.string.tag_relax
+            "sports" -> R.string.tag_sports
+            "wildlife" -> R.string.tag_wildlife
             else -> null
         }
         
