@@ -12,19 +12,22 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tourly.app.R
 import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
-
-import androidx.compose.material3.TextButton
+import com.tourly.app.core.presentation.util.StatusUtils
 
 @Composable
 fun BookedToursSection(
     bookings: List<Booking>,
-    title: String = "My Bookings",
+    title: String,
     onCancelBooking: (Long) -> Unit = {},
     onRateClick: (Long) -> Unit = {},
     onCompleteBooking: (Long) -> Unit = {},
@@ -42,7 +45,7 @@ fun BookedToursSection(
 
         if (bookings.isEmpty()) {
             Text(
-                text = "No tours found in this section.",
+                text = stringResource(id = R.string.no_tours_in_section),
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = OutfitFamily,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -83,7 +86,7 @@ fun BookingCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = booking.tourTitle,
@@ -105,7 +108,7 @@ fun BookingCard(
                         
                         TextButton(onClick = onCancelClick) {
                             Text(
-                                text = "Cancel",
+                                text = stringResource(id = R.string.cancel),
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.labelMedium
                             )
@@ -130,13 +133,13 @@ fun BookingCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Date: ${booking.tourScheduledDate ?: "TBA"}",
+                    text = stringResource(id = R.string.date_label, booking.tourScheduledDate ?: "TBA"),
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = OutfitFamily
                 )
                 
                 Text(
-                    text = "${booking.numberOfParticipants} people",
+                    text = stringResource(id = R.string.people_count, booking.numberOfParticipants),
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = OutfitFamily
                 )
@@ -147,10 +150,10 @@ fun BookingCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = booking.status,
+                    text = StatusUtils.getTranslatedStatus(booking.status),
                     style = MaterialTheme.typography.labelMedium,
                     fontFamily = OutfitFamily,
                     color = if (booking.status == "CONFIRMED") 
@@ -162,7 +165,7 @@ fun BookingCard(
                 if (showRateButton && booking.status == "COMPLETED" && !booking.hasReview) {
                     TextButton(onClick = onRateClick) {
                         Text(
-                            text = "Rate Experience",
+                            text = stringResource(id = R.string.rate_experience),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold
@@ -181,4 +184,3 @@ fun BookingCard(
         }
     }
 }
-
