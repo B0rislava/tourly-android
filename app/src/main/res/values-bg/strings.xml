@@ -1,0 +1,210 @@
+<resources>
+
+    <string name="enter_email">Въведете имейл</string>
+    <string name="email">Имейл</string>
+
+    <string name="enter_password">Въведете парола</string>
+    <string name="password">Парола</string>
+    <string name="enter_new_password">Въведете нова парола</string>
+    <string name="new_password">Нова парола</string>
+    <string name="enter_confirm_password">Потвърдете паролата</string>
+    <string name="notifications_title">Известия</string>
+    <string name="mark_all_read">Маркирай всички като прочетени</string>
+    <string name="no_notifications">Все още нямате известия</string>
+    <string name="notification_new_booking_title">Нова резервация</string>
+    <string name="notification_booking_cancelled_title">Анулирана резервация</string>
+    <string name="notification_tour_cancelled_title">Анулирана обиколка</string>
+    <string name="notification_new_booking_msg">Някой резервира %1$d място(а) за вашата обиколка %2$s.</string>
+    <string name="notification_booking_cancelled_traveler_msg">Вашата резервация за %1$s беше анулирана.</string>
+    <string name="notification_booking_cancelled_guide_msg">Пътешественик анулира своята резервация за вашата обиколка %1$s.</string>
+    <string name="notification_tour_cancelled_msg">Обиколката %1$s беше анулирана от гида.</string>
+
+    <string name="enter_full_name">Въведете трите имена</string>
+    <string name="full_name">Трите имена</string>
+
+    <string name="login">Вход</string>
+    <string name="logout">Изход</string>
+    <string name="register">Регистрация</string>
+
+    <string name="no_account">Нямате акаунт?</string>
+    <string name="have_account">Вече имате акаунт?</string>
+
+    <string name="welcome_abroad">Добре дошли!</string>
+    <string name="welcome_back">Добре дошли отново!</string>
+    <string name="welcome_subtitle">Бъдете организирани и готови за всяко приключение.</string>
+
+    <string name="adventure_awaits">Следващото ви приключение ви очаква.</string>
+    <string name="journey_starts">Вашето пътуване започва тук.</string>
+    <string name="discover_journey">Открийте следващото си пътуване</string>
+
+    <string name="hide_password">Скрий паролата</string>
+    <string name="show_password">Покажи паролата</string>
+
+    <string name="edit_profile">Редактиране на профила</string>
+    <string name="settings">Настройки</string>
+
+    <string name="profile_title">Профил</string>
+    <string name="tour_images">Снимки</string>
+    <string name="tour_title">Заглавие</string>
+    <string name="tour_title_example">напр. Тайните на Стария град</string>
+    <string name="tour_description">Описание</string>
+    <string name="tour_description_example">Опишете вашето преживяване, какво ще видят и направят пътешествениците…</string>
+    <string name="tour_location">Място</string>
+    <string name="tour_location_example">напр. Барселона, Испания</string>
+    <string name="tour_date">Дата</string>
+    <string name="tour_date_example">Изберете дата</string>
+    <string name="tour_duration">Продължителност</string>
+    <string name="tour_duration_example">напр. 02:30</string>
+    <string name="tour_max_group">Макс. група</string>
+    <string name="tour_max_group_example">напр. 10</string>
+    <string name="tour_price">Цена</string>
+    <string name="tour_price_per_person">Цена на човек</string>
+    <string name="tour_included">Какво е включено</string>
+    <string name="tour_included_example">напр. Местни закуски, транспорт, входни такси…</string>
+    <string name="tour_tags">Тагове</string>
+    <string name="create_tour">Създай обиколка</string>
+    <string name="empty_heading">Няма налични обиколки</string>
+    <string name="empty_subheading">Проверете отново по-късно за нови обиколки</string>
+
+
+
+    <string name="delete_account">Изтриване на акаунт</string>
+    <string name="delete_account_confirmation">Сигурни ли сте, че искате да изтриете акаунта си? Това действие е постоянно и не може да бъде отменено.</string>
+
+    <string name="or_with">Или чрез</string>
+    <string name="google">Google</string>
+    <string name="google_sign_up">Регистрация с Google</string>
+    <string name="agree_terms">Съгласен съм с Общите условия</string>
+    <string name="confirm_password">Потвърди паролата</string>
+
+    <!-- Home -->
+    <string name="no_results_found">Няма намерени резултати</string>
+    <string name="no_results_description">Не можахме да намерим обиколки, съвпадащи с \"%1$s\". Опитайте да коригирате търсенето си.</string>
+    <string name="no_tours_found">Не са намерени обиколки</string>
+    <string name="no_tours_description">Опитайте да изчистите филтрите си или да изберете друга категория.</string>
+
+    <string name="available_tours">Налични обиколки</string>
+    <string name="search_hint">Търсете дестинации, обиколки…</string>
+    <string name="clear_all_filters">Изчисти всички филтри</string>
+
+    <string name="good_morning">Добро утро</string>
+    <string name="good_afternoon">Добър ден</string>
+    <string name="good_evening">Добър вечер</string>
+    <string name="your_group_chats">Вашите групови чатове</string>
+    <string name="group_chat">Групов чат</string>
+    <string name="incomplete_profile_tooltip">Моля, добавете фамилията си в Редактиране на профила</string>
+    <string name="no_tours_in_section">Няма намерени обиколки в този раздел.</string>
+    <string name="rate_experience">Оценете преживяването</string>
+    <string name="people_count">%1$d души</string>
+    <string name="date_label">Дата: %1$s</string>
+    <string name="apply">Приложи</string>
+    <string name="clear">Изчисти</string>
+    <string name="sort_by">Сортирай…</string>
+    <string name="top_rated">Най-високо оценени</string>
+    <string name="price_asc">Цена: Ниска → Висока</string>
+    <string name="price_desc">Цена: Висока → Ниска</string>
+    <string name="duration_asc">Продължителност: Кратка → Дълга</string>
+    <string name="duration_desc">Продължителност: Дълга → Кратка</string>
+    <string name="price_range">Ценови диапазон</string>
+    <string name="select_location">Изберете местоположение</string>
+    <string name="enter_location_hint">Въведете град или държава…</string>
+
+
+
+    <!-- Dashboard -->
+    <string name="login_to_see_dashboard">Моля, влезте в профила си, за да видите вашето табло</string>
+    <string name="delete_tour">Изтриване на обиколка</string>
+
+    <string name="delete_tour_confirmation">Сигурни ли сте, че искате да изтриете \"%1$s\"? Това действие е необратимо.</string>
+    <string name="delete">Изтрий</string>
+    <string name="cancel_booking">Отказване на резервация</string>
+    <string name="cancel_booking_confirmation">Сигурни ли сте, че искате да откажете резервацията си за \"%1$s\"?</string>
+    <string name="yes_cancel">Да, откажи</string>
+    <string name="no_keep">Не, запази</string>
+    <string name="upcoming_tours">Предстоящи обиколки</string>
+    <string name="past_tours">Минали обиколки</string>
+    <string name="my_tours">Моите обиколки</string>
+    <string name="no_tours_created">Все още не сте създали нито една обиколка.</string>
+
+    <string name="back">Назад</string>
+
+
+    <!-- Settings -->
+    <string name="profile_settings">Настройки на профила</string>
+    <string name="profile_details">Детайли на профила</string>
+    <string name="preferences">Предпочитания</string>
+    <string name="notifications">Известия</string>
+    <string name="theme">Тема</string>
+    <string name="language">Език</string>
+    <string name="choose_theme">Изберете тема</string>
+    <string name="system_default">Системна по подразбиране</string>
+    <string name="light">Светла</string>
+    <string name="dark">Тъмна</string>
+    <string name="choose_language">Изберете език</string>
+    <string name="english">Английски</string>
+    <string name="bulgarian">Български</string>
+    <string name="cancel">Отказ</string>
+
+    <!-- Edit Profile -->
+    <string name="edit_photo">Редактиране на снимка</string>
+    <string name="personal">Лична информация</string>
+    <string name="bio">Биография</string>
+    <string name="certifications">Сертификати</string>
+    <string name="contact">Контакт</string>
+    <string name="save">Запази</string>
+
+    <!-- Tour Details -->
+    <string name="edit_tour">Редактиране на обиколка</string>
+
+    <string name="share">Сподели</string>
+    <string name="favorite">Любим</string>
+    <string name="places_count">Места: %1$d / %2$d</string>
+    <string name="your_guide">Вашият гид</string>
+    <string name="about_this_tour">За тази обиколка</string>
+
+
+    <string name="meeting_location">Място на среща</string>
+    <string name="meeting_point">Точка на среща</string>
+    <string name="open_in_maps">Отвори в Карти</string>
+    <string name="cancellation_policy">Политика за анулиране</string>
+    <string name="policy_full_refund">Пълно възстановяване: до 7 дни преди събитието</string>
+    <string name="policy_partial_refund">50%% възстановяване: 3–7 дни преди събитието</string>
+    <string name="policy_no_refund">Без възстановяване: по-малко от 3 дни</string>
+    <string name="reviews_count">Отзиви (%1$d)</string>
+    <string name="no_reviews_yet">Все още няма отзиви.</string>
+
+    <!-- Create Tour -->
+    <string name="enter_meeting_address">Въведете адрес на среща (напр. ул. Върба 10, София)</string>
+    <string name="toggle_input_mode">Превключване на режима на въвеждане</string>
+    <string name="time_example">10:00 ч.</string>
+    <string name="ok">ОК</string>
+
+    <!-- Roles -->
+    <string name="traveler">Пътешественик</string>
+    <string name="guide">Гид</string>
+    <string name="member">Член</string>
+    <string name="status_confirmed">Потвърдена</string>
+    <string name="status_cancelled">Анулирана</string>
+    <string name="status_completed">Завършена</string>
+    <string name="status_pending">Изчакваща</string>
+
+
+    <!-- Profile -->
+    <string name="followers">Последователи</string>
+    <string name="about_me">За мен</string>
+    <string name="see_more">Виж повече</string>
+    <string name="fully_booked">Разпродадено</string>
+    <string name="per_person">/ човек</string>
+
+    <!-- Tags -->
+    <string name="tag_adventure">Приключение</string>
+    <string name="tag_nature">Природа</string>
+    <string name="tag_historical">Исторически</string>
+    <string name="tag_urban">Градски</string>
+    <string name="tag_food">Храна</string>
+    <string name="tag_hiking">Пешеходен туризъм</string>
+    <string name="tag_culture">Култура</string>
+    <string name="tag_architecture">Архитектура</string>
+    <string name="tag_nightlife">Нощен живот</string>
+    <string name="tag_photography">Фотография</string>
+</resources>

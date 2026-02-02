@@ -1,0 +1,15 @@
+<resources>
+    <plurals name="tour_count">
+        <item quantity="one">%1$d обиколка</item>
+        <item quantity="other">%1$d обиколки</item>
+    </plurals>
+    <plurals name="reviews_label">
+        <item quantity="one">%1$d отзив</item>
+        <item quantity="other">%1$d отзива</item>
+    </plurals>
+    <plurals name="spots_left">
+        <item quantity="one">%1$d оставащо място</item>
+        <item quantity="other">%1$d оставащи места</item>
+    </plurals>
+
+</resources>
