@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.lifecycle.SavedStateHandle
 import com.tourly.app.core.domain.repository.BookingRepository
+import com.tourly.app.core.domain.repository.UserRepository
 import com.tourly.app.reviews.domain.repository.ReviewRepository
 
 @HiltViewModel
@@ -44,6 +45,7 @@ class UserViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val reviewRepository: ReviewRepository,
     private val bookingRepository: BookingRepository,
+    private val userRepository: UserRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -268,6 +270,37 @@ class UserViewModel @Inject constructor(
                 is Result.Error -> {
                     _events.send(result.message)
                 }
+            }
+        }
+    }
+
+    fun toggleFollow() {
+        val currentState = _uiState.value
+        if (currentState !is UserUiState.Success) return
+        val user = currentState.user
+
+        viewModelScope.launch {
+            // Optimistic update
+            val newIsFollowing = !user.isFollowing
+            val newCount = if (newIsFollowing) user.followerCount + 1 else user.followerCount - 1
+            
+            _uiState.value = currentState.copy(
+                user = user.copy(
+                    isFollowing = newIsFollowing,
+                    followerCount = newCount.coerceAtLeast(0)
+                )
+            )
+
+            val result = if (newIsFollowing) {
+                userRepository.followUser(user.id)
+            } else {
+                userRepository.unfollowUser(user.id)
+            }
+
+            if (result is Result.Error) {
+                // Revert logic could be simpler or just reload
+                _uiState.value = currentState // Revert to original state
+                _events.send("Failed to update follow status: ${result.message}")
             }
         }
     }

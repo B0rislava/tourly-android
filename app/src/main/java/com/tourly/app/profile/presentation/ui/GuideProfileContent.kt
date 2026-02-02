@@ -25,6 +25,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +54,7 @@ fun GuideProfileContent(
     isOwnProfile: Boolean = true,
     tours: List<Tour>,
     onSeeMore: () -> Unit,
+    onFollowClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
@@ -122,8 +125,22 @@ fun GuideProfileContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Primary Actions
-
-
+        if (!isOwnProfile) {
+            Button(
+                onClick = onFollowClick,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (user.isFollowing) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
+                    contentColor = if (user.isFollowing) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = if (user.isFollowing) stringResource(id = R.string.following) else stringResource(id = R.string.follow),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontFamily = OutfitFamily
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 

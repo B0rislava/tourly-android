@@ -13,6 +13,7 @@ fun ProfileContent(
     isOwnProfile: Boolean = true,
     onSeeMore: () -> Unit = {},
     onBackClick: () -> Unit = {},
+    onFollowClick: () -> Unit = {},
     tours: List<Tour> = emptyList()
 ) {
     if (user.role == UserRole.GUIDE) {
@@ -22,6 +23,7 @@ fun ProfileContent(
             tours = tours,
             onSeeMore = onSeeMore,
             onBackClick = onBackClick,
+            onFollowClick = onFollowClick,
             modifier = modifier
         )
     } else {

@@ -112,6 +112,24 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun followUser(userId: Long): Result<Unit> {
+        return try {
+            val response = authApiService.followUser(userId)
+            NetworkResponseMapper.map(response)
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        }
+    }
+
+    override suspend fun unfollowUser(userId: Long): Result<Unit> {
+        return try {
+            val response = authApiService.unfollowUser(userId)
+            NetworkResponseMapper.map(response)
+        } catch (e: Exception) {
+            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        }
+    }
+
     override suspend fun logout() {
         println("UserRepository: Starting logout process...")
 

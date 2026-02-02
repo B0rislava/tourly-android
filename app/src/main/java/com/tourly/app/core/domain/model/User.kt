@@ -15,7 +15,8 @@ data class User(
     val followerCount: Int = 0,
     val certifications: String? = null,
     val toursCompleted: Int = 0,
-    val isVerified: Boolean = false
+    val isVerified: Boolean = false,
+    val isFollowing: Boolean = false
 ) {
     val fullName: String
         get() = "$firstName $lastName"

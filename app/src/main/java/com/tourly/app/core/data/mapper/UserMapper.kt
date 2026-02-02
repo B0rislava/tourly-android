@@ -18,7 +18,8 @@ object UserMapper {
             followerCount = dto.followerCount,
             certifications = dto.certifications,
             toursCompleted = dto.toursCompleted,
-            isVerified = dto.isVerified
+            isVerified = dto.isVerified,
+            isFollowing = dto.isFollowing
         )
     }
 }

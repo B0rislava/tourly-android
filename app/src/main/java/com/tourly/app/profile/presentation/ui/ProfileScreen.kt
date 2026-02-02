@@ -65,7 +65,8 @@ fun ProfileScreen(
                         isOwnProfile = state.isOwnProfile,
                         onSeeMore = onSeeMore,
                         onBackClick = onBackClick,
-                        tours = state.tours
+                        tours = state.tours,
+                        onFollowClick = { userViewModel.toggleFollow() }
                     )
                 }
                 is UserUiState.Error -> {
