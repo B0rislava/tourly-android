@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.tourly.app.core.presentation.util.TagUtils
 import androidx.compose.ui.unit.dp
 import com.tourly.app.core.domain.model.Tag
 
@@ -31,7 +32,7 @@ fun TagSelector(
             FilterChip(
                 selected = isSelected,
                 onClick = { onTagToggled(tag.id) },
-                label = { Text(tag.displayName) },
+                label = { Text(TagUtils.getTranslatedName(tag)) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
