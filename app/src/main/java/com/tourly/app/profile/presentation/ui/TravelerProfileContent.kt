@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +27,7 @@ import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
+import com.tourly.app.profile.presentation.ui.components.ProfileStatItem
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
 
@@ -68,6 +70,23 @@ fun TravelerProfileContent(
             isOwnProfile = isOwnProfile
         )
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Stats Section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ProfileStatItem(
+                icon = Icons.Default.People,
+                value = "${user.followingCount}",
+                label = stringResource(id = R.string.following),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
 
 
         // Bio Section
@@ -106,3 +125,4 @@ private fun TravelerProfileContentPreview() {
         )
     )
 }
+
