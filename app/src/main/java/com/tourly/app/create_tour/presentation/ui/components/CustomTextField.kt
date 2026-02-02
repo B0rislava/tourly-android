@@ -25,6 +25,7 @@ fun CustomTextField(
     singleLine: Boolean = true,
     minLines: Int = 1,
     keyboardType: KeyboardType = KeyboardType.Text,
+    autoCorrectEnabled: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     error: String? = null,
 ) {
@@ -44,7 +45,7 @@ fun CustomTextField(
             ),
             singleLine = singleLine,
             minLines = minLines,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType, autoCorrectEnabled = autoCorrectEnabled),
             visualTransformation = visualTransformation,
             textStyle = MaterialTheme.typography.bodyLarge.copy(fontFamily = OutfitFamily),
             isError = error != null

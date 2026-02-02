@@ -166,7 +166,10 @@ fun EditProfileContent(
             supportingText = state.bioError,
             minLines = 3,
             maxLines = 5,
-            singleLine = false
+            singleLine = false,
+            keyboardOptions = KeyboardOptions(
+                autoCorrectEnabled = false
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -179,7 +182,10 @@ fun EditProfileContent(
             supportingText = state.certificationsError,
             minLines = 2,
             maxLines = 4,
-            singleLine = false
+            singleLine = false,
+            keyboardOptions = KeyboardOptions(
+                autoCorrectEnabled = false
+            )
         )
 
         Spacer(modifier = Modifier.height(32.dp))

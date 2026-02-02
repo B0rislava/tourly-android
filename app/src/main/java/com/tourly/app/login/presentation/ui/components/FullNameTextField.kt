@@ -31,6 +31,7 @@ fun FullNameTextField(
         },
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
+            autoCorrectEnabled = false,
             imeAction = ImeAction.Next
         )
     )
