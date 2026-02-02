@@ -29,14 +29,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.notifications.domain.model.Notification
+import com.tourly.app.notifications.presentation.util.NotificationUtils
 import com.tourly.app.notifications.presentation.viewmodel.NotificationViewModel
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun NotificationScreen(
@@ -52,16 +54,16 @@ fun NotificationScreen(
     Scaffold(
         topBar = {
             SimpleTopBar(
-                title = "Notifications",
+                title = stringResource(id = R.string.notifications_title),
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
                 },
                 actions = {
                     if (uiState.notifications.any { !it.isRead }) {
                         IconButton(onClick = { viewModel.markAllAsRead() }) {
-                            Icon(Icons.Default.DoneAll, contentDescription = "Mark all as read")
+                            Icon(Icons.Default.DoneAll, contentDescription = stringResource(id = R.string.mark_all_read))
                         }
                     }
                 }
@@ -86,7 +88,6 @@ fun NotificationScreen(
                                 if (!notification.isRead) {
                                     viewModel.markAsRead(notification.id)
                                 }
-                                // Navigate if needed based on type
                             }
                         )
                         HorizontalDivider(
@@ -116,7 +117,6 @@ fun NotificationItem(
             .padding(16.dp),
         verticalAlignment = Alignment.Top
     ) {
-        // Notification dot or icon
         Box(
             modifier = Modifier
                 .size(8.dp)
@@ -129,21 +129,21 @@ fun NotificationItem(
         
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = notification.title,
+                text = NotificationUtils.getTranslatedTitle(notification),
                 style = MaterialTheme.typography.titleMedium,
                 fontFamily = OutfitFamily,
                 fontWeight = if (notification.isRead) FontWeight.Normal else FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = notification.message,
+                text = NotificationUtils.getTranslatedMessage(notification),
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = OutfitFamily,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = notification.createdAt.format(DateTimeFormatter.ofPattern("MMM dd, HH:mm")),
+                text = NotificationUtils.formatNotificationDate(notification.createdAt),
                 style = MaterialTheme.typography.labelSmall,
                 fontFamily = OutfitFamily,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
@@ -167,7 +167,7 @@ fun EmptyNotifications(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "No notifications yet",
+            text = stringResource(id = R.string.no_notifications),
             style = MaterialTheme.typography.titleMedium,
             fontFamily = OutfitFamily,
             color = MaterialTheme.colorScheme.outline
