@@ -15,10 +15,14 @@
     <string name="notification_new_booking_title">New Booking</string>
     <string name="notification_booking_cancelled_title">Booking Cancelled</string>
     <string name="notification_tour_cancelled_title">Tour Cancelled</string>
-    <string name="notification_new_booking_msg">Someone has booked %1$d spot(s) for your tour %2$s.</string>
-    <string name="notification_booking_cancelled_traveler_msg">Your booking for %1$s has been cancelled.</string>
-    <string name="notification_booking_cancelled_guide_msg">A traveler has cancelled their booking for your tour %1$s.</string>
-    <string name="notification_tour_cancelled_msg">The tour %1$s has been cancelled by the guide.</string>
+    <string name="notification_follow_title">New Follower</string>
+    <string name="notification_new_tour_title">New Tour</string>
+    <string name="notification_follow_msg">%1$s started following you</string>
+    <string name="notification_new_booking_msg">%1$s booked %2$s spot(s) for your tour \'%3$s\'</string>
+    <string name="notification_new_tour_msg">%1$s created a new tour: \'%2$s\'</string>
+    <string name="notification_booking_cancelled_traveler_msg">Your booking for \'%1$s\' has been cancelled.</string>
+    <string name="notification_booking_cancelled_guide_msg">%1$s cancelled their booking for your tour \'%2$s\'.</string>
+    <string name="notification_tour_cancelled_msg">The tour \'%1$s\' has been cancelled by the guide.</string>
 
     <string name="enter_full_name">Enter Full Name</string>
     <string name="full_name">Full Name</string>
@@ -45,7 +49,7 @@
     <string name="settings">Settings</string>
 
     <string name="profile_title">Profile</string>
-    <string name="tour_images">Images</string>
+    <string name="tour_image">Image</string>
     <string name="tour_title">Title</string>
     <string name="tour_title_example">e.g., Hidden Gems of Old Town</string>
     <string name="tour_description">Description</string>
@@ -138,6 +142,23 @@
     <string name="english">English</string>
     <string name="bulgarian">Bulgarian</string>
     <string name="cancel">Cancel</string>
+    <string name="book_now">Book Now</string>
+    <string name="message">Message</string>
+
+    <!-- Tags -->
+    <string name="tag_adventure">Adventure</string>
+    <string name="tag_culture">Culture</string>
+    <string name="tag_nature">Nature</string>
+    <string name="tag_food">Food</string>
+    <string name="tag_relax">Relax</string>
+    <string name="tag_history">History</string>
+    <string name="tag_sports">Sports</string>
+    <string name="tag_wildlife">Wildlife</string>
+    <string name="tag_photography">Photography</string>
+    <string name="tag_nightlife">Nightlife</string>
+
+    <string name="start_time">Start Time</string>
+    <string name="duration_label">Duration</string>
 
     <!-- Edit Profile -->
     <string name="edit_photo">Edit photo</string>
@@ -165,7 +186,7 @@
     <string name="no_reviews_yet">No reviews yet.</string>
 
     <!-- Create Tour -->
-    <string name="enter_meeting_address">Enter meeting address (e.g. Varba 10, Sofia)</string>
+    <string name="enter_meeting_address">Enter meeting address (e.g. ul. Orfey 2, Sofia)</string>
     <string name="toggle_input_mode">Toggle input mode</string>
     <string name="time_example">10:00 AM</string>
     <string name="ok">OK</string>
@@ -182,21 +203,12 @@
 
     <!-- Profile -->
     <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="follow">Follow</string>
     <string name="about_me">About me</string>
     <string name="see_more">See More</string>
     <string name="fully_booked">Fully Booked</string>
     <string name="per_person">/ person</string>
 
 
-    <!-- Tags -->
-    <string name="tag_adventure">Adventure</string>
-    <string name="tag_nature">Nature</string>
-    <string name="tag_historical">Historical</string>
-    <string name="tag_urban">Urban</string>
-    <string name="tag_food">Food</string>
-    <string name="tag_hiking">Hiking</string>
-    <string name="tag_culture">Culture</string>
-    <string name="tag_architecture">Architecture</string>
-    <string name="tag_nightlife">Nightlife</string>
-    <string name="tag_photography">Photography</string>
 </resources>

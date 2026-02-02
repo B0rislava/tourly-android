@@ -15,8 +15,12 @@ object NotificationUtils {
     fun getTranslatedTitle(notification: Notification): String {
         val resourceId = when (notification.type) {
             "NEW_BOOKING" -> R.string.notification_new_booking_title
-            "BOOKING_CANCELLED" -> R.string.notification_booking_cancelled_title
+            "BOOKING_CANCELLED",
+            "BOOKING_CANCELLED_TRAVELER",
+            "BOOKING_CANCELLED_GUIDE" -> R.string.notification_booking_cancelled_title
             "TOUR_CANCELLED" -> R.string.notification_tour_cancelled_title
+            "FOLLOW" -> R.string.notification_follow_title
+            "NEW_TOUR" -> R.string.notification_new_tour_title
             else -> null
         }
         return if (resourceId != null) stringResource(id = resourceId) else notification.title
@@ -25,39 +29,40 @@ object NotificationUtils {
     @Composable
     fun getTranslatedMessage(notification: Notification): String {
         val type = notification.type ?: return notification.message
-        val message = notification.message
-
+        val parts = notification.message.split("|")
+        
         return when (type) {
             "NEW_BOOKING" -> {
-                // Someone has booked {count} spot(s) for your tour '{title}'.
-                val countRegex = "booked (\\d+) spot".toRegex()
-                val titleRegex = "your tour '(.*)'\\.".toRegex()
-                
-                val count = countRegex.find(message)?.groupValues?.get(1)?.toIntOrNull() ?: 1
-                val title = titleRegex.find(message)?.groupValues?.get(1) ?: "your tour"
-                
-                stringResource(id = R.string.notification_new_booking_msg, count, title)
+                // name|count|title
+                if (parts.size >= 3) {
+                    stringResource(id = R.string.notification_new_booking_msg, parts[0], parts[1], parts[2])
+                } else notification.message
             }
-            "BOOKING_CANCELLED" -> {
-                if (message.startsWith("Your booking")) {
-                    // Your booking for '{title}' has been cancelled.
-                    val titleRegex = "for '(.*)' has been".toRegex()
-                    val title = titleRegex.find(message)?.groupValues?.get(1) ?: "the tour"
-                    stringResource(id = R.string.notification_booking_cancelled_traveler_msg, title)
-                } else {
-                    // A traveler has cancelled their booking for your tour '{title}'.
-                    val titleRegex = "your tour '(.*)'\\.".toRegex()
-                    val title = titleRegex.find(message)?.groupValues?.get(1) ?: "your tour"
-                    stringResource(id = R.string.notification_booking_cancelled_guide_msg, title)
-                }
+            "BOOKING_CANCELLED_TRAVELER" -> {
+                // title
+                stringResource(id = R.string.notification_booking_cancelled_traveler_msg, parts.getOrElse(0){""})
+            }
+            "BOOKING_CANCELLED_GUIDE" -> {
+                // name|title
+                if (parts.size >= 2) {
+                    stringResource(id = R.string.notification_booking_cancelled_guide_msg, parts[0], parts[1])
+                } else notification.message
             }
             "TOUR_CANCELLED" -> {
-                // The tour '{title}' has been cancelled by the guide.
-                val titleRegex = "The tour '(.*)' has been".toRegex()
-                val title = titleRegex.find(message)?.groupValues?.get(1) ?: "the tour"
-                stringResource(id = R.string.notification_tour_cancelled_msg, title)
+                // title
+                stringResource(id = R.string.notification_tour_cancelled_msg, parts.getOrElse(0){""})
             }
-            else -> message
+            "FOLLOW" -> {
+                // name
+                stringResource(id = R.string.notification_follow_msg, parts.getOrElse(0){""})
+            }
+            "NEW_TOUR" -> {
+                // name|title
+                if (parts.size >= 2) {
+                    stringResource(id = R.string.notification_new_tour_msg, parts[0], parts[1])
+                } else notification.message
+            }
+            else -> notification.message
         }
     }
 

@@ -14,13 +14,17 @@
     <string name="notification_new_booking_title">Нова резервация</string>
     <string name="notification_booking_cancelled_title">Анулирана резервация</string>
     <string name="notification_tour_cancelled_title">Анулирана обиколка</string>
-    <string name="notification_new_booking_msg">Някой резервира %1$d място(а) за вашата обиколка %2$s.</string>
-    <string name="notification_booking_cancelled_traveler_msg">Вашата резервация за %1$s беше анулирана.</string>
-    <string name="notification_booking_cancelled_guide_msg">Пътешественик анулира своята резервация за вашата обиколка %1$s.</string>
-    <string name="notification_tour_cancelled_msg">Обиколката %1$s беше анулирана от гида.</string>
+    <string name="notification_follow_title">Нов последовател</string>
+    <string name="notification_new_tour_title">Нова обиколка</string>
+    <string name="notification_follow_msg">%1$s започна да Ви следва</string>
+    <string name="notification_new_booking_msg">%1$s резервира %2$s място/места за Вашата обиколка \'%3$s\'</string>
+    <string name="notification_new_tour_msg">%1$s създаде нова обиколка: \'%2$s\'</string>
+    <string name="notification_booking_cancelled_traveler_msg">Вашата резервация за \'%1$s\' беше анулирана.</string>
+    <string name="notification_booking_cancelled_guide_msg">%1$s анулира резервацията си за Вашата обиколка \'%2$s\'.</string>
+    <string name="notification_tour_cancelled_msg">Турът \'%1$s\' беше анулиран от гида.</string>
 
-    <string name="enter_full_name">Въведете трите имена</string>
-    <string name="full_name">Трите имена</string>
+    <string name="enter_full_name">Въведете име и фамилия</string>
+    <string name="full_name">Име и фамилия</string>
 
     <string name="login">Вход</string>
     <string name="logout">Изход</string>
@@ -44,7 +48,7 @@
     <string name="settings">Настройки</string>
 
     <string name="profile_title">Профил</string>
-    <string name="tour_images">Снимки</string>
+    <string name="tour_image">Снимка</string>
     <string name="tour_title">Заглавие</string>
     <string name="tour_title_example">напр. Тайните на Стария град</string>
     <string name="tour_description">Описание</string>
@@ -144,6 +148,23 @@
     <string name="english">Английски</string>
     <string name="bulgarian">Български</string>
     <string name="cancel">Отказ</string>
+    <string name="book_now">Резервирай</string>
+    <string name="message">Съобщение</string>
+
+    <!-- Tags -->
+    <string name="tag_adventure">Приключение</string>
+    <string name="tag_culture">Култура</string>
+    <string name="tag_nature">Природа</string>
+    <string name="tag_food">Храна</string>
+    <string name="tag_relax">Релакс</string>
+    <string name="tag_history">История</string>
+    <string name="tag_sports">Спорт</string>
+    <string name="tag_wildlife">Дива природа</string>
+    <string name="tag_photography">Фотография</string>
+    <string name="tag_nightlife">Нощен живот</string>
+
+    <string name="start_time">Начален час</string>
+    <string name="duration_label">Продължителност</string>
 
     <!-- Edit Profile -->
     <string name="edit_photo">Редактиране на снимка</string>
@@ -168,13 +189,13 @@
     <string name="open_in_maps">Отвори в Карти</string>
     <string name="cancellation_policy">Политика за анулиране</string>
     <string name="policy_full_refund">Пълно възстановяване: до 7 дни преди събитието</string>
-    <string name="policy_partial_refund">50%% възстановяване: 3–7 дни преди събитието</string>
+    <string name="policy_partial_refund">50% възстановяване: 3–7 дни преди събитието</string>
     <string name="policy_no_refund">Без възстановяване: по-малко от 3 дни</string>
     <string name="reviews_count">Отзиви (%1$d)</string>
     <string name="no_reviews_yet">Все още няма отзиви.</string>
 
     <!-- Create Tour -->
-    <string name="enter_meeting_address">Въведете адрес на среща (напр. ул. Върба 10, София)</string>
+    <string name="enter_meeting_address">Въведете адрес на среща (напр. ул. Орфей 2, София)</string>
     <string name="toggle_input_mode">Превключване на режима на въвеждане</string>
     <string name="time_example">10:00 ч.</string>
     <string name="ok">ОК</string>
@@ -191,20 +212,11 @@
 
     <!-- Profile -->
     <string name="followers">Последователи</string>
+    <string name="following">Следвам</string>
+    <string name="follow">Последвай</string>
     <string name="about_me">За мен</string>
     <string name="see_more">Виж повече</string>
     <string name="fully_booked">Разпродадено</string>
     <string name="per_person">/ човек</string>
 
-    <!-- Tags -->
-    <string name="tag_adventure">Приключение</string>
-    <string name="tag_nature">Природа</string>
-    <string name="tag_historical">Исторически</string>
-    <string name="tag_urban">Градски</string>
-    <string name="tag_food">Храна</string>
-    <string name="tag_hiking">Пешеходен туризъм</string>
-    <string name="tag_culture">Култура</string>
-    <string name="tag_architecture">Архитектура</string>
-    <string name="tag_nightlife">Нощен живот</string>
-    <string name="tag_photography">Фотография</string>
 </resources>
