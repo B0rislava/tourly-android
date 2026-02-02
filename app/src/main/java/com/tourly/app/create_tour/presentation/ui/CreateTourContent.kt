@@ -100,7 +100,7 @@ fun CreateTourContent(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         SectionTitle(
-            title = stringResource(id = R.string.tour_images),
+            title = stringResource(id = R.string.tour_image),
             icon = Icons.Outlined.Image
         )
         AddPhotoPlaceholder(

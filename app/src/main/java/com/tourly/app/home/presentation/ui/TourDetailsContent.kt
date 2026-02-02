@@ -104,10 +104,14 @@ fun TourDetailsContent(
                 IconButton(
                     onClick = onBackClick,
                     modifier = Modifier
-                        .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                         .size(40.dp)
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -115,27 +119,39 @@ fun TourDetailsContent(
                         IconButton(
                             onClick = { onEditTour(tour.id) },
                             modifier = Modifier
-                                .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                                 .size(40.dp)
                         ) {
-                            Icon(Icons.Default.Edit, contentDescription = stringResource(id = R.string.edit_tour))
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(id = R.string.edit_tour),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                     IconButton(
                         onClick = { /* Share */ },
                         modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                             .size(40.dp)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = stringResource(id = R.string.share))
+                        Icon(
+                            Icons.Default.Share,
+                            contentDescription = stringResource(id = R.string.share),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                     IconButton(
                         onClick = { /* Favorite */ },
                         modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
                             .size(40.dp)
                     ) {
-                        Icon(Icons.Default.FavoriteBorder, contentDescription = stringResource(id = R.string.favorite))
+                        Icon(
+                            Icons.Default.FavoriteBorder,
+                            contentDescription = stringResource(id = R.string.favorite),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             }
@@ -200,9 +216,19 @@ fun TourDetailsContent(
                     InfoRow(icon = Icons.Default.CalendarToday, text = tour.scheduledDate) // Needs formatting
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+                if (!tour.startTime.isNullOrEmpty()) {
+                    InfoRow(
+                        icon = Icons.Default.AccessTime,
+                        text = "${stringResource(id = R.string.start_time)}: ${tour.startTime}"
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    InfoRow(icon = Icons.Default.AccessTime, text = tour.duration)
+                    InfoRow(
+                        icon = Icons.Default.AccessTime,
+                        text = "${stringResource(id = R.string.duration_label)}: ${tour.duration}"
+                    )
                     InfoRow(
                         icon = Icons.Default.Groups, 
                         text = stringResource(id = R.string.places_count, tour.availableSpots, tour.maxGroupSize),

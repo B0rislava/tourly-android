@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BottomPriceBar(
     price: Double,
-    buttonText: String = "Book Now",
+    buttonText: String,
     isButtonEnabled: Boolean = true,
     onButtonClick: () -> Unit
 ) {

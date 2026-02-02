@@ -25,6 +25,9 @@ import com.tourly.app.home.presentation.viewmodel.TourDetailsViewModel
 
 import com.tourly.app.login.domain.UserRole
 
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
+
 @Composable
 fun TourDetailsScreen(
     viewModel: TourDetailsViewModel,
@@ -69,7 +72,7 @@ fun TourDetailsScreen(
                 
                 BottomPriceBar(
                     price = tour.pricePerPerson,
-                    buttonText = if (canBook) "Book Now" else "Fully Booked",
+                    buttonText = if (canBook) stringResource(id = R.string.book_now) else stringResource(id = R.string.fully_booked),
                     isButtonEnabled = canBook,
                     onButtonClick = { showBookingDialog = true }
                 )
