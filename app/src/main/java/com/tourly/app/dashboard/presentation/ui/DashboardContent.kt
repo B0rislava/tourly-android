@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
@@ -35,6 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
+import com.tourly.app.bookings.presentation.ui.RateExperienceDialog
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.ui.components.TourlyAlertDialog
 
@@ -78,7 +81,7 @@ fun DashboardContent(
             }
             else -> {
                 Text(
-                    text = "Please log in to see your dashboard",
+                    text = stringResource(id = R.string.login_to_see_dashboard),
                     fontFamily = OutfitFamily
                 )
             }
@@ -108,9 +111,9 @@ private fun DashboardSuccessContent(
             onConfirm = {
                 tourToDelete?.id?.let { onDeleteTour(it) }
             },
-            title = "Delete Tour",
-            text = "Are you sure you want to delete '${tourToDelete?.title}'? This action cannot be undone.",
-            confirmButtonText = "Delete",
+            title = stringResource(id = R.string.delete_tour),
+            text = stringResource(id = R.string.delete_tour_confirmation, tourToDelete?.title ?: ""),
+            confirmButtonText = stringResource(id = R.string.delete),
             isDestructive = true
         )
     }
@@ -121,16 +124,16 @@ private fun DashboardSuccessContent(
             onConfirm = {
                 bookingToCancel?.id?.let { onCancelBooking(it) }
             },
-            title = "Cancel Booking",
-            text = "Are you sure you want to cancel your booking for '${bookingToCancel?.tourTitle}'?",
-            confirmButtonText = "Yes, Cancel",
-            dismissButtonText = "No, Keep",
+            title = stringResource(id = R.string.cancel_booking),
+            text = stringResource(id = R.string.cancel_booking_confirmation, bookingToCancel?.tourTitle ?: ""),
+            confirmButtonText = stringResource(id = R.string.yes_cancel),
+            dismissButtonText = stringResource(id = R.string.no_keep),
             isDestructive = true
         )
     }
 
     if (showRateDialog != null) {
-        com.tourly.app.bookings.presentation.ui.RateExperienceDialog(
+        RateExperienceDialog(
             onDismissRequest = { showRateDialog = null },
             onConfirm = { tourRating, guideRating, comment ->
                 showRateDialog?.id?.let { bookingId ->
@@ -157,7 +160,7 @@ private fun DashboardSuccessContent(
                 .sortedByDescending { it.tourScheduledDate }
 
             BookedToursSection(
-                title = "Upcoming Tours",
+                title = stringResource(id = R.string.upcoming_tours),
                 bookings = upcomingBookings,
                 onCancelBooking = { bookingId ->
                     bookingToCancel = uiState.bookings.find { it.id == bookingId }
@@ -165,11 +168,12 @@ private fun DashboardSuccessContent(
                 onCompleteBooking = onCompleteBooking,
                 showRateButton = false
             )
+
             
             Spacer(modifier = Modifier.height(24.dp))
             
             BookedToursSection(
-                title = "Past Tours",
+                title = stringResource(id = R.string.past_tours),
                 bookings = pastBookings,
                 onCancelBooking = {}, 
                 onRateClick = { bookingId ->
@@ -179,6 +183,7 @@ private fun DashboardSuccessContent(
                 showRateButton = true
             )
 
+
         } else {
             // Guide Dashboard
             Row(
@@ -187,11 +192,12 @@ private fun DashboardSuccessContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "My Tours",
+                    text = stringResource(id = R.string.my_tours),
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold
                 )
+
                 
                 TextButton(onClick = onCreateTour) {
                     Icon(
@@ -200,20 +206,22 @@ private fun DashboardSuccessContent(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Create Tour", fontFamily = OutfitFamily)
+                    Text(text = stringResource(id = R.string.create_tour), fontFamily = OutfitFamily)
                 }
+
             }
             
             Spacer(modifier = Modifier.height(16.dp))
             
             if (uiState.tours.isEmpty()) {
                 Text(
-                    text = "You haven't created any tours yet.",
+                    text = stringResource(id = R.string.no_tours_created),
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = OutfitFamily,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
+
                 uiState.tours.forEach { tour ->
                     GuideTourCard(
                         tour = tour,

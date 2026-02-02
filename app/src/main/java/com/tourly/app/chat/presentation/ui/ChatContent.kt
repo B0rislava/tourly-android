@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.chat.presentation.state.ChatUiState
 import com.tourly.app.chat.presentation.ui.components.EmptyChatState
 import com.tourly.app.chat.presentation.ui.components.TourChatCard
@@ -38,7 +40,7 @@ fun ChatContent(
             .padding(top = 16.dp)
     ) {
         Text(
-            text = "Your Group Chats",
+            text = stringResource(id = R.string.your_group_chats),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)

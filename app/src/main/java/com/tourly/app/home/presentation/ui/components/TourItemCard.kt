@@ -35,6 +35,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +55,7 @@ import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.util.Formatters
+import java.util.Locale.getDefault
 
 @Composable
 fun TourItemCard(
@@ -131,14 +134,14 @@ fun TourItemCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "4.9",
+                            text = String.format(getDefault(), "%.1f", tour.rating),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = OutfitFamily,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "(128)",
+                            text = "(${tour.reviewsCount})",
                             fontSize = 12.sp,
                             fontFamily = OutfitFamily,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
@@ -241,7 +244,15 @@ fun TourItemCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = if (tour.availableSpots > 0) "${tour.availableSpots} spots left" else "Fully Booked",
+                            text = if (tour.availableSpots > 0) {
+                                pluralStringResource(
+                                    id = R.plurals.spots_left,
+                                    count = tour.availableSpots,
+                                    tour.availableSpots
+                                )
+                            } else {
+                                stringResource(id = R.string.fully_booked)
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = OutfitFamily,
                             color = if (tour.availableSpots > 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error
@@ -276,7 +287,7 @@ fun TourItemCard(
 
                     // Price
                     Text(
-                        text = "$${tour.pricePerPerson.toInt()}/person",
+                        text = "$${tour.pricePerPerson.toInt()}${stringResource(id = R.string.per_person)}",
                         style = MaterialTheme.typography.titleLarge,
                         fontFamily = OutfitFamily,
                         fontWeight = FontWeight.Bold,

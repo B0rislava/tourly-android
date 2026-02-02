@@ -47,7 +47,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tourly.app.R
 import androidx.compose.ui.window.Dialog
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.TourFilters
@@ -166,13 +168,12 @@ fun TourDatePickerDialog(
                     onDateSelected(date)
                 } ?: onDateSelected(null)
             }) {
-                Text("Apply")
+                Text(stringResource(id = R.string.apply))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
-                // TODO: Extract text
+                Text(stringResource(id = R.string.cancel))
             }
         }
     ) {
@@ -192,7 +193,7 @@ fun SortMenu(
     Box(modifier = modifier) {
         FilterButton(
             modifier = Modifier.fillMaxWidth(),
-            text = "Sort...",
+            text = stringResource(id = R.string.sort_by),
             icon = Icons.AutoMirrored.Filled.Sort,
             onClick = { expanded = true },
             isActive = false // Always neutral style
@@ -204,7 +205,7 @@ fun SortMenu(
              modifier = Modifier.background(MaterialTheme.colorScheme.surface)
         ) {
             SortOptionItem(
-                label = "Top Rated",
+                label = stringResource(id = R.string.top_rated),
                 isSelected = currentSortField == TourFilters.SortField.RATING,
                 onClick = { 
                     onSortSelected(TourFilters.SortField.RATING, TourFilters.SortOrder.DESC)
@@ -212,7 +213,7 @@ fun SortMenu(
                 }
             )
             SortOptionItem(
-                label = "Price: Low → High",
+                label = stringResource(id = R.string.price_asc),
                 isSelected = currentSortField == TourFilters.SortField.PRICE && currentSortOrder == TourFilters.SortOrder.ASC,
                 onClick = { 
                     onSortSelected(TourFilters.SortField.PRICE, TourFilters.SortOrder.ASC)
@@ -220,7 +221,7 @@ fun SortMenu(
                 }
             )
             SortOptionItem(
-                label = "Price: High → Low",
+                label = stringResource(id = R.string.price_desc),
                 isSelected = currentSortField == TourFilters.SortField.PRICE && currentSortOrder == TourFilters.SortOrder.DESC,
                 onClick = { 
                     onSortSelected(TourFilters.SortField.PRICE, TourFilters.SortOrder.DESC)
@@ -228,7 +229,7 @@ fun SortMenu(
                 }
             )
              SortOptionItem(
-                label = "Duration: Short → Long",
+                label = stringResource(id = R.string.duration_asc),
                 isSelected = currentSortField == TourFilters.SortField.DURATION && currentSortOrder == TourFilters.SortOrder.ASC,
                 onClick = { 
                     onSortSelected(TourFilters.SortField.DURATION, TourFilters.SortOrder.ASC)
@@ -236,7 +237,7 @@ fun SortMenu(
                 }
             )
             SortOptionItem(
-                label = "Duration: Long → Short",
+                label = stringResource(id = R.string.duration_desc),
                 isSelected = currentSortField == TourFilters.SortField.DURATION && currentSortOrder == TourFilters.SortOrder.DESC,
                 onClick = { 
                     onSortSelected(TourFilters.SortField.DURATION, TourFilters.SortOrder.DESC)
@@ -288,7 +289,7 @@ fun PriceFilterPopup(
     Box(modifier = modifier) {
         FilterButton(
             modifier = Modifier.fillMaxWidth(),
-            text = if (isActive) "$${priceRange.start.toInt()} - $${priceRange.endInclusive.toInt()}" else "Price",
+            text = if (isActive) "$${priceRange.start.toInt()} - $${priceRange.endInclusive.toInt()}" else stringResource(id = R.string.tour_price),
             icon = Icons.Default.AttachMoney, 
              onClick = { expanded = true },
             isActive = isActive
@@ -303,7 +304,7 @@ fun PriceFilterPopup(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Price Range",
+                            text = stringResource(id = R.string.price_range),
                             style = MaterialTheme.typography.titleMedium,
                             fontFamily = OutfitFamily
                         )
@@ -345,7 +346,7 @@ fun PriceFilterPopup(
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Apply")
+                            Text(stringResource(id = R.string.apply))
                         }
                     }
                 }
@@ -368,7 +369,7 @@ fun LocationFilterPopup(
     Box(modifier = modifier) {
         FilterButton(
             modifier = Modifier.fillMaxWidth(),
-            text = selectedLocation ?: "Location",
+            text = selectedLocation ?: stringResource(id = R.string.tour_location),
             icon = Icons.Default.LocationOn,
             onClick = { expanded = true },
             isActive = selectedLocation != null
@@ -385,7 +386,7 @@ fun LocationFilterPopup(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Select Location",
+                            text = stringResource(id = R.string.select_location),
                             style = MaterialTheme.typography.titleMedium,
                             fontFamily = OutfitFamily
                         )
@@ -398,14 +399,14 @@ fun LocationFilterPopup(
                                 onSearchTextChange(it)
                              },
                             modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text("Enter city or country...") },
+                            placeholder = { Text(stringResource(id = R.string.enter_location_hint)) },
                             trailingIcon = {
                                 if (searchText.isNotEmpty()) {
                                     IconButton(onClick = { 
                                         searchText = "" 
                                         onSearchTextChange("")
                                     }) {
-                                        Icon(Icons.Default.Close, contentDescription = "Clear")
+                                        Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.clear))
                                     }
                                 }
                             },
@@ -473,7 +474,7 @@ fun LocationFilterPopup(
                                 },
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Clear")
+                                Text(stringResource(id = R.string.clear))
                             }
                             Button(
                                 onClick = {
@@ -486,7 +487,7 @@ fun LocationFilterPopup(
                                 },
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Apply")
+                                Text(stringResource(id = R.string.apply))
                             }
                         }
                     }

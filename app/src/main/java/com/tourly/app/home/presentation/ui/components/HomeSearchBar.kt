@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -34,7 +36,7 @@ fun HomeSearchBar(
             .background(MaterialTheme.colorScheme.surfaceVariant),
         placeholder = {
             Text(
-                text = "Search destinations, tours...",
+                text = stringResource(id = R.string.search_hint),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -24,6 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.chat.presentation.ui.components.ChatInputField
 import com.tourly.app.chat.presentation.ui.components.MessageItem
 import com.tourly.app.chat.presentation.viewmodel.GroupChatViewModel
@@ -48,12 +50,12 @@ fun GroupChatContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(uiState.tourTitle.ifEmpty { "Group Chat" }) },
+                title = { Text(uiState.tourTitle.ifEmpty { stringResource(id = R.string.group_chat) }) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 }

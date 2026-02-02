@@ -1,6 +1,8 @@
 package com.tourly.app.profile.presentation.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +26,8 @@ import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.ui.components.ProfileHeader
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 
 @Composable
 fun TravelerProfileContent(
@@ -42,14 +46,14 @@ fun TravelerProfileContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (!isOwnProfile) {
-            androidx.compose.foundation.layout.Row(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Start
+                horizontalArrangement = Arrangement.Start
             ) {
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = stringResource(id = R.string.back)
                     )
                 }
             }
@@ -70,7 +74,7 @@ fun TravelerProfileContent(
         if (!user.bio.isNullOrBlank()) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "About me",
+                    text = stringResource(id = R.string.about_me),
                     style = MaterialTheme.typography.titleLarge,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold
