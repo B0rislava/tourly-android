@@ -95,6 +95,7 @@ fun TourDetailsScreen(
                 is TourDetailsUiState.Success -> {
                     TourDetailsContent(
                         tour = state.tour,
+                        reviews = state.reviews,
                         userRole = userRole,
                         onEditTour = onEditTour,
                         onBackClick = onBackClick,

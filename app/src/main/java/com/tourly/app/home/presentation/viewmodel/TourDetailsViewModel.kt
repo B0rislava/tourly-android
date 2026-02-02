@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.network.Result
 import com.tourly.app.core.domain.model.Tour
+import com.tourly.app.core.domain.model.Review
 import com.tourly.app.home.domain.usecase.GetTourDetailsUseCase
 import com.tourly.app.home.domain.usecase.BookTourUseCase
+import com.tourly.app.reviews.domain.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +20,7 @@ sealed interface TourDetailsUiState {
     data class Error(val message: String) : TourDetailsUiState
     data class Success(
         val tour: Tour,
+        val reviews: List<Review> = emptyList(),
         val isBooking: Boolean = false,
         val bookingError: String? = null,
         val isBookingSuccess: Boolean = false
@@ -27,7 +30,8 @@ sealed interface TourDetailsUiState {
 @HiltViewModel
 class TourDetailsViewModel @Inject constructor(
     private val getTourDetailsUseCase: GetTourDetailsUseCase,
-    private val bookTourUseCase: BookTourUseCase
+    private val bookTourUseCase: BookTourUseCase,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TourDetailsUiState>(TourDetailsUiState.Loading)
@@ -38,7 +42,13 @@ class TourDetailsViewModel @Inject constructor(
             _uiState.value = TourDetailsUiState.Loading
             when (val result = getTourDetailsUseCase(id)) {
                 is Result.Success -> {
-                    _uiState.value = TourDetailsUiState.Success(result.data)
+                    val tour = result.data
+                    // Fetch reviews
+                    val reviews = when (val reviewResult = reviewRepository.getReviewsForTour(id)) {
+                        is Result.Success -> reviewResult.data
+                        else -> emptyList() // Ignore error for now, show tour
+                    }
+                    _uiState.value = TourDetailsUiState.Success(tour = tour, reviews = reviews)
                 }
                 is Result.Error -> {
                     _uiState.value = TourDetailsUiState.Error(result.message)
@@ -90,3 +100,4 @@ class TourDetailsViewModel @Inject constructor(
         }
     }
 }
+
