@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.tourly.app.core.domain.model.AppLanguage
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.core.domain.model.ThemeMode
@@ -24,6 +25,8 @@ fun SettingsScreen(
 ) {
     val themeMode by viewModel.themeMode.collectAsState()
     val user by viewModel.user.collectAsState()
+    val currentLanguage by viewModel.currentLanguage.collectAsState()
+
 
     // Refresh user data when returning to this screen
     LaunchedEffect(Unit) {
@@ -33,8 +36,10 @@ fun SettingsScreen(
     SettingsContent(
         user = user,
         themeMode = themeMode,
+        currentLanguage = currentLanguage,
         onNavigateBack = onNavigateBack,
         onSetThemeMode = { viewModel.setThemeMode(it) },
+        onSetLanguage = { viewModel.setLanguage(it) },
         onLogout = { viewModel.logout(onLogout) },
         onNavigateProfileDetails = onNavigateToEditProfile,
         onNavigatePassword = onNavigatePassword,
@@ -60,8 +65,10 @@ private fun SettingsScreenPreview() {
             profilePictureUrl = null
         ),
         themeMode = ThemeMode.SYSTEM,
+        currentLanguage = AppLanguage.ENGLISH,
         onNavigateBack = {},
         onSetThemeMode = {},
+        onSetLanguage = {},
         onLogout = {},
         onNavigateProfileDetails = {},
         onNavigatePassword = {},

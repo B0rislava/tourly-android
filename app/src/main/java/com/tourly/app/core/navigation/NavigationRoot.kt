@@ -20,10 +20,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.tourly.app.MainActivityUiState
 import com.tourly.app.MainViewModel
+import com.tourly.app.chat.presentation.ui.GroupChatScreen
 import com.tourly.app.core.presentation.ui.SplashScreen
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
 import com.tourly.app.create_tour.presentation.ui.EditTourScreen
 import com.tourly.app.notifications.presentation.ui.NotificationScreen
+import com.tourly.app.profile.presentation.ui.ProfileScreen
+import com.tourly.app.settings.presentation.ui.ChangePasswordScreen
+import com.tourly.app.settings.presentation.ui.EditProfileScreen
 
 @Composable
 fun NavigationRoot(
@@ -47,13 +51,9 @@ fun NavigationRoot(
                 Route.Welcome
             }
             
-            
             val backStack = rememberNavBackStack(startRoute)
-            
-            // Shared UserViewModel for user-related data (bookings, profile, etc.)
             val userViewModel: UserViewModel = hiltViewModel()
 
-            // Redirect Guide to GuideMain if they end up on TravelerMain (e.g. after login)
             LaunchedEffect(state, backStack.lastOrNull()) {
                 if (state.isUserLoggedIn && state.userRole == UserRole.GUIDE && backStack.lastOrNull() == Route.TravelerMain
                 ) {
@@ -67,212 +67,211 @@ fun NavigationRoot(
                 onBack = { backStack.removeLastOrNull() },
                 entryProvider = { key ->
                     when(key) {
-                is Route.Welcome -> {
-                    NavEntry(key) {
-                        WelcomeScreen(
-                            windowSizeState = windowSizeState,
-                            onGetStartedClick = {
-                                backStack.add(Route.SignUp)
+                        is Route.Welcome -> {
+                            NavEntry(key) {
+                                WelcomeScreen(
+                                    windowSizeState = windowSizeState,
+                                    onGetStartedClick = {
+                                        backStack.add(Route.SignUp)
+                                    }
+                                )
                             }
-                        )
-                    }
-                }
-                is Route.SignIn -> {
-                    NavEntry(key) {
-                        SignInScreen (
-                            onNavigateToSignUp = {
-                                backStack.add(Route.SignUp)
-                            },
-                            onLoginSuccess = {
-                                backStack.clear()
-                                backStack.add(Route.TravelerMain) 
-                            }
-                        )
-                    }
-                }
-                is Route.SignUp -> {
-                    NavEntry(key) {
-                        SignUpScreen (
-                            onNavigateToSignIn = {
-                                backStack.add(Route.SignIn)
-                            },
-                            onSignUpSuccess = {
-                                backStack.clear()
-                                backStack.add(Route.TravelerMain)
-                            }
-                        )
-                    }
-                }
-                is Route.TravelerMain -> {
-                    NavEntry(key) {
-                        MainScreen(
-                            windowSizeState = windowSizeState,
-                            onLogout = {
-                                viewModel.logout {
-                                    backStack.clear()
-                                    backStack.add(Route.Welcome)
-                                }
-                            },
-                            onNavigateToNotifications = {
-                                backStack.add(Route.Notifications)
-                            },
-                            onNavigateToSettings = {
-                                backStack.add(Route.Settings)
-                            },
-                            onTourClick = { tourId ->
-                                backStack.add(Route.TourDetails(tourId))
-                            },
-                            onChatClick = { tourId ->
-                                backStack.add(Route.GroupChat(tourId))
-                            },
-                            userViewModel = userViewModel
-                        )
-                    }
-                }
-                is Route.GuideMain -> {
-                    NavEntry(key) {
-                        GuideMainScreen(
-                            windowSizeState = windowSizeState,
-                            onLogout = {
-                                viewModel.logout {
-                                    backStack.clear()
-                                    backStack.add(Route.Welcome)
-                                }
-                            },
-                            onNavigateToNotifications = {
-                                backStack.add(Route.Notifications)
-                            },
-                            onNavigateToSettings = {
-                                backStack.add(Route.Settings)
-                            },
-                            onTourClick = { tourId ->
-                                backStack.add(Route.TourDetails(tourId))
-                            },
-                            onEditTour = { tourId ->
-                                backStack.add(Route.EditTour(tourId))
-                            },
-                            onChatClick = { tourId ->
-                                backStack.add(Route.GroupChat(tourId))
-                            },
-                            userViewModel = userViewModel
-                        )
-                    }
-                }
-                is Route.Settings -> {
-                    NavEntry(key) {
-                        SettingsScreen(
-                            onNavigateBack = {
-                                backStack.removeLastOrNull()
-                            },
-                            onLogout = {
-                                backStack.clear()
-                                backStack.add(Route.Welcome)
-                            },
-                            onAccountDeleted = {
-                                backStack.clear()
-                                backStack.add(Route.Welcome)
-                            },
-                            onNavigatePassword = {
-                                backStack.add(Route.ChangePassword)
-                            },
-                            onNavigateToEditProfile = {
-                                backStack.add(Route.EditProfile)
-                            }
-                        )
-                    }
-                }
-                is Route.EditProfile -> {
-                    NavEntry(key) {
-                        com.tourly.app.settings.presentation.ui.EditProfileScreen(
-                            onNavigateBack = {
-                                backStack.removeLastOrNull()
-                            },
-                            userViewModel = userViewModel
-                        )
-                    }
-                }
-                is Route.ChangePassword -> {
-                    NavEntry(key) {
-                        com.tourly.app.settings.presentation.ui.ChangePasswordScreen(
-                            onNavigateBack = {
-                                backStack.removeLastOrNull()
-                            },
-                            userViewModel = userViewModel
-                        )
-                    }
-                }
-                is Route.TourDetails -> {
-                    NavEntry(key) {
-                        val viewModel = hiltViewModel<TourDetailsViewModel>()
-                        val tourId = key.tourId
-                        LaunchedEffect(tourId) {
-                            viewModel.loadTour(tourId)
                         }
-                        
-                        TourDetailsScreen(
-                            viewModel = viewModel,
-                            userRole = state.userRole,
-                            onBookingSuccess = {
-                                userViewModel.refreshBookings()
-                            },
-                            onEditTour = { tourId ->
-                                backStack.add(Route.EditTour(tourId))
-                            },
-                            onGuideClick = { guideId ->
-                                backStack.add(Route.Profile(guideId))
-                            },
-                            onBackClick = {
-                                backStack.removeLastOrNull()
+                        is Route.SignIn -> {
+                            NavEntry(key) {
+                                SignInScreen (
+                                    onNavigateToSignUp = {
+                                        backStack.add(Route.SignUp)
+                                    },
+                                    onLoginSuccess = {
+                                        backStack.clear()
+                                        backStack.add(Route.TravelerMain) 
+                                    }
+                                )
                             }
-                        )
-                    }
-                }
-                is Route.EditTour -> {
-                    NavEntry(key) {
-                        EditTourScreen(
-                            tourId = key.tourId,
-                            onNavigateBack = {
-                                backStack.removeLastOrNull()
-                            },
-                            onUpdateSuccess = {
-                                userViewModel.showMessage("Tour updated successfully!")
-                                userViewModel.refreshBookings() // Also refresh tours for guide
-                                backStack.removeLastOrNull()
-
+                        }
+                        is Route.SignUp -> {
+                            NavEntry(key) {
+                                SignUpScreen (
+                                    onNavigateToSignIn = {
+                                        backStack.add(Route.SignIn)
+                                    },
+                                    onSignUpSuccess = {
+                                        backStack.clear()
+                                        backStack.add(Route.TravelerMain)
+                                    }
+                                )
                             }
-                        )
-                    }
-                }
-                is Route.Notifications -> {
-                    NavEntry(key) {
-                        NotificationScreen(
-                            onBackClick = { backStack.removeLastOrNull() }
-                        )
-                    }
-                }
-                is Route.Profile -> {
-                    NavEntry(key) {
-                        com.tourly.app.profile.presentation.ui.ProfileScreen(
-                            userId = key.userId,
-                            onSeeMore = { /* Handle if needed */ },
-                            onBackClick = { backStack.removeLastOrNull() }
-                        )
-                    }
-                }
-                is Route.GroupChat -> {
-                    NavEntry(key) {
-                        com.tourly.app.chat.presentation.ui.GroupChatScreen(
-                            tourId = key.tourId,
-                            onBackClick = {
-                                backStack.removeLastOrNull()
+                        }
+                        is Route.TravelerMain -> {
+                            NavEntry(key) {
+                                MainScreen(
+                                    windowSizeState = windowSizeState,
+                                    onLogout = {
+                                        viewModel.logout {
+                                            backStack.clear()
+                                            backStack.add(Route.Welcome)
+                                        }
+                                    },
+                                    onNavigateToNotifications = {
+                                        backStack.add(Route.Notifications)
+                                    },
+                                    onNavigateToSettings = {
+                                        backStack.add(Route.Settings)
+                                    },
+                                    onTourClick = { tourId ->
+                                        backStack.add(Route.TourDetails(tourId))
+                                    },
+                                    onChatClick = { tourId ->
+                                        backStack.add(Route.GroupChat(tourId))
+                                    },
+                                    userViewModel = userViewModel
+                                )
                             }
-                        )
+                        }
+                        is Route.GuideMain -> {
+                            NavEntry(key) {
+                                GuideMainScreen(
+                                    windowSizeState = windowSizeState,
+                                    onLogout = {
+                                        viewModel.logout {
+                                            backStack.clear()
+                                            backStack.add(Route.Welcome)
+                                        }
+                                    },
+                                    onNavigateToNotifications = {
+                                        backStack.add(Route.Notifications)
+                                    },
+                                    onNavigateToSettings = {
+                                        backStack.add(Route.Settings)
+                                    },
+                                    onTourClick = { tourId ->
+                                        backStack.add(Route.TourDetails(tourId))
+                                    },
+                                    onEditTour = { tourId ->
+                                        backStack.add(Route.EditTour(tourId))
+                                    },
+                                    onChatClick = { tourId ->
+                                        backStack.add(Route.GroupChat(tourId))
+                                    },
+                                    userViewModel = userViewModel
+                                )
+                            }
+                        }
+                        is Route.Settings -> {
+                            NavEntry(key) {
+                                SettingsScreen(
+                                    onNavigateBack = {
+                                        backStack.removeLastOrNull()
+                                    },
+                                    onLogout = {
+                                        backStack.clear()
+                                        backStack.add(Route.Welcome)
+                                    },
+                                    onAccountDeleted = {
+                                        backStack.clear()
+                                        backStack.add(Route.Welcome)
+                                    },
+                                    onNavigatePassword = {
+                                        backStack.add(Route.ChangePassword)
+                                    },
+                                    onNavigateToEditProfile = {
+                                        backStack.add(Route.EditProfile)
+                                    }
+                                )
+                            }
+                        }
+                        is Route.EditProfile -> {
+                            NavEntry(key) {
+                                EditProfileScreen(
+                                    onNavigateBack = {
+                                        backStack.removeLastOrNull()
+                                    },
+                                    userViewModel = userViewModel
+                                )
+                            }
+                        }
+                        is Route.ChangePassword -> {
+                            NavEntry(key) {
+                                ChangePasswordScreen(
+                                    onNavigateBack = {
+                                        backStack.removeLastOrNull()
+                                    },
+                                    userViewModel = userViewModel
+                                )
+                            }
+                        }
+                        is Route.TourDetails -> {
+                            NavEntry(key) {
+                                val tourViewModel = hiltViewModel<TourDetailsViewModel>()
+                                val tourId = key.tourId
+                                LaunchedEffect(tourId) {
+                                    tourViewModel.loadTour(tourId)
+                                }
+                                
+                                TourDetailsScreen(
+                                    viewModel = tourViewModel,
+                                    userRole = state.userRole,
+                                    onBookingSuccess = {
+                                        userViewModel.refreshBookings()
+                                    },
+                                    onEditTour = { id ->
+                                        backStack.add(Route.EditTour(id))
+                                    },
+                                    onGuideClick = { guideId ->
+                                        backStack.add(Route.Profile(guideId))
+                                    },
+                                    onBackClick = {
+                                        backStack.removeLastOrNull()
+                                    }
+                                )
+                            }
+                        }
+                        is Route.EditTour -> {
+                            NavEntry(key) {
+                                EditTourScreen(
+                                    tourId = key.tourId,
+                                    onNavigateBack = {
+                                        backStack.removeLastOrNull()
+                                    },
+                                    onUpdateSuccess = {
+                                        userViewModel.showMessage("Tour updated successfully!")
+                                        userViewModel.refreshBookings()
+                                        backStack.removeLastOrNull()
+                                    }
+                                )
+                            }
+                        }
+                        is Route.Notifications -> {
+                            NavEntry(key) {
+                                NotificationScreen(
+                                    onBackClick = { backStack.removeLastOrNull() }
+                                )
+                            }
+                        }
+                        is Route.Profile -> {
+                            NavEntry(key) {
+                                ProfileScreen(
+                                    userId = key.userId,
+                                    onSeeMore = { /*TODO*/ },
+                                    onBackClick = { backStack.removeLastOrNull() }
+                                )
+                            }
+                        }
+                        is Route.GroupChat -> {
+                            NavEntry(key) {
+                                GroupChatScreen(
+                                    tourId = key.tourId,
+                                    onBackClick = {
+                                        backStack.removeLastOrNull()
+                                    }
+                                )
+                            }
+                        }
+                        else -> error("Unknown NavKey: $key")
                     }
                 }
-                else -> error("Unknown NavKey: $key")
-            }
-        }
-    )
+            )
         }
     }
 }

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.domain.repository.ThemeRepository
+import com.tourly.app.core.domain.repository.LanguageRepository
+import com.tourly.app.core.domain.model.AppLanguage
 import com.tourly.app.core.network.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,7 @@ import com.tourly.app.core.domain.model.ThemeMode
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val themeRepository: ThemeRepository,
+    private val languageRepository: LanguageRepository,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
@@ -34,10 +37,19 @@ class SettingsViewModel @Inject constructor(
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()
 
+    private val _currentLanguage = MutableStateFlow(AppLanguage.ENGLISH)
+    val currentLanguage: StateFlow<AppLanguage> = _currentLanguage.asStateFlow()
+
     init {
         viewModelScope.launch {
             themeRepository.themeMode.collect {
                 _themeMode.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            languageRepository.currentLanguage.collect {
+                _currentLanguage.value = it
             }
         }
         
@@ -69,6 +81,12 @@ class SettingsViewModel @Inject constructor(
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
             themeRepository.setThemeMode(mode)
+        }
+    }
+
+    fun setLanguage(language: AppLanguage) {
+        viewModelScope.launch {
+            languageRepository.setLanguage(language)
         }
     }
 
