@@ -53,6 +53,7 @@ class HomeViewModel @Inject constructor(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
+    private val _errorCode = MutableStateFlow<String?>(null)
     private val _allTours = MutableStateFlow<List<Tour>>(emptyList())
 
     private val _searchQuery = MutableStateFlow("")
@@ -83,12 +84,13 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = combine(
         _isLoading,
         _error,
+        _errorCode,
         _allTours,
         _searchQuery
-    ) { isLoading, error, tours, query ->
+    ) { isLoading, error, errorCode, tours, query ->
         when {
             isLoading -> HomeUiState.Loading
-            error != null -> HomeUiState.Error(error)
+            error != null -> HomeUiState.Error(error, errorCode)
             else -> {
                 // Only filter by search query client-side
                 val filteredTours = if (query.isBlank()) {
@@ -131,6 +133,7 @@ class HomeViewModel @Inject constructor(
                     _isLoading.value = false
                     _isRefreshing.value = false
                     _error.value = null
+                    _errorCode.value = null
                 }
             }
         }
@@ -271,6 +274,7 @@ class HomeViewModel @Inject constructor(
                         _events.send(HomeEvent.SessionExpired)
                     }
                     _error.value = result.message
+                    _errorCode.value = result.code
                     _isLoading.value = false
                 }
             }
