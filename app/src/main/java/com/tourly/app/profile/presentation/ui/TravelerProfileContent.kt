@@ -36,6 +36,7 @@ fun TravelerProfileContent(
     modifier: Modifier = Modifier,
     user: User,
     isOwnProfile: Boolean = true,
+    isSavingAvatar: Boolean = false,
     onBackClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
@@ -67,7 +68,8 @@ fun TravelerProfileContent(
             email = user.email,
             role = user.role,
             profilePictureUrl = user.profilePictureUrl,
-            isOwnProfile = isOwnProfile
+            isOwnProfile = isOwnProfile,
+            isSavingAvatar = isSavingAvatar
         )
 
         Spacer(modifier = Modifier.height(24.dp))

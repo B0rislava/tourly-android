@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +59,10 @@ fun ChangePasswordContent(
             onValueChange = onPasswordChange,
             label = "New Password",
             isError = state.passwordError != null,
-            supportingText = state.passwordError,
+            supportingText = state.passwordError?.let { stringResource(it) },
+            leadingIcon = {
+                Icon(imageVector = Icons.Outlined.Lock, contentDescription = null)
+            },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -80,7 +85,10 @@ fun ChangePasswordContent(
             onValueChange = onConfirmPasswordChange,
             label = "Confirm New Password",
             isError = state.confirmPasswordError != null,
-            supportingText = state.confirmPasswordError,
+            supportingText = state.confirmPasswordError?.let { stringResource(it) },
+            leadingIcon = {
+                Icon(imageVector = Icons.Outlined.Lock, contentDescription = null)
+            },
             visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,

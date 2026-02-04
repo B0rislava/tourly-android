@@ -17,6 +17,7 @@ import com.tourly.app.core.domain.usecase.DeleteAccountUseCase
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.core.domain.usecase.LogoutUseCase
 import com.tourly.app.core.domain.usecase.ObserveAuthStateUseCase
+import com.tourly.app.core.domain.usecase.ObserveUserProfileUseCase
 import javax.inject.Inject
 
 import com.tourly.app.core.domain.model.ThemeMode
@@ -28,7 +29,8 @@ class SettingsViewModel @Inject constructor(
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val observeAuthStateUseCase: ObserveAuthStateUseCase
+    private val observeAuthStateUseCase: ObserveAuthStateUseCase,
+    private val observeUserProfileUseCase: ObserveUserProfileUseCase
 ) : ViewModel() {
 
     private val _themeMode = MutableStateFlow(ThemeMode.SYSTEM)
@@ -53,17 +55,24 @@ class SettingsViewModel @Inject constructor(
             }
         }
         
-        // Observe token changes to refresh user data
+        // Observe global user flow via UseCase to refresh user data automatically everywhere
         viewModelScope.launch {
-            observeAuthStateUseCase()
-                .distinctUntilChanged()
-                .collect { isLoggedIn ->
-                    if (isLoggedIn) {
-                        refreshUserProfile()
-                    } else {
-                        _user.value = null
-                    }
+            observeUserProfileUseCase().collect { user ->
+                if (user != null) {
+                    _user.value = user
+                } else {
+                    // Check if we are logged in - if so, try to fetch
+                    observeAuthStateUseCase()
+                        .distinctUntilChanged()
+                        .collect { isLoggedIn ->
+                            if (isLoggedIn && _user.value == null) {
+                                refreshUserProfile()
+                            } else if (!isLoggedIn) {
+                                _user.value = null
+                            }
+                        }
                 }
+            }
         }
     }
 

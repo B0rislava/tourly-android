@@ -13,12 +13,14 @@ fun ProfileContent(
     isOwnProfile: Boolean = true,
     onBackClick: () -> Unit = {},
     onFollowClick: () -> Unit = {},
+    isSavingAvatar: Boolean = false,
     tours: List<Tour> = emptyList()
 ) {
     if (user.role == UserRole.GUIDE) {
         GuideProfileContent(
             user = user,
             isOwnProfile = isOwnProfile,
+            isSavingAvatar = isSavingAvatar,
             tours = tours,
             onBackClick = onBackClick,
             onFollowClick = onFollowClick,
@@ -28,6 +30,7 @@ fun ProfileContent(
         TravelerProfileContent(
             user = user,
             isOwnProfile = isOwnProfile,
+            isSavingAvatar = isSavingAvatar,
             onBackClick = onBackClick,
             modifier = modifier
         )

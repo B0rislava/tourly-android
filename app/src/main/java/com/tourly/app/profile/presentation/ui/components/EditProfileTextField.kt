@@ -1,17 +1,10 @@
 package com.tourly.app.profile.presentation.ui.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
-import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 
 @Composable
 fun EditProfileTextField(
@@ -22,32 +15,26 @@ fun EditProfileTextField(
     isError: Boolean = false,
     supportingText: String? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
     minLines: Int = 1,
-    maxLines: Int = Int.MAX_VALUE,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
-    OutlinedTextField(
+    AppTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = label, fontFamily = OutfitFamily) },
-        modifier = modifier.fillMaxWidth(),
+        label = label,
+        modifier = modifier,
         isError = isError,
-        supportingText = { supportingText?.let { Text(text = it, fontFamily = OutfitFamily) } },
+        errorText = supportingText,
+        visualTransformation = visualTransformation,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         singleLine = singleLine,
         minLines = minLines,
         maxLines = maxLines,
-        visualTransformation = visualTransformation,
-        trailingIcon = trailingIcon,
-        keyboardOptions = keyboardOptions,
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            errorContainerColor = MaterialTheme.colorScheme.surface,
-            focusedBorderColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        )
+        keyboardOptions = keyboardOptions
     )
 }
