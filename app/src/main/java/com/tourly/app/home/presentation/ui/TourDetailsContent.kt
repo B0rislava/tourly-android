@@ -72,6 +72,7 @@ fun TourDetailsContent(
     tour: Tour,
     reviews: List<Review> = emptyList(),
     userRole: UserRole? = null,
+    currentUserId: Long? = null,
     onBackClick: () -> Unit,
     onGuideClick: (Long) -> Unit = {},
     onEditTour: (Long) -> Unit = {},
@@ -123,7 +124,7 @@ fun TourDetailsContent(
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (userRole == UserRole.GUIDE) {
+                    if (userRole == UserRole.GUIDE && tour.tourGuideId == currentUserId) {
                         IconButton(
                             onClick = { onEditTour(tour.id) },
                             modifier = Modifier
@@ -149,17 +150,19 @@ fun TourDetailsContent(
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    IconButton(
-                        onClick = onToggleSave,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
-                            .size(40.dp)
-                    ) {
-                        Icon(
-                            if (tour.isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = stringResource(id = R.string.favorite),
-                            tint = if (tour.isSaved) Color.Red else MaterialTheme.colorScheme.onSurface
-                        )
+                    if (userRole != UserRole.GUIDE) {
+                        IconButton(
+                            onClick = onToggleSave,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
+                                .size(40.dp)
+                        ) {
+                            Icon(
+                                if (tour.isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = stringResource(id = R.string.favorite),
+                                tint = if (tour.isSaved) Color.Red else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             }
@@ -331,31 +334,37 @@ fun TourDetailsContent(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // What's included
-                Text(
-                    text = stringResource(id = R.string.tour_included),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                // Assuming bullet list in string
-                val items = tour.whatsIncluded?.split(",") ?: listOf("Expert guide", "Safety equipment")
-                items.forEach { item ->
-                    Row(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            tint = Color(0xFFFF9800).copy(alpha = 0.6f),
-                            modifier = Modifier.size(20.dp).background(Color(0xFFFFF0E3), CircleShape).padding(2.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = item.trim(), style = MaterialTheme.typography.bodyLarge)
+                if (!tour.whatsIncluded.isNullOrBlank()) {
+                    Text(
+                        text = stringResource(id = R.string.tour_included),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    val items = tour.whatsIncluded.split(",")
+                    items.forEach { item ->
+                        if (item.isNotBlank()) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = Color(0xFFFF9800).copy(alpha = 0.6f),
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .background(Color(0xFFFFF0E3), CircleShape)
+                                        .padding(2.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(text = item.trim(), style = MaterialTheme.typography.bodyLarge)
+                            }
+                        }
                     }
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
-
-                Spacer(modifier = Modifier.height(32.dp))
 
                 // Cancellation Policy
                 Row(verticalAlignment = Alignment.CenterVertically) {

@@ -32,11 +32,13 @@ import com.tourly.app.home.presentation.ui.components.ErrorState
 import com.tourly.app.home.presentation.ui.components.HomeFilterSection
 import com.tourly.app.home.presentation.ui.components.HomeHeaderSection
 import com.tourly.app.core.presentation.ui.components.TourItemCard
+import com.tourly.app.login.domain.UserRole
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
+    modifier: Modifier = Modifier,
     uiState: HomeUiState,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
@@ -51,12 +53,11 @@ fun HomeContent(
     onRefresh: () -> Unit,
     greeting: Int,
     userName: String,
-
     isRefreshing: Boolean,
     onTourClick: (Long) -> Unit,
     onNotifyClick: () -> Unit,
     unreadCount: Int,
-    modifier: Modifier = Modifier
+    userRole: UserRole? = null,
 ) {
 
     PullToRefreshBox(
@@ -64,149 +65,158 @@ fun HomeContent(
         onRefresh = onRefresh,
         modifier = modifier.fillMaxSize()
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // 1. Header Section (Always visible)
-            item {
-                HomeHeaderSection(
-                    greeting = stringResource(id = greeting),
-                    userName = userName,
-                    onNotifyClick = onNotifyClick,
-                    unreadCount = unreadCount,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
-                )
-            }
-
-            // 2. Filters (Includes Search Bar now)
-            item {
-                HomeFilterSection(
-                    uiState = filterUiState,
-                    searchQuery = searchQuery,
-                    onSearchQueryChange = onSearchQueryChange,
-                    onTagToggle = onTagToggle,
-                    onSortSelected = onSortSelected,
-                    onPriceRangeChanged = onPriceRangeChanged,
-                    onDateSelected = onDateSelected,
-                    onLocationSearch = onLocationSearch,
-                    onLocationSelected = onLocationSelected,
-                    onClearFilters = onClearFilters,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            // 3. Content based on UI State
-            when (uiState) {
-                is HomeUiState.Loading -> {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 50.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
+        if (uiState is HomeUiState.Error) {
+            ErrorState(
+                message = uiState.message,
+                errorCode = uiState.code,
+                onRetry = onRefresh,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // 1. Header Section (Always visible)
+                item {
+                    HomeHeaderSection(
+                        greeting = stringResource(id = greeting),
+                        userName = userName,
+                        onNotifyClick = onNotifyClick,
+                        unreadCount = unreadCount,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 16.dp)
+                    )
                 }
 
-                is HomeUiState.Error -> {
-                    item {
-                        ErrorState(
-                            message = uiState.message,
-                            onRetry = onRefresh,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp)
-                        )
-                    }
+                // 2. Filters (Includes Search Bar now)
+                item {
+                    HomeFilterSection(
+                        uiState = filterUiState,
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = onSearchQueryChange,
+                        onTagToggle = onTagToggle,
+                        onSortSelected = onSortSelected,
+                        onPriceRangeChanged = onPriceRangeChanged,
+                        onDateSelected = onDateSelected,
+                        onLocationSearch = onLocationSearch,
+                        onLocationSelected = onLocationSelected,
+                        onClearFilters = onClearFilters,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
 
-                is HomeUiState.Success -> {
-                    if (uiState.tours.isEmpty()) {
+                // 3. Content based on UI State
+                when (uiState) {
+                    is HomeUiState.Loading -> {
                         item {
-                            when {
-                                searchQuery.isNotEmpty() -> {
-                                    EmptyState(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 32.dp),
-                                        title = stringResource(id = R.string.no_results_found),
-                                        description = stringResource(id = R.string.no_results_description, searchQuery)
-                                    )
-                                }
-                                filterUiState.hasActiveFilters -> {
-                                    EmptyState(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 32.dp),
-                                        title = stringResource(id = R.string.no_tours_found),
-                                        description = stringResource(id = R.string.no_tours_description)
-                                    )
-                                }
-                                else -> {
-                                    EmptyState(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 32.dp)
-                                    )
-                                }
-                            }
-                        }
-                    } else {
-                        // Header with Count
-                        item {
-                            Row(
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                    .padding(top = 50.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.available_tours),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontFamily = OutfitFamily
-                                    )
-                                    
-                                    // Count Badge
-                                    Surface(
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                        shape = RoundedCornerShape(12.dp)
-                                    ) {
-                                        Text(
-                                            text = pluralStringResource(
-                                                id = R.plurals.tour_count,
-                                                count = uiState.tours.size,
-                                                uiState.tours.size
-                                            ),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                        )
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
 
+                    is HomeUiState.Success -> {
+                        // ... items for success
+                        if (uiState.tours.isEmpty()) {
+                            item {
+                                when {
+                                    searchQuery.isNotEmpty() -> {
+                                        EmptyState(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 32.dp),
+                                            title = stringResource(id = R.string.no_results_found),
+                                            description = stringResource(
+                                                id = R.string.no_results_description,
+                                                searchQuery
+                                            )
+                                        )
+                                    }
+
+                                    filterUiState.hasActiveFilters -> {
+                                        EmptyState(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 32.dp),
+                                            title = stringResource(id = R.string.no_tours_found),
+                                            description = stringResource(id = R.string.no_tours_description)
+                                        )
+                                    }
+
+                                    else -> {
+                                        EmptyState(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 32.dp)
+                                        )
                                     }
                                 }
                             }
-                        }
-                        
-                        items(uiState.tours, key = { it.id }) { tour ->
-                            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                TourItemCard(
-                                    tour = tour,
-                                    onClick = { onTourClick(tour.id) }
-                                )
+                        } else {
+                            // Header with Count
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.available_tours),
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontFamily = OutfitFamily
+                                        )
+
+                                        // Count Badge
+                                        Surface(
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Text(
+                                                text = pluralStringResource(
+                                                    id = R.plurals.tour_count,
+                                                    count = uiState.tours.size,
+                                                    uiState.tours.size
+                                                ),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.padding(
+                                                    horizontal = 8.dp,
+                                                    vertical = 4.dp
+                                                )
+                                            )
+
+                                        }
+                                    }
+                                }
+                            }
+
+                            items(uiState.tours, key = { it.id }) { tour ->
+                                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                    TourItemCard(
+                                        tour = tour,
+                                        userRole = userRole,
+                                        onClick = { onTourClick(tour.id) }
+                                    )
+                                }
                             }
                         }
                     }
+
+                    else -> {}
                 }
             }
         }
