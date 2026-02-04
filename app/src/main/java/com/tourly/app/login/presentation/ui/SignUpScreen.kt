@@ -2,6 +2,7 @@ package com.tourly.app.login.presentation.ui
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,11 +83,11 @@ fun SignUpScreen(
         onRoleChange = viewModel::onRoleChange,
         agreedToTerms = uiState.agreedToTerms,
         onAgreeToTermsChange = viewModel::onAgreeToTermsChange,
-        emailError = uiState.emailError,
-        passwordError = uiState.passwordError,
-        confirmPasswordError = uiState.confirmPasswordError,
-        fullNameError = uiState.fullNameError,
-        termsError = uiState.termsError,
+        emailError = uiState.emailError?.let { stringResource(it) },
+        passwordError = uiState.passwordError?.let { stringResource(it) },
+        confirmPasswordError = uiState.confirmPasswordError?.let { stringResource(it) },
+        fullNameError = uiState.fullNameError?.let { stringResource(it) },
+        termsError = uiState.termsError?.let { stringResource(it) },
         signUpError = uiState.signUpError,
         isLoading = uiState.isLoading,
         onRegisterClick = viewModel::signUp,

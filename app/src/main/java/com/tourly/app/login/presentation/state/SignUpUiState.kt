@@ -10,11 +10,11 @@ data class SignUpUiState(
     val role: UserRole = UserRole.TRAVELER,
     val agreedToTerms: Boolean = false,
 
-    val emailError: String? = null,
-    val passwordError: String? = null,
-    val confirmPasswordError: String? = null,
-    val fullNameError: String? = null,
-    val termsError: String? = null,
+    val emailError: Int? = null,
+    val passwordError: Int? = null,
+    val confirmPasswordError: Int? = null,
+    val fullNameError: Int? = null,
+    val termsError: Int? = null,
     val signUpError: String? = null,
 
     val isLoading: Boolean = false,
