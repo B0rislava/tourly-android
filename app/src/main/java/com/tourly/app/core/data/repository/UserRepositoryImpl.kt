@@ -21,6 +21,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.data.mapper.UserMapper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @Singleton
 class UserRepositoryImpl @Inject constructor(
@@ -30,55 +32,48 @@ class UserRepositoryImpl @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) : UserRepository {
 
+    private val _currentUserProfile = MutableStateFlow<User?>(null)
+    override val currentUserProfile: Flow<User?> = _currentUserProfile.asStateFlow()
+
     override suspend fun getUserProfile(): Result<User> {
-        return try {
-            val response = authApiService.getProfile()
-            when (val result = NetworkResponseMapper.map<UserDto>(response)) {
-                 is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
-                 is Result.Error -> result
+        return when (val result = NetworkResponseMapper.map<UserDto> { authApiService.getProfile() }) {
+            is Result.Success -> {
+                val user = UserMapper.mapToDomain(result.data)
+                _currentUserProfile.value = user
+                Result.Success(user)
             }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+            is Result.Error -> result
         }
     }
 
     override suspend fun getUserProfile(userId: Long): Result<User> {
-        return try {
-            val response = authApiService.getProfileById(userId)
-            when (val result = NetworkResponseMapper.map<UserDto>(response)) {
-                is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
-                is Result.Error -> result
-            }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        return when (val result = NetworkResponseMapper.map<UserDto> { authApiService.getProfileById(userId) }) {
+            is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
+            is Result.Error -> result
         }
     }
 
     override suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<User> {
-        return try {
-            val response = authApiService.updateProfile(request)
-            when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
-                is Result.Success -> {
-                    tokenManager.saveToken(result.data.accessToken)
-                    Result.Success(UserMapper.mapToDomain(result.data.user))
-                }
-                is Result.Error -> result
+        return when (val result = NetworkResponseMapper.map<LoginResponseDto> { authApiService.updateProfile(request) }) {
+            is Result.Success -> {
+                tokenManager.saveToken(result.data.accessToken)
+                val user = UserMapper.mapToDomain(result.data.user)
+                _currentUserProfile.value = user
+                Result.Success(user)
             }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+            is Result.Error -> result
         }
     }
 
 
     private suspend fun uploadProfilePicture(fileBytes: ByteArray): Result<User> {
-        return try {
-            val response = authApiService.uploadProfilePicture(fileBytes)
-            when (val result = NetworkResponseMapper.map<UserDto>(response)) {
-                is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
-                is Result.Error -> result
+        return when (val result = NetworkResponseMapper.map<UserDto> { authApiService.uploadProfilePicture(fileBytes) }) {
+            is Result.Success -> {
+                val user = UserMapper.mapToDomain(result.data)
+                _currentUserProfile.value = user
+                Result.Success(user)
             }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+            is Result.Error -> result
         }
     }
 
@@ -98,36 +93,21 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteAccount(): Result<Unit> {
-        return try {
-            val response = authApiService.deleteProfile()
-            when (val result = NetworkResponseMapper.map<Unit>(response)) {
-                is Result.Success -> {
-                    logout()
-                    Result.Success(Unit)
-                }
-                is Result.Error -> result
+        return when (val result = NetworkResponseMapper.map<Unit> { authApiService.deleteProfile() }) {
+            is Result.Success -> {
+                logout()
+                Result.Success(Unit)
             }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+            is Result.Error -> result
         }
     }
 
     override suspend fun followUser(userId: Long): Result<Unit> {
-        return try {
-            val response = authApiService.followUser(userId)
-            NetworkResponseMapper.map(response)
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
-        }
+        return NetworkResponseMapper.map { authApiService.followUser(userId) }
     }
 
     override suspend fun unfollowUser(userId: Long): Result<Unit> {
-        return try {
-            val response = authApiService.unfollowUser(userId)
-            NetworkResponseMapper.map(response)
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
-        }
+        return NetworkResponseMapper.map { authApiService.unfollowUser(userId) }
     }
 
     override suspend fun logout() {
@@ -137,6 +117,9 @@ class UserRepositoryImpl @Inject constructor(
         tokenManager.clearToken()
         tokenManager.clearRefreshToken()
         client.authProvider<BearerAuthProvider>()?.clearToken()
+
+        // Clear local cache
+        _currentUserProfile.value = null
         println("UserRepository: Token cleared via Standard Ktor Auth Clear - logout complete")
     }
     

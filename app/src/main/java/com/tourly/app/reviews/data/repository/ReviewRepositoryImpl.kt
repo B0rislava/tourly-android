@@ -7,12 +7,12 @@ import com.tourly.app.reviews.data.dto.CreateReviewRequest
 import com.tourly.app.reviews.data.dto.ReviewDto
 import com.tourly.app.reviews.domain.repository.ReviewRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import com.tourly.app.core.network.NetworkResponseMapper
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,62 +28,41 @@ class ReviewRepositoryImpl @Inject constructor(
         guideRating: Int,
         comment: String?
     ): Result<Review> {
-        return try {
-            val response = httpClient.post("${BuildConfig.BASE_URL}reviews") {
+        return when (val result = NetworkResponseMapper.map<ReviewDto> {
+            httpClient.post("${BuildConfig.BASE_URL}reviews") {
                 contentType(ContentType.Application.Json)
                 setBody(CreateReviewRequest(bookingId, tourRating, guideRating, comment))
             }
-            if (response.status.value in 200..299) {
-                val dto = response.body<ReviewDto>()
-                Result.Success(mapDtoToDomain(dto))
-            } else {
-                Result.Error(code = response.status.value.toString(), message = "Failed to create review")
-            }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        }) {
+            is Result.Success -> Result.Success(mapDtoToDomain(result.data))
+            is Result.Error -> result
         }
     }
 
     override suspend fun getReviewsForTour(tourId: Long): Result<List<Review>> {
-        return try {
-            val response = httpClient.get("${BuildConfig.BASE_URL}reviews/tours/$tourId")
-            if (response.status.value in 200..299) {
-                val dtos = response.body<List<ReviewDto>>()
-                Result.Success(dtos.map { mapDtoToDomain(it) })
-            } else {
-                Result.Error(code = response.status.value.toString(), message = "Failed to fetch reviews")
-            }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        return when (val result = NetworkResponseMapper.map<List<ReviewDto>> {
+            httpClient.get("${BuildConfig.BASE_URL}reviews/tours/$tourId")
+        }) {
+            is Result.Success -> Result.Success(result.data.map { mapDtoToDomain(it) })
+            is Result.Error -> result
         }
     }
 
     override suspend fun getReviewsForGuide(guideId: Long): Result<List<Review>> {
-        return try {
-            // Updated endpoint based on backend controller: /reviews/guides/{guideId}
-            val response = httpClient.get("${BuildConfig.BASE_URL}reviews/guides/$guideId")
-            if (response.status.value in 200..299) {
-                val dtos = response.body<List<ReviewDto>>()
-                Result.Success(dtos.map { mapDtoToDomain(it) })
-            } else {
-                 Result.Error(code = response.status.value.toString(), message = "Failed to fetch reviews")
-            }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        return when (val result = NetworkResponseMapper.map<List<ReviewDto>> {
+            httpClient.get("${BuildConfig.BASE_URL}reviews/guides/$guideId")
+        }) {
+            is Result.Success -> Result.Success(result.data.map { mapDtoToDomain(it) })
+            is Result.Error -> result
         }
     }
 
     override suspend fun getMyReviews(): Result<List<Review>> {
-        return try {
-            val response = httpClient.get("${BuildConfig.BASE_URL}reviews/my")
-            if (response.status.value in 200..299) {
-                val dtos = response.body<List<ReviewDto>>()
-                Result.Success(dtos.map { mapDtoToDomain(it) })
-            } else {
-                Result.Error(code = response.status.value.toString(), message = "Failed to fetch reviews")
-            }
-        } catch (e: Exception) {
-            Result.Error(code = e.javaClass.simpleName, message = e.message ?: "Unknown error")
+        return when (val result = NetworkResponseMapper.map<List<ReviewDto>> {
+            httpClient.get("${BuildConfig.BASE_URL}reviews/my")
+        }) {
+            is Result.Success -> Result.Success(result.data.map { mapDtoToDomain(it) })
+            is Result.Error -> result
         }
     }
 

@@ -6,9 +6,9 @@ import com.tourly.app.chat.domain.model.Message
 import com.tourly.app.chat.domain.repository.ChatRepository
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.home.domain.usecase.GetTourDetailsUseCase
+import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.network.Result
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -114,12 +114,12 @@ class ChatRepositoryImpl @Inject constructor(
 
         // 1. Fetch History Always (Refresh)
         launch {
-            try {
-                println("ChatRepository: Fetching history for tour $tourId...")
-                val historyUrl = "${BuildConfig.BASE_URL}chat/$tourId/messages"
-                val response = httpClient.get(historyUrl)
-                if (response.status.value in 200..299) {
-                    val history = response.body<List<ChatMessageDto>>()
+            println("ChatRepository: Fetching history for tour $tourId...")
+            val historyUrl = "${BuildConfig.BASE_URL}chat/$tourId/messages"
+            
+            when (val result = NetworkResponseMapper.map<List<ChatMessageDto>> { httpClient.get(historyUrl) }) {
+                is Result.Success -> {
+                    val history = result.data
                     println("ChatRepository: Fetched ${history.size} messages from history for tour $tourId")
                     
                     // MERGE with existing optimistic messages checking for duplicates
@@ -141,11 +141,10 @@ class ChatRepositoryImpl @Inject constructor(
                         println("ChatRepository: Merged history. Total: ${merged.size} (Pending optimistic: ${pendingOptimistic.size})")
                         current + (tourId to merged)
                     }
-                } else {
-                    println("ChatRepository: Failed to fetch history: ${response.status}")
                 }
-            } catch (e: Exception) {
-                println("ChatRepository: Error fetching history: ${e.message}")
+                is Result.Error -> {
+                    println("ChatRepository: Failed to fetch history: ${result.message}")
+                }
             }
         }
 

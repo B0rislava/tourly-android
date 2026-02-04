@@ -20,38 +20,38 @@ class TourRepositoryImpl @Inject constructor(
 ) : TourRepository {
 
     override suspend fun createTour(params: CreateTourParams): Result<Tour> {
-        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto>(
+        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto> {
             apiService.createTour(context, mapper.toDto(params), params.imageUri)
-        )) {
+        }) {
             is Result.Success -> Result.Success(TourMapper.toDomain(result.data))
             is Result.Error -> result
         }
     }
 
     override suspend fun getMyTours(): Result<List<Tour>> {
-        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getMyTours())) {
+        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>> { apiService.getMyTours() }) {
             is Result.Success -> Result.Success(TourMapper.toDomainList(result.data))
             is Result.Error -> result
         }
     }
 
     override suspend fun getToursByGuideId(guideId: Long): Result<List<Tour>> {
-        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getToursByGuideId(guideId))) {
+        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>> { apiService.getToursByGuideId(guideId) }) {
             is Result.Success -> Result.Success(TourMapper.toDomainList(result.data))
             is Result.Error -> result
         }
     }
 
     override suspend fun updateTour(id: Long, params: CreateTourParams): Result<Tour> {
-        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto>(
+        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto> {
             apiService.updateTour(context, id, mapper.toDto(params), params.imageUri)
-        )) {
+        }) {
             is Result.Success -> Result.Success(TourMapper.toDomain(result.data))
             is Result.Error -> result
         }
     }
 
     override suspend fun deleteTour(id: Long): Result<Unit> {
-        return NetworkResponseMapper.map(apiService.deleteTour(id))
+        return NetworkResponseMapper.map { apiService.deleteTour(id) }
     }
 }

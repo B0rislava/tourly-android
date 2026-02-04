@@ -6,6 +6,7 @@ import com.tourly.app.core.network.Result
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
+    val currentUserProfile: Flow<User?>
     suspend fun getUserProfile(): Result<User>
     suspend fun getUserProfile(userId: Long): Result<User>
     suspend fun updateUserProfile(request: UpdateProfileRequestDto): Result<User>
