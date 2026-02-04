@@ -3,7 +3,9 @@ package com.tourly.app.core.presentation.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import coil.request.ImageRequest
 import coil.compose.SubcomposeAsyncImage
 import java.util.Locale
@@ -26,7 +29,8 @@ fun UserAvatar(
     imageUrl: String?,
     name: String,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
-    backgroundColor: Color? = null
+    backgroundColor: Color? = null,
+    isLoading: Boolean = false
 ) {
     val context = LocalContext.current
     val initials = getInitials(name)
@@ -94,6 +98,21 @@ fun UserAvatar(
                    }
                 }
             )
+        }
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp),
+                    color = Color.White,
+                    strokeWidth = 3.dp
+                )
+            }
         }
     }
 }

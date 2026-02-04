@@ -28,6 +28,7 @@
 
     <string name="login">Вход</string>
     <string name="logout">Изход</string>
+    <string name="logout_confirmation_text">Сигурни ли сте, че искате да излезете от профила си?</string>
     <string name="register">Регистрация</string>
 
     <string name="no_account">Нямате акаунт?</string>
@@ -192,6 +193,16 @@
     <string name="certifications">Сертификати</string>
     <string name="contact">Контакт</string>
     <string name="save">Запази</string>
+    <string name="profile_updated_success">Профилът е обновен успешно</string>
+    <string name="error_name_empty">Името не може да бъде празно</string>
+    <string name="error_name_invalid">Моля, въведете и двете си имена</string>
+    <string name="error_email_empty">Имейлът не може да бъде празен</string>
+    <string name="error_email_invalid">Невалиден формат на имейла</string>
+    <string name="error_password_too_short">Паролата трябва да бъде поне 6 знака</string>
+    <string name="error_password_no_digit">Паролата трябва да съдържа поне една цифра</string>
+    <string name="error_passwords_dont_match">Паролите не съвпадат</string>
+    <string name="error_terms_not_accepted">Трябва да приемете общите условия</string>
+    <string name="error_password_empty">Паролата не може да бъде празна</string>
 
     <!-- Tour Details -->
     <string name="edit_tour">Редактиране на обиколка</string>
@@ -238,5 +249,8 @@
     <string name="see_more">Виж повече</string>
     <string name="fully_booked">Разпродадено</string>
     <string name="per_person">/ човек</string>
+    <string name="error_no_internet_title">Няма връзка с интернет</string>
+    <string name="error_no_internet_description">Изглежда, че сте офлайн. Моля, проверете връзката си и опитайте отново.</string>
+    <string name="retry">Опитай пак</string>
 
 </resources>

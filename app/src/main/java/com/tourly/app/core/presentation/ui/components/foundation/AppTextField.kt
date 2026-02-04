@@ -1,7 +1,6 @@
 package com.tourly.app.core.presentation.ui.components.foundation
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -21,20 +20,27 @@ fun AppTextField(
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     singleLine: Boolean = true,
+    minLines: Int = 1,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    isError: Boolean = false,
+    errorText: String? = null
 ) {
     OutlinedTextField(
         modifier = modifier
-            .fillMaxWidth()
-            .height(height = 56.dp),
+            .fillMaxWidth(),
         value = value,
         onValueChange = onValueChange,
         label = { Text(text = label) },
         placeholder = placeholder?.let { { Text(text = it) } },
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
+        isError = isError,
+        supportingText = errorText?.let { { Text(text = it) } },
         singleLine = singleLine,
+        minLines = minLines,
+        maxLines = maxLines,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         shape = RoundedCornerShape(size = 18.dp),
@@ -50,6 +56,11 @@ fun AppTextField(
             unfocusedTrailingIconColor = MaterialTheme.colorScheme.onBackground,
             focusedLabelColor = MaterialTheme.colorScheme.onBackground,
             unfocusedLabelColor = MaterialTheme.colorScheme.onBackground,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorLabelColor = MaterialTheme.colorScheme.error,
+            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+            errorTrailingIconColor = MaterialTheme.colorScheme.error,
+            errorSupportingTextColor = MaterialTheme.colorScheme.error
         )
     )
 }

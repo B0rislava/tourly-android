@@ -29,6 +29,7 @@
 
     <string name="login">Login</string>
     <string name="logout">Logout</string>
+    <string name="logout_confirmation_text">Are you sure you want to log out?</string>
     <string name="register">Register</string>
 
     <string name="no_account">Don\'t have an account?</string>
@@ -186,6 +187,16 @@
     <string name="certifications">Certifications</string>
     <string name="contact">Contact</string>
     <string name="save">Save</string>
+    <string name="profile_updated_success">Profile updated successfully</string>
+    <string name="error_name_empty">Name cannot be empty</string>
+    <string name="error_name_invalid">Please enter both first and last name</string>
+    <string name="error_email_empty">Email cannot be empty</string>
+    <string name="error_email_invalid">Invalid email format</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_password_no_digit">Password must contain at least one digit</string>
+    <string name="error_passwords_dont_match">Passwords do not match</string>
+    <string name="error_terms_not_accepted">You must agree to the terms and conditions</string>
+    <string name="error_password_empty">Password cannot be empty</string>
 
     <!-- Tour Details -->
     <string name="edit_tour">Edit Tour</string>
@@ -229,6 +240,9 @@
     <string name="see_more">See More</string>
     <string name="fully_booked">Fully Booked</string>
     <string name="per_person">/ person</string>
+    <string name="error_no_internet_title">No Internet Connection</string>
+    <string name="error_no_internet_description">It seems you\'re offline. Please check your connection and try again.</string>
+    <string name="retry">Retry</string>
 
 
 </resources>
