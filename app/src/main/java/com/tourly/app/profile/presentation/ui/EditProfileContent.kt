@@ -20,6 +20,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -42,6 +45,7 @@ import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.components.ImageCropperDialog
 import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import com.tourly.app.profile.presentation.ui.components.EditProfileTextField
 import com.tourly.app.login.presentation.ui.components.FullNameTextField
@@ -142,19 +146,11 @@ fun EditProfileContent(
 
         FullNameTextField(
             value = state.fullName,
-            onValueChange = onFullNameChange
+            onValueChange = onFullNameChange,
+            isError = state.fullNameError != null,
+            errorText = state.fullNameError?.let { stringResource(it) }
         )
 
-        if (state.fullNameError != null) {
-            Text(
-                text = state.fullNameError,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 4.dp)
-            )
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -163,7 +159,13 @@ fun EditProfileContent(
             onValueChange = onBioChange,
             label = stringResource(id = R.string.bio),
             isError = state.bioError != null,
-            supportingText = state.bioError,
+            supportingText = state.bioError?.let { stringResource(it) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = stringResource(id = R.string.bio)
+                )
+            },
             minLines = 3,
             maxLines = 5,
             singleLine = false,
@@ -172,23 +174,29 @@ fun EditProfileContent(
             )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        EditProfileTextField(
-            value = state.certifications,
-            onValueChange = onCertificationsChange,
-            label = stringResource(id = R.string.certifications),
-            isError = state.certificationsError != null,
-            supportingText = state.certificationsError,
-            minLines = 2,
-            maxLines = 4,
-            singleLine = false,
-            keyboardOptions = KeyboardOptions(
-                autoCorrectEnabled = false
+        if (state.userRole == UserRole.GUIDE) {
+            EditProfileTextField(
+                value = state.certifications,
+                onValueChange = onCertificationsChange,
+                label = stringResource(id = R.string.certifications),
+                isError = state.certificationsError != null,
+                supportingText = state.certificationsError?.let { stringResource(it) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Badge,
+                        contentDescription = stringResource(id = R.string.certifications)
+                    )
+                },
+                minLines = 2,
+                maxLines = 4,
+                singleLine = false,
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false
+                )
             )
-        )
 
-        Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+        }
 
         // Email & Password Section
         Text(
@@ -205,7 +213,13 @@ fun EditProfileContent(
             onValueChange = onEmailChange,
             label = stringResource(id = R.string.email),
             isError = state.emailError != null,
-            supportingText = state.emailError,
+            supportingText = state.emailError?.let { stringResource(it) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Email,
+                    contentDescription = stringResource(id = R.string.email)
+                )
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 autoCorrectEnabled = false,

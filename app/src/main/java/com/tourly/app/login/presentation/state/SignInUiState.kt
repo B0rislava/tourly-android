@@ -6,8 +6,8 @@ data class SignInUiState(
     val showRoleSelectionDialog: Boolean = false,
     val pendingGoogleIdToken: String? = null,
 
-    val emailError: String? = null,
-    val passwordError: String? = null,
+    val emailError: Int? = null,
+    val passwordError: Int? = null,
     val loginError: String? = null,
 
     val isLoading: Boolean = false,

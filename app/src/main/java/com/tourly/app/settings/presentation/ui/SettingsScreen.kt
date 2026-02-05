@@ -13,6 +13,12 @@ import com.tourly.app.login.domain.UserRole
 import com.tourly.app.core.domain.model.ThemeMode
 import com.tourly.app.settings.presentation.viewmodel.SettingsViewModel
 
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.tourly.app.core.presentation.viewmodel.UserEvent
+import com.tourly.app.core.presentation.viewmodel.UserViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -21,11 +27,27 @@ fun SettingsScreen(
     onAccountDeleted: () -> Unit,
     onNavigatePassword: () -> Unit,
     onNavigateToEditProfile: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel()
 ) {
     val themeMode by viewModel.themeMode.collectAsState()
     val user by viewModel.user.collectAsState()
     val currentLanguage by viewModel.currentLanguage.collectAsState()
+    
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    // Observe shared user events (like "Profile updated successfully")
+    LaunchedEffect(Unit) {
+        userViewModel.events.collect { event ->
+            val message = when (event) {
+                is UserEvent.Message -> event.message
+                is UserEvent.ResourceMessage -> context.applicationContext.getString(event.resId)
+                is UserEvent.Success -> null
+            }
+            message?.let { snackbarHostState.showSnackbar(it) }
+        }
+    }
 
 
     // Refresh user data when returning to this screen
@@ -37,6 +59,7 @@ fun SettingsScreen(
         user = user,
         themeMode = themeMode,
         currentLanguage = currentLanguage,
+        snackbarHostState = snackbarHostState,
         onNavigateBack = onNavigateBack,
         onSetThemeMode = { viewModel.setThemeMode(it) },
         onSetLanguage = { viewModel.setLanguage(it) },

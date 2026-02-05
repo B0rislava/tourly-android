@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.components.BottomNavDestination
 import com.tourly.app.core.presentation.ui.utils.WindowSizeState
+import androidx.compose.ui.platform.LocalContext
+import com.tourly.app.core.presentation.viewmodel.UserEvent
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
 
 @Composable
@@ -31,10 +33,16 @@ fun GuideMainScreen(
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        userViewModel.events.collect { message ->
-            snackbarHostState.showSnackbar(message)
+        userViewModel.events.collect { event ->
+            val message = when (event) {
+                is UserEvent.Message -> event.message
+                is UserEvent.ResourceMessage -> context.applicationContext.getString(event.resId)
+                is UserEvent.Success -> null
+            }
+            message?.let { snackbarHostState.showSnackbar(it) }
         }
     }
 

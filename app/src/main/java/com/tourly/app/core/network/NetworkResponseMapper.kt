@@ -1,9 +1,11 @@
 package com.tourly.app.core.network
 
 import io.ktor.client.call.body
+import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
+import java.net.UnknownHostException
 
 @Serializable
 data class BackendErrorResponse(
@@ -15,8 +17,9 @@ data class BackendErrorResponse(
 
 object NetworkResponseMapper {
     
-    suspend inline fun <reified T> map(response: HttpResponse): Result<T> {
+    suspend inline fun <reified T> map(crossinline call: suspend () -> HttpResponse): Result<T> {
         return try {
+            val response = call()
             if (response.status.isSuccess()) {
                 val data = response.body<T>()
                 Result.Success(data)
@@ -51,10 +54,17 @@ object NetworkResponseMapper {
                 }
             }
         } catch (e: Exception) {
-            Result.Error(
-                code = "NETWORK_ERROR",
-                message = e.localizedMessage ?: "Unknown network error"
-            )
+            val code = when (e) {
+                is UnknownHostException -> "CONNECTION_ERROR"
+                is SocketTimeoutException -> "TIMEOUT_ERROR"
+                else -> "NETWORK_ERROR"
+            }
+            val message = when (e) {
+                is UnknownHostException -> "No internet connection. Please check your network settings."
+                is SocketTimeoutException -> "The server is taking too long to respond. Please try again."
+                else -> e.localizedMessage ?: "Unknown network error"
+            }
+            Result.Error(code = code, message = message)
         }
     }
 }

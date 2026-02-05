@@ -17,13 +17,8 @@ if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 
-val devBaseUrl: String =
-    localProperties.getProperty("DEV_BASE_URL")
-        ?: System.getenv("DEV_BASE_URL")
-        ?: "http://10.0.2.2:8080/api/"
-
-val devBaseHost: String = URI(devBaseUrl).host
-
+val productionBaseUrl = "https://tourly-backend-bwtp.onrender.com/api/"
+val devBaseUrl: String = localProperties.getProperty("DEV_BASE_URL") ?: productionBaseUrl
 val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
 
 android {
@@ -39,10 +34,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"$devBaseUrl\"")
-        buildConfigField("String", "BASE_HOST", "\"$devBaseHost\"")
         buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
-
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
 
         val googleWebClientId: String = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
@@ -50,12 +42,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            // In Debug -> local.properties override, otherwise Render
+            buildConfigField("String", "BASE_URL", "\"$devBaseUrl\"")
+            buildConfigField("String", "BASE_HOST", "\"${URI(devBaseUrl).host}\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Release always points to production
+            buildConfigField("String", "BASE_URL", "\"$productionBaseUrl\"")
+            buildConfigField("String", "BASE_HOST", "\"${URI(productionBaseUrl).host}\"")
         }
     }
     compileOptions {
@@ -128,6 +128,7 @@ dependencies {
     implementation(libs.googleid)
 
     implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

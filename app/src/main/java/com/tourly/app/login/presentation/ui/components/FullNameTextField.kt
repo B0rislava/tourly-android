@@ -16,13 +16,17 @@ fun FullNameTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String = stringResource(id = R.string.full_name),
-    placeholder: String? = stringResource(id = R.string.enter_full_name)
+    placeholder: String? = stringResource(id = R.string.enter_full_name),
+    isError: Boolean = false,
+    errorText: String? = null
 ){
     AppTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
         placeholder = placeholder,
+        isError = isError,
+        errorText = errorText,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.Person,

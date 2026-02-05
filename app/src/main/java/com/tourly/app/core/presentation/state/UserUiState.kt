@@ -12,6 +12,7 @@ sealed interface UserUiState {
         val user: User,
         val isOwnProfile: Boolean = true,
         val isEditing: Boolean = false,
+        val isSavingAvatar: Boolean = false,
         val editState: EditProfileUiState = EditProfileUiState(),
         val bookings: List<Booking> = emptyList(),
         val tours: List<Tour> = emptyList(),

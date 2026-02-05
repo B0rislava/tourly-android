@@ -22,9 +22,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signIn(email: String, password: String): Result<User> {
         println("AuthRepository: Attempting login for $email")
-        val response = apiService.login(LoginRequestDto(email, password))
-        
-        return when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
+        return when (val result = NetworkResponseMapper.map<LoginResponseDto> { apiService.login(LoginRequestDto(email, password)) }) {
             is Result.Success -> {
                 println("AuthRepository: Login successful, saving token (length: ${result.data.accessToken.length})")
                 tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
@@ -51,9 +49,7 @@ class AuthRepositoryImpl @Inject constructor(
             password = password,
             role = role
         )
-        val response = apiService.register(request)
-        
-        return when (val result = NetworkResponseMapper.map<RegisterResponseDto>(response)) {
+        return when (val result = NetworkResponseMapper.map<RegisterResponseDto> { apiService.register(request) }) {
             is Result.Success -> {
                 if (!result.data.accessToken.isNullOrEmpty() && !result.data.refreshToken.isNullOrEmpty()) {
                     tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
@@ -65,9 +61,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun verifyCode(email: String, code: String): Result<User> {
-        val response = apiService.verifyCode(email, code)
-        
-        return when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
+        return when (val result = NetworkResponseMapper.map<LoginResponseDto> { apiService.verifyCode(email, code) }) {
             is Result.Success -> {
                 println("AuthRepository: Verification successful, saving tokens...")
                 tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
@@ -79,14 +73,11 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun resendCode(email: String): Result<Unit> {
-        val response = apiService.resendCode(email)
-        return NetworkResponseMapper.map<Unit>(response)
+        return NetworkResponseMapper.map { apiService.resendCode(email) }
     }
 
     override suspend fun googleSignIn(idToken: String, role: UserRole?): Result<User> {
-        val response = apiService.googleLogin(idToken, role?.name)
-        
-        return when (val result = NetworkResponseMapper.map<LoginResponseDto>(response)) {
+        return when (val result = NetworkResponseMapper.map<LoginResponseDto> { apiService.googleLogin(idToken, role?.name) }) {
             is Result.Success -> {
                 tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
                 Result.Success(UserMapper.mapToDomain(result.data.user))

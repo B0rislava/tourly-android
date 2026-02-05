@@ -84,6 +84,7 @@ fun HomeScreen(
             onTourClick = onTourClick,
             onNotifyClick = onNotifyClick,
             unreadCount = unreadCount,
+            userRole = userProfile?.role,
             modifier = Modifier.padding(paddingValues)
         )
     }

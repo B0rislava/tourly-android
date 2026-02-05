@@ -55,12 +55,14 @@ import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.util.Formatters
+import com.tourly.app.login.domain.UserRole
 import java.util.Locale.getDefault
 
 @Composable
 fun TourItemCard(
-    tour: Tour,
     modifier: Modifier = Modifier,
+    tour: Tour,
+    userRole: UserRole? = null,
     onClick: () -> Unit
 ) {
     Card(
@@ -150,7 +152,7 @@ fun TourItemCard(
                 }
 
                 // Saved Indicator (top-left)
-                if (tour.isSaved) {
+                if (tour.isSaved && userRole != UserRole.GUIDE) {
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopStart)

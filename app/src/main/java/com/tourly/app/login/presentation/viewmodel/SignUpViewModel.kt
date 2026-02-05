@@ -2,6 +2,7 @@ package com.tourly.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.R
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.domain.usecase.SignUpUseCase
 import com.tourly.app.login.domain.usecase.VerifyCodeUseCase
@@ -275,51 +276,51 @@ class SignUpViewModel @Inject constructor(
         var isValid = true
         val state = _uiState.value
 
-        var emailError: String? = null
-        var passwordError: String? = null
-        var confirmPasswordError: String? = null
-        var fullNameError: String? = null
-        var termsError: String? = null
+        var emailError: Int? = null
+        var passwordError: Int? = null
+        var confirmPasswordError: Int? = null
+        var fullNameError: Int? = null
+        var termsError: Int? = null
 
         // Validate full name
         if (state.fullName.isBlank()) {
-            fullNameError = "Name cannot be empty"
+            fullNameError = R.string.error_name_empty
             isValid = false
         } else if (!state.fullName.trim().contains(" ")) {
-            fullNameError = "Please enter both first and last name"
+            fullNameError = R.string.error_name_invalid
             isValid = false
         }
 
         // Validate email
         if (state.email.isBlank()) {
-            emailError = "Email cannot be empty"
+            emailError = R.string.error_email_empty
             isValid = false
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            emailError = "Invalid email format"
+            emailError = R.string.error_email_invalid
             isValid = false
         }
 
         // Validate password
         if (state.password.isBlank()) {
-            passwordError = "Password cannot be empty"
+            passwordError = R.string.error_password_empty
             isValid = false
         } else if (state.password.length < 6) {
-            passwordError = "Password must be at least 6 characters"
+            passwordError = R.string.error_password_too_short
             isValid = false
         } else if (!state.password.any { it.isDigit() }) {
-            passwordError = "Password must contain at least one digit"
+            passwordError = R.string.error_password_no_digit
             isValid = false
         }
 
         // Validate confirm password
         if (state.confirmPassword != state.password) {
-            confirmPasswordError = "Passwords do not match"
+            confirmPasswordError = R.string.error_passwords_dont_match
             isValid = false
         }
 
         // Validate terms
         if (!state.agreedToTerms) {
-            termsError = "You must agree to the terms and conditions"
+            termsError = R.string.error_terms_not_accepted
             isValid = false
         }
 

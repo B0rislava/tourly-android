@@ -17,37 +17,31 @@ class BookingRepositoryImpl @Inject constructor(
 
     override suspend fun bookTour(tourId: Long, numberOfParticipants: Int): Result<Booking> {
         val request = BookTourRequestDto(tourId, numberOfParticipants)
-        return when (val result = NetworkResponseMapper.map<BookingResponseDto>(apiService.bookTour(request))) {
+        return when (val result = NetworkResponseMapper.map<BookingResponseDto> { apiService.bookTour(request) }) {
             is Result.Success -> Result.Success(mapper.toDomain(result.data))
             is Result.Error -> result
         }
     }
 
     override suspend fun getMyBookings(): Result<List<Booking>> {
-        return when (val result = NetworkResponseMapper.map<List<BookingResponseDto>>(apiService.getMyBookings())) {
+        return when (val result = NetworkResponseMapper.map<List<BookingResponseDto>> { apiService.getMyBookings() }) {
             is Result.Success -> Result.Success(result.data.map { mapper.toDomain(it) })
             is Result.Error -> result
         }
     }
 
     override suspend fun getGuideBookings(): Result<List<Booking>> {
-        return when (val result = NetworkResponseMapper.map<List<BookingResponseDto>>(apiService.getGuideBookings())) {
+        return when (val result = NetworkResponseMapper.map<List<BookingResponseDto>> { apiService.getGuideBookings() }) {
             is Result.Success -> Result.Success(result.data.map { mapper.toDomain(it) })
             is Result.Error -> result
         }
     }
 
     override suspend fun cancelBooking(id: Long): Result<Unit> {
-        return when (val result = NetworkResponseMapper.map<Unit>(apiService.cancelBooking(id))) {
-            is Result.Success -> Result.Success(Unit)
-            is Result.Error -> result
-        }
+        return NetworkResponseMapper.map { apiService.cancelBooking(id) }
     }
 
     override suspend fun completeBooking(id: Long): Result<Unit> {
-        return when (val result = NetworkResponseMapper.map<Unit>(apiService.completeBooking(id))) {
-            is Result.Success -> Result.Success(Unit)
-            is Result.Error -> result
-        }
+        return NetworkResponseMapper.map { apiService.completeBooking(id) }
     }
 }

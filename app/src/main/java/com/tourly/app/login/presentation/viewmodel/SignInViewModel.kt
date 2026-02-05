@@ -2,6 +2,7 @@ package com.tourly.app.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tourly.app.R
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.presentation.state.SignInUiState
 import com.tourly.app.core.network.Result
@@ -244,21 +245,24 @@ class SignInViewModel @Inject constructor(
         var isValid = true
         val state = _uiState.value
 
-        var emailError: String? = null
-        var passwordError: String? = null
+        var emailError: Int? = null
+        var passwordError: Int? = null
 
-        if (state.email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            emailError = "Invalid email"
+        if (state.email.isBlank()) {
+            emailError = R.string.error_email_empty
+            isValid = false
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
+            emailError = R.string.error_email_invalid
             isValid = false
         }
 
         if (state.password.isBlank()) {
-            passwordError = "Password cannot be empty"
+            passwordError = R.string.error_password_empty
             isValid = false
         }
 
         if (state.password.length < 6) {
-            passwordError = "Password must be at least 6 characters"
+            passwordError = R.string.error_password_too_short
             isValid = false
         }
 

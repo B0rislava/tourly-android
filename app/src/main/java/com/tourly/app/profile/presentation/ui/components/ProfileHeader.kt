@@ -48,6 +48,7 @@ fun ProfileHeader(
     role: UserRole,
     profilePictureUrl: String?,
     isOwnProfile: Boolean = true,
+    isSavingAvatar: Boolean = false
 ) {
     val hasIncompleteName = isOwnProfile && lastName.isBlank()
     var showTooltip by remember { mutableStateOf(false) }
@@ -62,6 +63,7 @@ fun ProfileHeader(
         UserAvatar(
             imageUrl = profilePictureUrl,
             name = "$firstName $lastName",
+            isLoading = isSavingAvatar,
             modifier = Modifier
                 .size(120.dp)
                 .border(

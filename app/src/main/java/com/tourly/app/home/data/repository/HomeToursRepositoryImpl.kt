@@ -18,32 +18,32 @@ class HomeToursRepositoryImpl @Inject constructor(
 ) : HomeToursRepository {
 
     override suspend fun getAllTags(): Result<List<Tag>> {
-        return when (val result = NetworkResponseMapper.map<List<TagDto>>(apiService.getAllTags())) {
+        return when (val result = NetworkResponseMapper.map<List<TagDto>> { apiService.getAllTags() }) {
             is Result.Success -> Result.Success(result.data.map { TagMapper.toDomain(it) })
             is Result.Error -> result
         }
     }
 
     override suspend fun getAllTours(filters: TourFilters): Result<List<Tour>> {
-        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getAllTours(filters))) {
+        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>> { apiService.getAllTours(filters) }) {
             is Result.Success -> Result.Success(TourMapper.toDomainList(result.data))
             is Result.Error -> result
         }
     }
 
     override suspend fun getTourDetails(id: Long): Result<Tour> {
-        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto>(apiService.getTour(id))) {
+        return when (val result = NetworkResponseMapper.map<CreateTourResponseDto> { apiService.getTour(id) }) {
             is Result.Success -> Result.Success(TourMapper.toDomain(result.data))
             is Result.Error -> result
         }
     }
 
     override suspend fun toggleSaveTour(id: Long): Result<Boolean> {
-        return NetworkResponseMapper.map(apiService.toggleSaveTour(id))
+        return NetworkResponseMapper.map { apiService.toggleSaveTour(id) }
     }
 
     override suspend fun getSavedTours(): Result<List<Tour>> {
-        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>>(apiService.getSavedTours())) {
+        return when (val result = NetworkResponseMapper.map<List<CreateTourResponseDto>> { apiService.getSavedTours() }) {
             is Result.Success -> Result.Success(TourMapper.toDomainList(result.data))
             is Result.Error -> result
         }

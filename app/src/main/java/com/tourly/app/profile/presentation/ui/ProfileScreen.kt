@@ -63,6 +63,7 @@ fun ProfileScreen(
                         user = state.user,
                         isOwnProfile = state.isOwnProfile,
                         onBackClick = onBackClick,
+                        isSavingAvatar = state.isSavingAvatar,
                         tours = state.tours,
                         onFollowClick = { userViewModel.toggleFollow() }
                     )

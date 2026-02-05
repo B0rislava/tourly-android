@@ -35,6 +35,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -69,11 +71,13 @@ fun SettingsContent(
     onNavigateProfileDetails: () -> Unit,
     onNavigatePassword: () -> Unit,
     onNavigateNotifications: () -> Unit,
-    onDeleteAccount: () -> Unit
+    onDeleteAccount: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var showLogoutConfirmation by remember { mutableStateOf(false) }
 
 
     if (showThemeDialog) {
@@ -95,6 +99,19 @@ fun SettingsContent(
                 showLanguageDialog = false
             },
             onDismissRequest = { showLanguageDialog = false }
+        )
+    }
+
+    if (showLogoutConfirmation) {
+        TourlyAlertDialog(
+            onDismissRequest = { showLogoutConfirmation = false },
+            onConfirm = {
+                onLogout()
+                showLogoutConfirmation = false
+            },
+            title = stringResource(id = R.string.logout),
+            text = stringResource(id = R.string.logout_confirmation_text),
+            confirmButtonText = stringResource(id = R.string.logout)
         )
     }
 
@@ -138,6 +155,7 @@ fun SettingsContent(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
@@ -237,7 +255,7 @@ fun SettingsContent(
 
             item {
                 FilledTonalButton(
-                    onClick = onLogout,
+                    onClick = { showLogoutConfirmation = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),

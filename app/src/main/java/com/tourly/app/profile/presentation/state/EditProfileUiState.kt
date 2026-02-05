@@ -1,20 +1,22 @@
 package com.tourly.app.profile.presentation.state
 
 import android.net.Uri
+import com.tourly.app.login.domain.UserRole
 
 data class EditProfileUiState(
+    val userRole: UserRole? = null,
     val fullName: String = "",
     val email: String = "",
     val bio: String = "",
     val certifications: String = "",
     val password: String = "",
     val confirmPassword: String = "",
-    val fullNameError: String? = null,
-    val emailError: String? = null,
-    val bioError: String? = null,
-    val certificationsError: String? = null,
-    val passwordError: String? = null,
-    val confirmPasswordError: String? = null,
+    val fullNameError: Int? = null,
+    val emailError: Int? = null,
+    val bioError: Int? = null,
+    val certificationsError: Int? = null,
+    val passwordError: Int? = null,
+    val confirmPasswordError: Int? = null,
     val isSaving: Boolean = false,
     val saveError: String? = null,
     val profilePictureUrl: String? = null,

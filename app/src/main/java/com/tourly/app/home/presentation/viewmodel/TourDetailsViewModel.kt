@@ -25,7 +25,7 @@ sealed interface TourDetailsEvent {
 
 sealed interface TourDetailsUiState {
     data object Loading : TourDetailsUiState
-    data class Error(val message: String) : TourDetailsUiState
+    data class Error(val message: String, val code: String? = null) : TourDetailsUiState
     data class Success(
         val tour: Tour,
         val reviews: List<Review> = emptyList(),
@@ -44,6 +44,8 @@ class TourDetailsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<TourDetailsUiState>(TourDetailsUiState.Loading)
     val uiState: StateFlow<TourDetailsUiState> = _uiState.asStateFlow()
+
+    private var currentTourId: Long? = null
 
     private val _events = Channel<TourDetailsEvent>()
     val events = _events.receiveAsFlow()
@@ -88,6 +90,7 @@ class TourDetailsViewModel @Inject constructor(
     }
 
     fun loadTour(id: Long) {
+        currentTourId = id
         viewModelScope.launch {
             _uiState.value = TourDetailsUiState.Loading
             when (val result = getTourDetailsUseCase(id)) {
@@ -101,7 +104,7 @@ class TourDetailsViewModel @Inject constructor(
                     _uiState.value = TourDetailsUiState.Success(tour = tour, reviews = reviews)
                 }
                 is Result.Error -> {
-                    _uiState.value = TourDetailsUiState.Error(result.message)
+                    _uiState.value = TourDetailsUiState.Error(result.message, result.code)
                 }
             }
         }
@@ -143,5 +146,8 @@ class TourDetailsViewModel @Inject constructor(
         }
     }
 
+    fun retry() {
+        currentTourId?.let { loadTour(it) }
+    }
 }
 

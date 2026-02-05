@@ -15,16 +15,19 @@ import com.tourly.app.core.network.Result
 import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
+import com.tourly.app.core.domain.usecase.ObserveUserProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.lifecycle.SavedStateHandle
+import com.tourly.app.R
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
@@ -36,18 +39,19 @@ class UserViewModel @Inject constructor(
     private val getUserToursUseCase: GetUserToursUseCase,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val toggleFollowUseCase: ToggleFollowUseCase,
+    private val observeUserProfileUseCase: ObserveUserProfileUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UserUiState>(UserUiState.Idle)
     val uiState: StateFlow<UserUiState> = _uiState.asStateFlow()
 
-    private val _events = Channel<String>()
-    val events = _events.receiveAsFlow()
+    private val _events = MutableSharedFlow<UserEvent>()
+    val events: SharedFlow<UserEvent> = _events.asSharedFlow()
 
     fun showMessage(message: String) {
         viewModelScope.launch {
-            _events.send(message)
+            _events.emit(UserEvent.Message(message))
         }
     }
 
@@ -67,11 +71,25 @@ class UserViewModel @Inject constructor(
                 .distinctUntilChanged()
                 .collect { isLoggedIn ->
                     if (isLoggedIn) {
-                        val currentState = _uiState.value
-                        if (currentState !is UserUiState.Success || currentState.isOwnProfile) {
-                             if (currentState !is UserUiState.Success || currentState.user.email == "") {
-                                 fetchUserProfile()
-                             }
+                        // Observe the global user flow via UseCase
+                        launch {
+                            observeUserProfileUseCase().collect { profile ->
+                                if (profile != null) {
+                                    val currentState = _uiState.value
+                                    if (currentState is UserUiState.Success && currentState.isOwnProfile) {
+                                        _uiState.value = currentState.copy(user = profile)
+                                    } else {
+                                        // Initialize Success state if not already there and we have user data
+                                        _uiState.value = UserUiState.Success(
+                                            user = profile,
+                                            isOwnProfile = true
+                                        )
+                                    }
+                                } else {
+                                    // If logged in but no profile yet, trigger fetch
+                                    fetchUserProfile()
+                                }
+                            }
                         }
                     } else {
                         _uiState.value = UserUiState.Idle
@@ -213,7 +231,7 @@ class UserViewModel @Inject constructor(
             if (result is Result.Error) {
                 // Revert logic could be simpler or just reload
                 _uiState.value = currentState // Revert to original state
-                _events.send("Failed to update follow status: ${result.message}")
+                _events.emit(UserEvent.Message("Failed to update follow status: ${result.message}"))
             }
         }
     }
@@ -226,6 +244,7 @@ class UserViewModel @Inject constructor(
             _uiState.value = currentState.copy(
                 isEditing = true,
                 editState = EditProfileUiState(
+                    userRole = currentState.user.role,
                     fullName = "${currentState.user.firstName} ${currentState.user.lastName}".trim(),
                     email = currentState.user.email,
                     bio = currentState.user.bio ?: "",
@@ -292,6 +311,7 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             // Set loading state
             _uiState.value = currentState.copy(
+                isSavingAvatar = currentState.editState.profilePictureUri != null,
                 editState = currentState.editState.copy(isSaving = true, saveError = null)
             )
 
@@ -308,6 +328,7 @@ class UserViewModel @Inject constructor(
                 val current = _uiState.value
                 if (current is UserUiState.Success) {
                     _uiState.value = current.copy(
+                        isSavingAvatar = false,
                         editState = current.editState.copy(
                             isSaving = false,
                             saveError = uploadError
@@ -338,20 +359,24 @@ class UserViewModel @Inject constructor(
                         _uiState.value = current.copy(
                             user = result.data,
                             isEditing = false,
-                            editState = EditProfileUiState() // Reset edit state
+                            isSavingAvatar = false,
+                            // Keep editState as is so fields don't disappear during transition
                         )
                     } else {
                         _uiState.value = UserUiState.Success(
                             user = result.data,
-                            isEditing = false
+                            isEditing = false,
+                            isSavingAvatar = false
                         )
                     }
-                    _events.send("Profile updated successfully")
+                    _events.emit(UserEvent.ResourceMessage(R.string.profile_updated_success))
+                    _events.emit(UserEvent.Success)
                 }
                 is Result.Error -> {
                     val current = _uiState.value
                     if (current is UserUiState.Success) {
                         _uiState.value = current.copy(
+                            isSavingAvatar = false,
                             editState = current.editState.copy(
                                 isSaving = false,
                                 saveError = result.message
@@ -365,34 +390,34 @@ class UserViewModel @Inject constructor(
 
     private fun validateFields(state: EditProfileUiState): Boolean {
         var isValid = true
-        var fullNameError: String? = null
-        var emailError: String? = null
-        var passwordError: String? = null
-        var confirmPasswordError: String? = null
+        var fullNameError: Int? = null
+        var emailError: Int? = null
+        var passwordError: Int? = null
+        var confirmPasswordError: Int? = null
 
         if (state.fullName.isBlank()) {
-            fullNameError = "Name cannot be empty"
+            fullNameError = R.string.error_name_empty
             isValid = false
         } else if (!state.fullName.trim().contains(" ")) {
-            fullNameError = "Please enter both first and last name"
+            fullNameError = R.string.error_name_invalid
             isValid = false
         }
 
         if (state.email.isBlank()) {
-            emailError = "Email cannot be empty"
+            emailError = R.string.error_email_empty
             isValid = false
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            emailError = "Invalid email format"
+            emailError = R.string.error_email_invalid
             isValid = false
         }
 
         if (state.password.isNotEmpty()) {
             if (state.password.length < 6) {
-                passwordError = "Password must be at least 6 characters"
+                passwordError = R.string.error_password_too_short
                 isValid = false
             }
             if (state.password != state.confirmPassword) {
-                confirmPasswordError = "Passwords do not match"
+                confirmPasswordError = R.string.error_passwords_dont_match
                 isValid = false
             }
         }
@@ -410,4 +435,10 @@ class UserViewModel @Inject constructor(
 
         return isValid
     }
+}
+
+sealed class UserEvent {
+    data class Message(val message: String) : UserEvent()
+    data class ResourceMessage(val resId: Int) : UserEvent()
+    object Success : UserEvent()
 }

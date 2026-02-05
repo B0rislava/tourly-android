@@ -23,6 +23,7 @@ import com.tourly.app.MainViewModel
 import com.tourly.app.chat.presentation.ui.GroupChatScreen
 import com.tourly.app.core.presentation.ui.SplashScreen
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
+import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.create_tour.presentation.ui.EditTourScreen
 import com.tourly.app.notifications.presentation.ui.NotificationScreen
 import com.tourly.app.profile.presentation.ui.ProfileScreen
@@ -177,7 +178,8 @@ fun NavigationRoot(
                                     },
                                     onNavigateToEditProfile = {
                                         backStack.add(Route.EditProfile)
-                                    }
+                                    },
+                                    userViewModel = userViewModel
                                 )
                             }
                         }
@@ -209,9 +211,13 @@ fun NavigationRoot(
                                     tourViewModel.loadTour(tourId)
                                 }
                                 
+                                val userState by userViewModel.uiState.collectAsState()
+                                val currentUserId = (userState as? UserUiState.Success)?.user?.id
+
                                 TourDetailsScreen(
                                     viewModel = tourViewModel,
                                     userRole = state.userRole,
+                                    currentUserId = currentUserId,
                                     onBookingSuccess = {
                                         userViewModel.refreshBookings()
                                     },

@@ -2,6 +2,7 @@ package com.tourly.app.login.presentation.ui
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,8 +73,8 @@ fun SignInScreen(
         onEmailChange = viewModel::onEmailChange,
         password = uiState.password,
         onPasswordChange = viewModel::onPasswordChange,
-        emailError = uiState.emailError,
-        passwordError = uiState.passwordError,
+        emailError = uiState.emailError?.let { stringResource(it) },
+        passwordError = uiState.passwordError?.let { stringResource(it) },
         loginError = uiState.loginError,
         isLoading = uiState.isLoading,
         onLoginClick = viewModel::login,
