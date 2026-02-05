@@ -128,6 +128,7 @@ dependencies {
     implementation(libs.googleid)
 
     implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
