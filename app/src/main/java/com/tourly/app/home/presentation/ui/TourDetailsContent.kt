@@ -37,15 +37,15 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -137,18 +137,6 @@ fun TourDetailsContent(
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
-                    }
-                    IconButton(
-                        onClick = { /* Share */ },
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), CircleShape)
-                            .size(40.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Share,
-                            contentDescription = stringResource(id = R.string.share),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
                     }
                     if (userRole != UserRole.GUIDE) {
                         IconButton(
@@ -310,6 +298,9 @@ fun TourDetailsContent(
                         draggable = false
                     )
                 }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 val context = LocalContext.current
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -320,14 +311,31 @@ fun TourDetailsContent(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextButton(onClick = {
-                        val address = tour.meetingPoint ?: tour.location
-                        val gmmIntentUri = "geo:0,0?q=${Uri.encode(address)}".toUri()
-                        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                        context.startActivity(mapIntent)
-                    }) {
-                        Text(stringResource(id = R.string.open_in_maps))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Button(
+                        onClick = {
+                            val address = tour.meetingPoint ?: tour.location
+                            val gmmIntentUri = "geo:0,0?q=${Uri.encode(address)}".toUri()
+                            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                            context.startActivity(mapIntent)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.open_in_maps),
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
                 }
 

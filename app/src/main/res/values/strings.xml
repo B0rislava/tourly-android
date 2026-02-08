@@ -211,7 +211,7 @@
     <string name="open_in_maps">Open in Maps</string>
     <string name="cancellation_policy">Cancellation Policy</string>
     <string name="policy_full_refund">Full refund: Cancel up to 7 days before</string>
-    <string name="policy_partial_refund">50%% refund: Cancel 3–7 days before</string>
+    <string name="policy_partial_refund">50% refund: Cancel 3–7 days before</string>
     <string name="policy_no_refund">No refund: Cancellations within 3 days</string>
     <string name="reviews_count">Reviews (%1$d)</string>
     <string name="no_reviews_yet">No reviews yet.</string>
