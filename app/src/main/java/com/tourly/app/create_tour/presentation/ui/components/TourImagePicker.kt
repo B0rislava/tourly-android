@@ -25,7 +25,7 @@ import coil.compose.AsyncImage
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
-fun AddPhotoPlaceholder(
+fun TourImagePicker(
     modifier: Modifier = Modifier,
     selectedImageUri: android.net.Uri? = null,
     onClick: () -> Unit

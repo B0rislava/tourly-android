@@ -124,7 +124,6 @@ fun HomeContent(
                     }
 
                     is HomeUiState.Success -> {
-                        // ... items for success
                         if (uiState.tours.isEmpty()) {
                             item {
                                 when {

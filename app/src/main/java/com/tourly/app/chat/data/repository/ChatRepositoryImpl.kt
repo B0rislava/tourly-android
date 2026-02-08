@@ -46,7 +46,6 @@ class ChatRepositoryImpl @Inject constructor(
 
     private var stompSession: StompSessionWithKxSerialization? = null
     
-    // Store raw DTOs to keep the repository user-agnostic
     private val _messages = MutableStateFlow<Map<Long, List<ChatMessageDto>>>(emptyMap())
     private val _currentUserId = MutableStateFlow<Long>(-1L)
 
