@@ -54,7 +54,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.components.foundation.PrimaryButton
 import com.tourly.app.create_tour.presentation.state.CreateTourUiState
-import com.tourly.app.create_tour.presentation.ui.components.AddPhotoPlaceholder
+import com.tourly.app.create_tour.presentation.ui.components.TourImagePicker
 import com.tourly.app.create_tour.presentation.ui.components.CustomTextField
 import com.tourly.app.create_tour.presentation.ui.components.DurationVisualTransformation
 import com.tourly.app.create_tour.presentation.ui.components.LocationSearchField
@@ -103,7 +103,7 @@ fun CreateTourContent(
             title = stringResource(id = R.string.tour_image),
             icon = Icons.Outlined.Image
         )
-        AddPhotoPlaceholder(
+        TourImagePicker(
             selectedImageUri = state.imageUri,
             onClick = onImageSelected
         )

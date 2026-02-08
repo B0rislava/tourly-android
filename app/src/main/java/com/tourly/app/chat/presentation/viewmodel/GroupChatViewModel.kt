@@ -74,7 +74,7 @@ class GroupChatViewModel @Inject constructor(
         if (content.isEmpty() || tourId == -1L) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(currentMessage = "") } // Clear input immediately for better UX
+            _uiState.update { it.copy(currentMessage = "") }
             val result = sendMessageUseCase(tourId, content)
             if (result is Result.Error) {
                 _uiState.update { it.copy(error = result.message) }

@@ -62,7 +62,6 @@ fun EditProfileScreen(
             }
             message?.let { snackbarHostState.showSnackbar(it) }
             
-            // If it was a success message, navigate back after a short delay
             if (event is UserEvent.Success) {
                 onNavigateBack()
             }

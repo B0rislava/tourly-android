@@ -62,9 +62,8 @@ class NotificationViewModel @Inject constructor(
 
     fun markAsRead(id: Long) {
         viewModelScope.launch {
-            when (val result = markNotificationAsReadUseCase(id)) {
+            when (markNotificationAsReadUseCase(id)) {
                 is Result.Success -> {
-                    // Optimistic update or reload
                     _uiState.update { state ->
                         val updatedList = state.notifications.map { 
                             if (it.id == id) it.copy(isRead = true) else it
@@ -84,7 +83,7 @@ class NotificationViewModel @Inject constructor(
 
     fun markAllAsRead() {
         viewModelScope.launch {
-            when (val result = markAllNotificationsAsReadUseCase()) {
+            when (markAllNotificationsAsReadUseCase()) {
                 is Result.Success -> {
                     _uiState.update { state ->
                         val updatedList = state.notifications.map { it.copy(isRead = true) }
@@ -92,7 +91,7 @@ class NotificationViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    // Show error
+                    // TODO: ViewModel
                 }
             }
         }

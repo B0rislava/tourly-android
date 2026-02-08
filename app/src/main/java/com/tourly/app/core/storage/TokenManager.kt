@@ -74,7 +74,7 @@ class TokenManagerImpl @Inject constructor(
             println("TokenManager: Token retrieved successfully (length: ${token.length})")
             token
         } catch (e: Exception) {
-            // CRITICAL: If decryption fails (corrupted data), clear the token
+            // If decryption fails (corrupted data), clear the token
             println("TokenManager: Decryption failed - clearing corrupted token: ${e.message}")
             e.printStackTrace()
 

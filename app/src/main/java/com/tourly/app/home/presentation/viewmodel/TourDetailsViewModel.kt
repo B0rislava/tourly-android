@@ -57,7 +57,6 @@ class TourDetailsViewModel @Inject constructor(
         val tour = currentState.tour
         val newIsSaved = !tour.isSaved
 
-        // Optimistic update
         _uiState.value = currentState.copy(
             tour = tour.copy(isSaved = newIsSaved),
             isSavingTour = true
