@@ -3,11 +3,7 @@ package com.tourly.app.core.presentation.ui
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.presentation.ui.components.BottomNavDestination
@@ -19,6 +15,8 @@ import com.tourly.app.core.presentation.viewmodel.UserViewModel
 @Composable
 fun GuideMainScreen(
     windowSizeState: WindowSizeState,
+    selectedDestination: BottomNavDestination,
+    onDestinationSelected: (BottomNavDestination) -> Unit,
     onLogout: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit,
@@ -28,9 +26,6 @@ fun GuideMainScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel()
 ) {
-    var selectedDestination by rememberSaveable {
-        mutableStateOf(BottomNavDestination.GUIDE_HOME)
-    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
@@ -50,9 +45,7 @@ fun GuideMainScreen(
         modifier = modifier,
         selectedDestination = selectedDestination,
         snackbarHostState = snackbarHostState,
-        onDestinationSelected = { destination ->
-            selectedDestination = destination
-        },
+        onDestinationSelected = onDestinationSelected,
         onNavigateToSettings = onNavigateToSettings,
         onLogout = onLogout,
         onTourClick = onTourClick,

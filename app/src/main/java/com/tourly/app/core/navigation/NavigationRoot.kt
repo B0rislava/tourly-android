@@ -23,12 +23,15 @@ import com.tourly.app.MainViewModel
 import com.tourly.app.chat.presentation.ui.GroupChatScreen
 import com.tourly.app.core.presentation.ui.SplashScreen
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
-import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.create_tour.presentation.ui.EditTourScreen
 import com.tourly.app.notifications.presentation.ui.NotificationScreen
-import com.tourly.app.profile.presentation.ui.ProfileScreen
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.tourly.app.core.presentation.ui.components.BottomNavDestination
 import com.tourly.app.settings.presentation.ui.ChangePasswordScreen
 import com.tourly.app.settings.presentation.ui.EditProfileScreen
+import com.tourly.app.profile.presentation.ui.ProfileScreen
 
 @Composable
 fun NavigationRoot(
@@ -36,6 +39,10 @@ fun NavigationRoot(
 ) {
     val windowSizeState = rememberWindowSizeState()
     val uiState by viewModel.uiState.collectAsState()
+    
+    // Get a separate instance for tracking current user that doesn't change on profile navigation
+    val currentUserViewModel: CurrentUserViewModel = hiltViewModel()
+    val currentUserId by currentUserViewModel.currentUserId.collectAsState(initial = null)
 
     when (val state = uiState) {
         is MainActivityUiState.Loading -> {
@@ -54,6 +61,10 @@ fun NavigationRoot(
             
             val backStack = rememberNavBackStack(startRoute)
             val userViewModel: UserViewModel = hiltViewModel()
+
+            // Reset tabs when currentUserId changes (login/logout/user switch)
+            var travelerTab by remember(currentUserId) { mutableStateOf(BottomNavDestination.TRAVELER_HOME) }
+            var guideTab by remember(currentUserId) { mutableStateOf(BottomNavDestination.GUIDE_HOME) }
 
             LaunchedEffect(state, backStack.lastOrNull()) {
                 if (state.isUserLoggedIn && state.userRole == UserRole.GUIDE && backStack.lastOrNull() == Route.TravelerMain
@@ -108,6 +119,8 @@ fun NavigationRoot(
                             NavEntry(key) {
                                 MainScreen(
                                     windowSizeState = windowSizeState,
+                                    selectedDestination = travelerTab,
+                                    onDestinationSelected = { travelerTab = it },
                                     onLogout = {
                                         viewModel.logout {
                                             backStack.clear()
@@ -134,6 +147,8 @@ fun NavigationRoot(
                             NavEntry(key) {
                                 GuideMainScreen(
                                     windowSizeState = windowSizeState,
+                                    selectedDestination = guideTab,
+                                    onDestinationSelected = { guideTab = it },
                                     onLogout = {
                                         viewModel.logout {
                                             backStack.clear()
@@ -210,9 +225,6 @@ fun NavigationRoot(
                                 LaunchedEffect(tourId) {
                                     tourViewModel.loadTour(tourId)
                                 }
-                                
-                                val userState by userViewModel.uiState.collectAsState()
-                                val currentUserId = (userState as? UserUiState.Success)?.user?.id
 
                                 TourDetailsScreen(
                                     viewModel = tourViewModel,
@@ -225,7 +237,16 @@ fun NavigationRoot(
                                         backStack.add(Route.EditTour(id))
                                     },
                                     onGuideClick = { guideId ->
-                                        backStack.add(Route.Profile(guideId))
+                                        if (guideId == currentUserId) {
+                                            if (state.userRole == UserRole.GUIDE) {
+                                                guideTab = BottomNavDestination.PROFILE
+                                            } else {
+                                                travelerTab = BottomNavDestination.PROFILE
+                                            }
+                                            backStack.removeLastOrNull()
+                                        } else {
+                                            backStack.add(Route.Profile(guideId))
+                                        }
                                     },
                                     onBackClick = {
                                         backStack.removeLastOrNull()
