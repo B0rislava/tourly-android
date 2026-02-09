@@ -69,7 +69,7 @@ fun GuideMainContent(
                     selectedDestination != BottomNavDestination.CHAT
                 ) {
                     SimpleTopBar(
-                        title = selectedDestination.label,
+                        title = stringResource(id = selectedDestination.labelResId),
                         navigationIcon = {
                             val onBack: (() -> Unit)? = when {
                                 selectedDestination == BottomNavDestination.CREATE_TOUR -> {
@@ -82,7 +82,7 @@ fun GuideMainContent(
                                 IconButton(onClick = onBack) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Back"
+                                        contentDescription = stringResource(id = R.string.back)
                                     )
                                 }
                             }

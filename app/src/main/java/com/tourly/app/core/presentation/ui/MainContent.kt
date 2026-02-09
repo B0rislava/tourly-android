@@ -65,7 +65,7 @@ fun MainContent(
                     selectedDestination != BottomNavDestination.CHAT
                 ) {
                     SimpleTopBar(
-                        title = selectedDestination.label,
+                        title = stringResource(id = selectedDestination.labelResId),
                         actions = {
                             if (selectedDestination == BottomNavDestination.PROFILE) {
                                 IconButton(onClick = onNavigateToSettings) {

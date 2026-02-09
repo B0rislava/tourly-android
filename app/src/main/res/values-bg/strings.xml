@@ -67,7 +67,6 @@
     <string name="tour_included">Какво е включено</string>
     <string name="tour_included_example">напр. Местни закуски, транспорт, входни такси…</string>
     <string name="tour_tags">Тагове</string>
-    <string name="create_tour">Създай обиколка</string>
     <string name="empty_heading">Няма налични обиколки</string>
     <string name="empty_subheading">Проверете отново по-късно за нови обиколки</string>
 
@@ -252,5 +251,11 @@
     <string name="error_no_internet_title">Няма връзка с интернет</string>
     <string name="error_no_internet_description">Изглежда, че сте офлайн. Моля, проверете връзката си и опитайте отново.</string>
     <string name="retry">Опитай пак</string>
+
+    <string name="home">Начало</string>
+    <string name="dashboard">Табло</string>
+    <string name="chat">Чат</string>
+    <string name="profile">Профил</string>
+    <string name="create_tour">Създай тур</string>
 
 </resources>

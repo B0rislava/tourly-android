@@ -68,7 +68,6 @@
     <string name="tour_included">What\'s included</string>
     <string name="tour_included_example">e.g., Local snacks, transportation, entrance fees…</string>
     <string name="tour_tags">Tags</string>
-    <string name="create_tour">Create Tour</string>
     <string name="empty_heading">No Tours Available</string>
     <string name="empty_subheading">Check back later for new tours</string>
 
@@ -244,5 +243,10 @@
     <string name="error_no_internet_description">It seems you\'re offline. Please check your connection and try again.</string>
     <string name="retry">Retry</string>
 
+    <string name="home">Home</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="chat">Chat</string>
+    <string name="profile">Profile</string>
+    <string name="create_tour">Create Tour</string>
 
 </resources>

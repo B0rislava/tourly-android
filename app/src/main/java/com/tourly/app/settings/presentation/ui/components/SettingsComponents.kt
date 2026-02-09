@@ -23,9 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.components.UserAvatar
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import com.tourly.app.login.domain.UserRole
 
 @Composable
 fun SettingsProfileCard(
@@ -60,7 +63,10 @@ fun SettingsProfileCard(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = user.role.name.lowercase().replaceFirstChar { it.titlecase() },
+                    text = when (user.role) {
+                        UserRole.TRAVELER -> stringResource(id = R.string.traveler)
+                        UserRole.GUIDE -> stringResource(id = R.string.guide)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontFamily = OutfitFamily
