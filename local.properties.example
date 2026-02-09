@@ -1,3 +1,6 @@
+# Use your local IP address, so the mobile app can connect to the backend on the same network
+# If using emulator use: http://10.0.2.2:8080/api/
+
 DEV_BASE_URL=http://YOUR_LOCAL_IP:8080/api/
 MAPS_API_KEY=
-GOOGLE_WEB_CLIENT_ID
+GOOGLE_WEB_CLIENT_ID=
