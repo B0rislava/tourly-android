@@ -7,11 +7,34 @@
 ![Status](https://img.shields.io/badge/Status-Project_Completed-success?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-[![Backend](https://img.shields.io/badge/Backend_Repo-Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://github.com/B0rislava/tourly-backend)
 
 **A unified full-stack platform bridging the gap between local excursion guides and travelers**
 
 [Features](#features) • [Tech Stack](#tech-stack) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Project Structure](#project-structure)
+
+---
+
+## Related Projects
+
+<table>
+<tr>
+<td width="50%" align="center">
+<img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android"/>
+<h3>Tourly Android</h3>
+<p>Android client</p>
+<a href="https://github.com/B0rislava/tourly-android">
+<img src="https://img.shields.io/badge/Current_Repository-6366f1?style=for-the-badge" alt="Current"/>
+</td>
+<td width="50%" align="center">
+<img src="https://img.shields.io/badge/API-FF6C37?style=for-the-badge&logo=postman&logoColor=white" alt="API"/>
+<h3>Tourly Backend</h3>
+<p>RESTful API</p>
+<a href="https://github.com/B0rislava/tourly-backend">
+<img src="https://img.shields.io/badge/View_Repository-181717?style=for-the-badge&logo=github" alt="Repo"/>
+</a>
+</td>
+</tr>
+</table>
 
 ---
 
