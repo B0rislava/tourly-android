@@ -7,6 +7,7 @@
 ![Status](https://img.shields.io/badge/Status-Project_Completed-success?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+[![Backend](https://img.shields.io/badge/Backend_Repo-Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://github.com/B0rislava/tourly-backend)
 
 **A unified full-stack platform bridging the gap between local excursion guides and travelers**
 
