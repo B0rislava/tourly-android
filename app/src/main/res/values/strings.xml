@@ -94,6 +94,9 @@
     <string name="good_evening">Good evening</string>
     <string name="your_group_chats">Your Group Chats</string>
     <string name="group_chat">Group Chat</string>
+    <string name="no_chats_yet">No Chats Yet</string>
+    <string name="empty_chat_traveler">Book a tour to join its group chat and connect with other travelers!</string>
+    <string name="empty_chat_guide">Create a tour to host its group chat and connect with travelers!</string>
     <string name="incomplete_profile_tooltip">Please add your last name in Edit Profile</string>
     <string name="no_tours_in_section">No tours found in this section.</string>
     <string name="rate_experience">Rate Experience</string>

@@ -96,6 +96,9 @@
     <string name="good_evening">Добър вечер</string>
     <string name="your_group_chats">Вашите групови чатове</string>
     <string name="group_chat">Групов чат</string>
+    <string name="no_chats_yet">Няма чатове</string>
+    <string name="empty_chat_traveler">Резервирайте тур, за да се присъедините към неговия групов чат и да се свържете с другите пътешественици!</string>
+    <string name="empty_chat_guide">Създайте тур, за да организирате неговия групов чат и да се свържете с пътешествениците!</string>
     <string name="incomplete_profile_tooltip">Моля, добавете фамилията си в Редактиране на профила</string>
     <string name="no_tours_in_section">Няма намерени обиколки в този раздел.</string>
     <string name="rate_experience">Оценете преживяването</string>

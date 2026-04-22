@@ -15,12 +15,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tourly.app.R
 
 @Composable
-fun EmptyChatState() {
+fun EmptyChatState(isGuide: Boolean = false) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -36,14 +38,16 @@ fun EmptyChatState() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "No Chats Yet",
+            text = stringResource(id = R.string.no_chats_yet),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Book a tour to join its group chat and connect with other travelers!",
+            text = stringResource(
+                id = if (isGuide) R.string.empty_chat_guide else R.string.empty_chat_traveler
+            ),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center

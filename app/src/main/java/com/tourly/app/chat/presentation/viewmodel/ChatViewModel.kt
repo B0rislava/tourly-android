@@ -60,7 +60,7 @@ class ChatViewModel @Inject constructor(
                         role = "Member"
                     )
                 }.distinctBy { it.id }
-                _uiState.value = ChatUiState.Success(chats)
+                _uiState.value = ChatUiState.Success(chats, isGuide = false)
             }
             is Result.Error -> {
                 _uiState.value = ChatUiState.Error(result.message)
@@ -79,7 +79,7 @@ class ChatViewModel @Inject constructor(
                         role = "Guide"
                     )
                 }.distinctBy { it.id }
-                _uiState.value = ChatUiState.Success(chats)
+                _uiState.value = ChatUiState.Success(chats, isGuide = true)
             }
             is Result.Error -> {
                 _uiState.value = ChatUiState.Error(result.message)

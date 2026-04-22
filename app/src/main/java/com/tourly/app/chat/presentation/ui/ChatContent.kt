@@ -55,7 +55,7 @@ fun ChatContent(
                 }
                 is ChatUiState.Success -> {
                     if (state.chats.isEmpty()) {
-                        EmptyChatState()
+                        EmptyChatState(isGuide = state.isGuide)
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
