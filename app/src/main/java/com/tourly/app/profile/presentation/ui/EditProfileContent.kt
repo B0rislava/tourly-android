@@ -21,8 +21,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Badge
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -160,12 +158,6 @@ fun EditProfileContent(
             label = stringResource(id = R.string.bio),
             isError = state.bioError != null,
             supportingText = state.bioError?.let { stringResource(it) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = stringResource(id = R.string.bio)
-                )
-            },
             minLines = 3,
             maxLines = 5,
             singleLine = false,
@@ -175,6 +167,8 @@ fun EditProfileContent(
         )
 
         if (state.userRole == UserRole.GUIDE) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             EditProfileTextField(
                 value = state.certifications,
                 onValueChange = onCertificationsChange,
@@ -194,9 +188,9 @@ fun EditProfileContent(
                     autoCorrectEnabled = false
                 )
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         // Email & Password Section
         Text(
@@ -214,12 +208,6 @@ fun EditProfileContent(
             label = stringResource(id = R.string.email),
             isError = state.emailError != null,
             supportingText = state.emailError?.let { stringResource(it) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Email,
-                    contentDescription = stringResource(id = R.string.email)
-                )
-            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 autoCorrectEnabled = false,
