@@ -92,11 +92,23 @@ class HomeViewModel @Inject constructor(
             isLoading -> HomeUiState.Loading
             error != null -> HomeUiState.Error(error, errorCode)
             else -> {
+                val currentDate = LocalDate.now(clock)
+                
+                // Filter out past tours
+                val activeTours = tours.filter { tour ->
+                    try {
+                        val tourDate = LocalDate.parse(tour.scheduledDate)
+                        !tourDate.isBefore(currentDate)
+                    } catch (e: Exception) {
+                        true
+                    }
+                }
+
                 // Only filter by search query client-side
                 val filteredTours = if (query.isBlank()) {
-                    tours
+                    activeTours
                 } else {
-                    tours.filter { tour ->
+                    activeTours.filter { tour ->
                         tour.title.contains(query, ignoreCase = true) || 
                         tour.location.contains(query, ignoreCase = true)
                     }

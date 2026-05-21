@@ -27,6 +27,7 @@ import com.tourly.app.login.domain.UserRole
 
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
+import java.time.LocalDate
 
 @Composable
 fun TourDetailsScreen(
@@ -72,12 +73,24 @@ fun TourDetailsScreen(
             bottomBar = {
                 if (uiState is TourDetailsUiState.Success && userRole == UserRole.TRAVELER) {
                     val tour = (uiState as TourDetailsUiState.Success).tour
-                    // Only show book button if spots available
-                    val canBook = tour.availableSpots > 0
+                    
+                    val isPast = try {
+                        LocalDate.parse(tour.scheduledDate).isBefore(LocalDate.now())
+                    } catch (e: Exception) {
+                        false
+                    }
+                    
+                    val canBook = tour.availableSpots > 0 && !isPast
+                    
+                    val buttonText = when {
+                        isPast -> stringResource(id = R.string.past)
+                        !canBook -> stringResource(id = R.string.fully_booked)
+                        else -> stringResource(id = R.string.book_now)
+                    }
                     
                     BottomPriceBar(
                         price = tour.pricePerPerson,
-                        buttonText = if (canBook) stringResource(id = R.string.book_now) else stringResource(id = R.string.fully_booked),
+                        buttonText = buttonText,
                         isButtonEnabled = canBook,
                         onButtonClick = { showBookingDialog = true }
                     )

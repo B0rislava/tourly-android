@@ -23,10 +23,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.time.Clock
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
+    private val clock: Clock,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val getMyBookingsUseCase: GetMyBookingsUseCase,
     private val cancelBookingUseCase: CancelBookingUseCase,
@@ -74,7 +77,8 @@ class DashboardViewModel @Inject constructor(
                 role = user.role,
                 userName = user.firstName,
                 bookings = bookingsResult.data,
-                savedTours = savedToursResult.data
+                savedTours = savedToursResult.data,
+                currentDate = LocalDate.now(clock)
             )
         } else {
             val errorMsg = (bookingsResult as? Result.Error)?.message 
@@ -97,7 +101,8 @@ class DashboardViewModel @Inject constructor(
                 reviewsCount = user.reviewsCount,
                 tours = toursResult.data,
                 bookings = bookingsResult.data,
-                reviews = reviewsResult.data
+                reviews = reviewsResult.data,
+                currentDate = LocalDate.now(clock)
             )
         } else {
             val errorMsg = (toursResult as? Result.Error)?.message 

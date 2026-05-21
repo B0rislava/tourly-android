@@ -261,6 +261,8 @@ class CreateTourViewModel @Inject constructor(
                     state.copy(isLoading = false, priceError = message)
                 "DATE_REQUIRED", "DATE_IN_PAST" ->
                     state.copy(isLoading = false, dateError = message)
+                "TIME_REQUIRED", "TIME_IN_PAST" ->
+                    state.copy(isLoading = false, timeError = message)
                 else ->
                     state.copy(isLoading = false, createTourError = message)
             }

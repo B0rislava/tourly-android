@@ -4,6 +4,7 @@ import com.tourly.app.core.domain.model.Booking
 import com.tourly.app.core.domain.model.Review
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.login.domain.UserRole
+import java.time.LocalDate
 
 sealed interface DashboardUiState {
     data object Loading : DashboardUiState
@@ -15,7 +16,8 @@ sealed interface DashboardUiState {
         val bookings: List<Booking> = emptyList(),
         val tours: List<Tour> = emptyList(),
         val savedTours: List<Tour> = emptyList(),
-        val reviews: List<Review> = emptyList()
+        val reviews: List<Review> = emptyList(),
+        val currentDate: LocalDate = LocalDate.now()
     ) : DashboardUiState
     data class Error(val message: String) : DashboardUiState
 }

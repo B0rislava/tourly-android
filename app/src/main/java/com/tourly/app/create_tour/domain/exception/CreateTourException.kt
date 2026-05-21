@@ -10,4 +10,6 @@ sealed class CreateTourException(val code: String, message: String) : Exception(
     class InvalidPrice : CreateTourException("INVALID_PRICE", "Price must be positive")
     class DateRequired : CreateTourException("DATE_REQUIRED", "Date is required")
     class DateInPast : CreateTourException("DATE_IN_PAST", "Date cannot be in the past")
+    class TimeRequired : CreateTourException("TIME_REQUIRED", "Time is required")
+    class TimeInPast : CreateTourException("TIME_IN_PAST", "Time cannot be in the past")
 }

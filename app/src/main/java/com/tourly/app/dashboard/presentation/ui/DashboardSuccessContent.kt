@@ -1,6 +1,8 @@
 package com.tourly.app.dashboard.presentation.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,11 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,6 +52,7 @@ import com.tourly.app.dashboard.presentation.ui.components.GuideDashboardTabs
 import com.tourly.app.dashboard.presentation.ui.components.GuideReviewCard
 import com.tourly.app.dashboard.presentation.ui.components.StatCard
 import com.tourly.app.login.domain.UserRole
+import java.time.LocalDate
 import java.util.Locale
 
 @Composable
@@ -116,6 +121,7 @@ internal fun DashboardSuccessContent(
 
     var selectedTab by remember { mutableStateOf(DashboardTab.UPCOMING) }
     var selectedGuideTab by remember { mutableStateOf(GuideDashboardTab.TOURS) }
+    var guideToursFilter by remember { mutableStateOf("ACTIVE") }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -327,17 +333,72 @@ internal fun DashboardSuccessContent(
                             }
                         }
                         
-                        if (uiState.tours.isEmpty()) {
+                        item {
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(4.dp).fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Surface(
+                                        modifier = Modifier.weight(1f).height(36.dp).clickable { guideToursFilter = "ACTIVE" },
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = if (guideToursFilter == "ACTIVE") MaterialTheme.colorScheme.surface else Color.Transparent
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text(
+                                                text = stringResource(id = R.string.active),
+                                                style = MaterialTheme.typography.labelMedium,
+                                                fontFamily = OutfitFamily,
+                                                fontWeight = if (guideToursFilter == "ACTIVE") FontWeight.Bold else FontWeight.Medium,
+                                                color = if (guideToursFilter == "ACTIVE") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                    Surface(
+                                        modifier = Modifier.weight(1f).height(36.dp).clickable { guideToursFilter = "PAST" },
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = if (guideToursFilter == "PAST") MaterialTheme.colorScheme.surface else Color.Transparent
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text(
+                                                text = stringResource(id = R.string.past),
+                                                style = MaterialTheme.typography.labelMedium,
+                                                fontFamily = OutfitFamily,
+                                                fontWeight = if (guideToursFilter == "PAST") FontWeight.Bold else FontWeight.Medium,
+                                                color = if (guideToursFilter == "PAST") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        val currentDate = uiState.currentDate
+                        val filteredTours = uiState.tours.filter { tour ->
+                            val isPast = try {
+                                LocalDate.parse(tour.scheduledDate).isBefore(currentDate)
+                            } catch (e: Exception) {
+                                false
+                            }
+                            if (guideToursFilter == "ACTIVE") !isPast else isPast
+                        }
+
+                        if (filteredTours.isEmpty()) {
                             item {
                                 EmptyState(
                                     message = stringResource(id = R.string.no_tours_created)
                                 )
                             }
                         } else {
-                            items(uiState.tours) { tour ->
+                            items(filteredTours) { tour ->
                                 val tourBookings = uiState.bookings.count { it.tourId == tour.id }
                                 CompactGuideTourCard(
                                     tour = tour,
+                                    currentDate = currentDate,
                                     totalBookings = tourBookings,
                                     onEdit = { onEditTour(tour.id) },
                                     onDelete = { tourToDelete = tour }
@@ -353,7 +414,8 @@ internal fun DashboardSuccessContent(
                                 )
                             }
                         } else {
-                            items(uiState.bookings) { booking ->
+                            val sortedGuideBookings = uiState.bookings.sortedByDescending { it.tourScheduledDate }
+                            items(sortedGuideBookings) { booking ->
                                 GuideBookingCard(booking = booking)
                             }
                         }

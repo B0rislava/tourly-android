@@ -59,15 +59,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun onAgreeToTermsChange(agreed: Boolean) {
-        _uiState.update {
-            it.copy(
-                agreedToTerms = agreed,
-                termsError = null
-            )
-        }
-    }
-
     fun onFullNameChange(fullName: String) {
         _uiState.update {
             it.copy(
@@ -280,7 +271,6 @@ class SignUpViewModel @Inject constructor(
         var passwordError: Int? = null
         var confirmPasswordError: Int? = null
         var fullNameError: Int? = null
-        var termsError: Int? = null
 
         // Validate full name
         if (state.fullName.isBlank()) {
@@ -318,19 +308,14 @@ class SignUpViewModel @Inject constructor(
             isValid = false
         }
 
-        // Validate terms
-        if (!state.agreedToTerms) {
-            termsError = R.string.error_terms_not_accepted
-            isValid = false
-        }
+
 
         _uiState.update {
             it.copy(
                 emailError = emailError,
                 passwordError = passwordError,
                 confirmPasswordError = confirmPasswordError,
-                fullNameError = fullNameError,
-                termsError = termsError
+                fullNameError = fullNameError
             )
         }
 

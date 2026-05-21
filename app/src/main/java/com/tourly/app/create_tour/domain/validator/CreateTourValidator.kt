@@ -5,6 +5,7 @@ import com.tourly.app.create_tour.domain.exception.CreateTourException
 import com.tourly.app.create_tour.domain.model.CreateTourParams
 import java.time.Clock
 import java.time.LocalDate
+import java.time.LocalTime
 import javax.inject.Inject
 
 class CreateTourValidator @Inject constructor(
@@ -17,7 +18,7 @@ class CreateTourValidator @Inject constructor(
             .flatMap { validateDuration(params.duration) }
             .flatMap { validateGroupSize(params.maxGroupSize) }
             .flatMap { validatePrice(params.pricePerPerson) }
-            .flatMap { validateScheduledDate(params.scheduledDate) }
+            .flatMap { validateScheduledDate(params.scheduledDate, params.startTime) }
     }
 
     private fun validateTitle(title: String): Result<Unit> =
@@ -83,14 +84,25 @@ class CreateTourValidator @Inject constructor(
             Result.success(Unit)
         }
 
-    private fun validateScheduledDate(scheduledDate: LocalDate?): Result<Unit> {
+    private fun validateScheduledDate(scheduledDate: LocalDate?, startTime: LocalTime?): Result<Unit> {
         if (scheduledDate == null) {
             return Result.failure(CreateTourException.DateRequired())
+        }
+        
+        if (startTime == null) {
+            return Result.failure(CreateTourException.TimeRequired())
         }
 
         val today = LocalDate.now(clock)
         if (scheduledDate.isBefore(today)) {
             return Result.failure(CreateTourException.DateInPast())
+        }
+        
+        if (scheduledDate.isEqual(today) && startTime != null) {
+            val nowTime = LocalTime.now(clock)
+            if (startTime.isBefore(nowTime)) {
+                return Result.failure(CreateTourException.TimeInPast())
+            }
         }
 
         return Result.success(Unit)

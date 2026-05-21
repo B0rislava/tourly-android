@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
             
             val localizedContext = remember(appLanguage) {
                 val locale = Locale.forLanguageTag(appLanguage.code)
+                Locale.setDefault(locale)
                 val config = Configuration(currentConfiguration)
                 config.setLocale(locale)
                 config.setLayoutDirection(locale)
