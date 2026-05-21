@@ -173,6 +173,12 @@
     <string name="book_now">Резервирай</string>
     <string name="message">Съобщение</string>
 
+    <!-- General Dialogs & Actions -->
+    <string name="confirm">Потвърди</string>
+    <string name="book_tour_title">Резервация на тур</string>
+    <string name="number_of_participants">Брой участници</string>
+    <string name="total_price_format">Обща цена: $%1$.2f</string>
+
     <!-- Tags -->
     <string name="tag_adventure">Приключение</string>
     <string name="tag_culture">Култура</string>

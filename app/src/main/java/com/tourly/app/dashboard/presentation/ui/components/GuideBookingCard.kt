@@ -26,7 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.width
 import coil.compose.AsyncImage
 import com.tourly.app.R
 import com.tourly.app.core.domain.model.Booking
@@ -87,20 +89,26 @@ fun GuideBookingCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = booking.customerName ?: stringResource(id = R.string.unknown_user),
                             style = MaterialTheme.typography.titleMedium,
                             fontFamily = OutfitFamily,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = booking.tourTitle,
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = OutfitFamily,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
+                    
+                    Spacer(modifier = Modifier.width(8.dp))
                     
                     Surface(
                         shape = RoundedCornerShape(12.dp),
@@ -120,7 +128,8 @@ fun GuideBookingCard(
                                 "COMPLETED" -> MaterialTheme.colorScheme.tertiary
                                 else -> MaterialTheme.colorScheme.error
                             },
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1
                         )
                     }
                 }

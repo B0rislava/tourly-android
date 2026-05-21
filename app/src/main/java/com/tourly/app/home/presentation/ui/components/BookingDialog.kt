@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
-import java.util.Locale
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
@@ -51,7 +52,7 @@ fun BookingDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Book Tour",
+                    text = stringResource(id = R.string.book_tour_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold
@@ -60,7 +61,7 @@ fun BookingDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Number of Participants",
+                    text = stringResource(id = R.string.number_of_participants),
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = OutfitFamily
                 )
@@ -98,7 +99,7 @@ fun BookingDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Total Price: $${String.format(Locale.US, "%.2f", totalPrice)}",
+                    text = stringResource(id = R.string.total_price_format, totalPrice),
                     style = MaterialTheme.typography.titleMedium,
                     fontFamily = OutfitFamily,
                     color = MaterialTheme.colorScheme.primary,
@@ -115,7 +116,7 @@ fun BookingDialog(
                             onClick = onDismiss,
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Cancel")
+                            Text(stringResource(id = R.string.cancel))
                         }
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -124,7 +125,7 @@ fun BookingDialog(
                             onClick = { onConfirm(tourId, participants) },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Confirm")
+                            Text(stringResource(id = R.string.confirm))
                         }
                     }
                 }

@@ -130,7 +130,7 @@ fun CompactDashboardCard(
                         style = MaterialTheme.typography.titleMedium,
                         fontFamily = OutfitFamily,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .weight(1f)
@@ -138,6 +138,7 @@ fun CompactDashboardCard(
                     )
                     
                     if (status != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
                         StatusBadge(status = status)
                     }
                 }
@@ -261,7 +262,8 @@ private fun StatusBadge(status: String) {
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
             color = textColor,
-            fontFamily = OutfitFamily
+            fontFamily = OutfitFamily,
+            maxLines = 1
         )
     }
 }

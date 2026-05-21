@@ -3,7 +3,6 @@ package com.tourly.app.core.presentation.ui
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,23 +69,7 @@ fun GuideMainContent(
                 ) {
                     SimpleTopBar(
                         title = stringResource(id = selectedDestination.labelResId),
-                        navigationIcon = {
-                            val onBack: (() -> Unit)? = when {
-                                selectedDestination == BottomNavDestination.CREATE_TOUR -> {
-                                    { onDestinationSelected(BottomNavDestination.GUIDE_HOME) }
-                                }
-                                else -> null
-                            }
-
-                            if (onBack != null) {
-                                IconButton(onClick = onBack) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = stringResource(id = R.string.back)
-                                    )
-                                }
-                            }
-                        },
+                        navigationIcon = {},
                         actions = {
                             if (selectedDestination == BottomNavDestination.PROFILE) {
                                 IconButton(onClick = onNavigateToSettings) {

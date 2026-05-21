@@ -8,6 +8,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import java.time.Instant
 import java.time.LocalDate
@@ -48,7 +49,7 @@ fun TourDatePickerDialog(
                 onConfirm(datePickerState.selectedDateMillis)
             }) {
                 Text(
-                    text = stringResource(id = android.R.string.ok),
+                    text = stringResource(id = R.string.ok),
                     fontFamily = OutfitFamily
                 )
             }
@@ -56,7 +57,7 @@ fun TourDatePickerDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
-                    text = stringResource(id = android.R.string.cancel),
+                    text = stringResource(id = R.string.cancel),
                     fontFamily = OutfitFamily
                 )
             }

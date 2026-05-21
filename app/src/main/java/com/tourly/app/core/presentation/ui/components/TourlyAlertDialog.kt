@@ -8,6 +8,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
 @Composable
@@ -16,8 +18,8 @@ fun TourlyAlertDialog(
     onConfirm: () -> Unit,
     title: String,
     text: String,
-    confirmButtonText: String = "Confirm",
-    dismissButtonText: String = "Cancel",
+    confirmButtonText: String = stringResource(id = R.string.confirm),
+    dismissButtonText: String = stringResource(id = R.string.cancel),
     isDestructive: Boolean = false
 ) {
     AlertDialog(

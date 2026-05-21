@@ -167,6 +167,12 @@
     <string name="book_now">Book Now</string>
     <string name="message">Message</string>
 
+    <!-- General Dialogs & Actions -->
+    <string name="confirm">Confirm</string>
+    <string name="book_tour_title">Book Tour</string>
+    <string name="number_of_participants">Number of Participants</string>
+    <string name="total_price_format">Total Price: $%1$.2f</string>
+
     <!-- Tags -->
     <string name="tag_adventure">Adventure</string>
     <string name="tag_culture">Culture</string>

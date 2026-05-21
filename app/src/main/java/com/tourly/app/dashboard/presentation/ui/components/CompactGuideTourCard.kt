@@ -36,10 +36,12 @@ import coil.request.ImageRequest
 import com.tourly.app.R
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import java.time.LocalDate
 
 @Composable
 fun CompactGuideTourCard(
     tour: Tour,
+    currentDate: LocalDate,
     totalBookings: Int,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
@@ -85,16 +87,25 @@ fun CompactGuideTourCard(
                         verticalAlignment = Alignment.Top
                     ) {
                         Column {
+                            val isPast = try {
+                                LocalDate.parse(tour.scheduledDate).isBefore(currentDate)
+                            } catch (e: Exception) {
+                                false
+                            }
+                            val badgeColor = if (isPast) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                            val textColor = if (isPast) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
+                            val badgeText = if (isPast) stringResource(id = R.string.past) else stringResource(id = R.string.active)
+
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                color = badgeColor
                             ) {
                                 Text(
-                                    text = stringResource(id = R.string.active),
+                                    text = badgeText,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontFamily = OutfitFamily,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = textColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
