@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,12 +38,18 @@ fun RoleSelector(
         label = "indicator_offset"
     )
 
+    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(46.dp)
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = if (isDarkTheme) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .background(
+                color = if (isDarkTheme) Color.Transparent else Color.Black.copy(alpha = 0.04f),
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(4.dp)
@@ -55,7 +63,7 @@ fun RoleSelector(
                     translationX = size.width * indicatorProgress
                 }
                 .background(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(12.dp)
                 )
         )

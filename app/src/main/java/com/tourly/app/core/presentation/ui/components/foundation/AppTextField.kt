@@ -1,5 +1,7 @@
 package com.tourly.app.core.presentation.ui.components.foundation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,7 +17,7 @@ fun AppTextField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
+    label: String? = null,
     placeholder: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -27,40 +29,47 @@ fun AppTextField(
     isError: Boolean = false,
     errorText: String? = null
 ) {
-    OutlinedTextField(
-        modifier = modifier
-            .fillMaxWidth(),
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(text = label) },
-        placeholder = placeholder?.let { { Text(text = it) } },
-        leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon,
-        isError = isError,
-        supportingText = errorText?.let { { Text(text = it) } },
-        singleLine = singleLine,
-        minLines = minLines,
-        maxLines = maxLines,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        shape = RoundedCornerShape(size = 18.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = MaterialTheme.colorScheme.onBackground,
-            unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            cursorColor = MaterialTheme.colorScheme.onBackground,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.onBackground,
-            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onBackground,
-            focusedTrailingIconColor = MaterialTheme.colorScheme.onBackground,
-            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onBackground,
-            focusedLabelColor = MaterialTheme.colorScheme.onBackground,
-            unfocusedLabelColor = MaterialTheme.colorScheme.onBackground,
-            errorBorderColor = MaterialTheme.colorScheme.error,
-            errorLabelColor = MaterialTheme.colorScheme.error,
-            errorLeadingIconColor = MaterialTheme.colorScheme.error,
-            errorTrailingIconColor = MaterialTheme.colorScheme.error,
-            errorSupportingTextColor = MaterialTheme.colorScheme.error
+    Column(modifier = modifier.fillMaxWidth()) {
+        if (label != null) {
+            Text(
+                text = label,
+                color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+            )
+        }
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = placeholder?.let { { Text(text = it) } },
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon,
+            isError = isError,
+            supportingText = errorText?.let { { Text(text = it) } },
+            singleLine = singleLine,
+            minLines = minLines,
+            maxLines = maxLines,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            shape = RoundedCornerShape(size = 18.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = Color.Transparent,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                errorContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                unfocusedLeadingIconColor = MaterialTheme.colorScheme.onBackground,
+                focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                unfocusedTrailingIconColor = MaterialTheme.colorScheme.onBackground,
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorLeadingIconColor = MaterialTheme.colorScheme.error,
+                errorTrailingIconColor = MaterialTheme.colorScheme.error,
+                errorSupportingTextColor = MaterialTheme.colorScheme.error
+            )
         )
-    )
+    }
 }

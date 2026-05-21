@@ -17,19 +17,19 @@ fun AuthBackground(modifier: Modifier = Modifier) {
     val backgroundColor = MaterialTheme.colorScheme.background
     val isDarkTheme = backgroundColor.luminance() < 0.5f
 
-    // Colors
-    val sunsetPurple = Color(0xFFDC4EC5).copy(alpha = if (isDarkTheme) 0.15f else 0.25f)
-    val sunsetPeach = Color(0xFFF59466).copy(alpha = if (isDarkTheme) 0.15f else 0.25f)
-    val sunsetOrange = Color(0xFFE2762F).copy(alpha = if (isDarkTheme) 0.15f else 0.25f)
+    // Colors for the gradient
+    val topOrange = Color(0xFFFF9A55).copy(alpha = if (isDarkTheme) 0.15f else 0.45f)
+    val leftYellow = Color(0xFFFFD166).copy(alpha = if (isDarkTheme) 0.15f else 0.4f)
+    val bottomPurple = Color(0xFFC785EC).copy(alpha = if (isDarkTheme) 0.15f else 0.45f)
 
     Canvas(modifier = modifier.fillMaxSize()) {
         // Draw base background
         drawRect(color = backgroundColor)
 
-
+        // Top right orange
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(sunsetPurple, Color.Transparent),
+                colors = listOf(topOrange, Color.Transparent),
                 center = Offset(size.width * 0.9f, size.height * 0.05f),
                 radius = size.width * 0.9f
             ),
@@ -37,25 +37,25 @@ fun AuthBackground(modifier: Modifier = Modifier) {
             radius = size.width * 0.9f
         )
 
-
+        // Left middle yellow
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(sunsetOrange, Color.Transparent),
-                center = Offset(size.width * 0.05f, size.height * 0.45f),
-                radius = size.width * 0.7f
+                colors = listOf(leftYellow, Color.Transparent),
+                center = Offset(size.width * 0.0f, size.height * 0.4f),
+                radius = size.width * 0.8f
             ),
-            center = Offset(size.width * 0.05f, size.height * 0.45f),
-            radius = size.width * 0.7f
+            center = Offset(size.width * 0.0f, size.height * 0.4f),
+            radius = size.width * 0.8f
         )
 
-
+        // Bottom right purple
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(sunsetPeach, Color.Transparent),
-                center = Offset(size.width * 0.85f, size.height * 0.85f),
+                colors = listOf(bottomPurple, Color.Transparent),
+                center = Offset(size.width * 0.8f, size.height * 0.9f),
                 radius = size.width * 1.0f
             ),
-            center = Offset(size.width * 0.85f, size.height * 0.85f),
+            center = Offset(size.width * 0.8f, size.height * 0.9f),
             radius = size.width * 1.0f
         )
     }

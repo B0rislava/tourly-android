@@ -25,7 +25,7 @@ fun ClickableText(
                 tag = "action_tag",
                 styles = TextLinkStyles(
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
                         ).toSpanStyle()
                 ),

@@ -1,6 +1,5 @@
 package com.tourly.app.login.presentation.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,9 +32,6 @@ import com.tourly.app.login.presentation.ui.components.EmailTextField
 import com.tourly.app.login.presentation.ui.components.PasswordTextField
 import com.tourly.app.login.presentation.ui.components.OrDivider
 import com.tourly.app.login.presentation.ui.components.GoogleSignInButton
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 
 @Composable
 fun SignUpContent(
@@ -49,13 +45,10 @@ fun SignUpContent(
     onFullNameChange: (String) -> Unit,
     role: UserRole,
     onRoleChange: (UserRole) -> Unit,
-    agreedToTerms: Boolean,
-    onAgreeToTermsChange: (Boolean) -> Unit,
     emailError: String?,
     passwordError: String?,
     confirmPasswordError: String?,
     fullNameError: String?,
-    termsError: String?,
     signUpError: String?,
     isLoading: Boolean,
     onRegisterClick: () -> Unit,
@@ -106,19 +99,11 @@ fun SignUpContent(
 
             FullNameTextField(
                 value = fullName,
-                onValueChange = onFullNameChange
+                onValueChange = onFullNameChange,
+                placeholder = stringResource(id = R.string.enter_full_name),
+                isError = fullNameError != null,
+                errorText = fullNameError
             )
-
-            if (fullNameError != null) {
-                Text(
-                    text = fullNameError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp)
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -126,20 +111,10 @@ fun SignUpContent(
             EmailTextField(
                 value = email,
                 onValueChange = onEmailChange,
-                label = stringResource(id = R.string.email),
-                placeholder = stringResource(id = R.string.enter_email)
+                placeholder = stringResource(id = R.string.enter_email),
+                isError = emailError != null,
+                errorText = emailError
             )
-
-            if (emailError != null) {
-                Text(
-                    text = emailError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp)
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -147,19 +122,10 @@ fun SignUpContent(
                 value = password,
                 onValueChange = onPasswordChange,
                 label = stringResource(id = R.string.new_password),
-                placeholder = stringResource(id = R.string.enter_new_password)
+                placeholder = stringResource(id = R.string.enter_new_password),
+                isError = passwordError != null,
+                errorText = passwordError
             )
-
-            if (passwordError != null) {
-                Text(
-                    text = passwordError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp)
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -168,57 +134,12 @@ fun SignUpContent(
                 value = confirmPassword,
                 onValueChange = onConfirmPasswordChange,
                 label = stringResource(id = R.string.confirm_password),
-                placeholder = stringResource(id = R.string.enter_confirm_password)
+                placeholder = stringResource(id = R.string.enter_confirm_password),
+                isError = confirmPasswordError != null,
+                errorText = confirmPasswordError
             )
 
-            if (confirmPasswordError != null) {
-                Text(
-                    text = confirmPasswordError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp)
-                )
-            }
-
-            // Terms and Conditions checkbox
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = agreedToTerms,
-                    onCheckedChange = onAgreeToTermsChange,
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = MaterialTheme.colorScheme.primary,
-                        uncheckedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
-                    )
-                )
-                Text(
-                    text = stringResource(id = R.string.agree_terms),
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontFamily = OutfitFamily,
-                        fontSize = 14.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                )
-            }
-
-            if (termsError != null) {
-                Text(
-                    text = termsError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             PrimaryButton(
                 text = stringResource(id = R.string.register),

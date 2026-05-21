@@ -20,8 +20,8 @@ sealed class ThemeColors(
 ) {
 
     object LightColors : ThemeColors(
-        background = Color(0xFFFFFFFF),
-        surface = Color(0xFFF5ECFD),
+        background = Color(0xFFFEF9F5),
+        surface = Color(0xFFFFFFFF),
 
         primary = Color(0xFFF59466),
         secondary = Color(0xFFFFB789),
@@ -32,8 +32,8 @@ sealed class ThemeColors(
 
         error = Color(0xFFE55B4D),
 
-        cardBackground = Color(0xFFF6F3FA),
-        cardBorder = Color(0xFFF5ECFD),
+        cardBackground = Color(0xFFFFFFFF), // White fields
+        cardBorder = Color(0xFFE6DDF2), // Soft purple border
     )
 
     object DarkColors : ThemeColors(

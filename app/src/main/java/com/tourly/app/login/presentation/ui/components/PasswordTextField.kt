@@ -1,7 +1,6 @@
 package com.tourly.app.login.presentation.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
@@ -24,8 +23,10 @@ import com.tourly.app.core.presentation.ui.components.foundation.AppTextField
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String = stringResource(id = R.string.password),
-    placeholder: String? = null
+    label: String? = stringResource(id = R.string.password),
+    placeholder: String? = null,
+    isError: Boolean = false,
+    errorText: String? = null
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -34,12 +35,8 @@ fun PasswordTextField(
         onValueChange = onValueChange,
         label = label,
         placeholder = placeholder,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Lock,
-                contentDescription = stringResource(id = R.string.password)
-            )
-        },
+        isError = isError,
+        errorText = errorText,
         trailingIcon = {
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(

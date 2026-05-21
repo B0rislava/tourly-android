@@ -80,42 +80,22 @@ fun SignInContent(
             EmailTextField(
                 value = email,
                 onValueChange = onEmailChange,
-                label = stringResource(id = R.string.email),
-                placeholder = stringResource(id = R.string.enter_email)
+                placeholder = stringResource(id = R.string.enter_email),
+                isError = emailError != null,
+                errorText = emailError
             )
-
-            if (emailError != null) {
-                Text(
-                    text = emailError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp)
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             PasswordTextField(
                 value = password,
                 onValueChange = onPasswordChange,
-                label = stringResource(id = R.string.password),
-                placeholder = stringResource(id = R.string.enter_password)
+                placeholder = stringResource(id = R.string.enter_password),
+                isError = passwordError != null,
+                errorText = passwordError
             )
 
-            if (passwordError != null) {
-                Text(
-                    text = passwordError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             PrimaryButton(
                 text = stringResource(id = R.string.login),
