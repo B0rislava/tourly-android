@@ -55,7 +55,14 @@
 
 # Keep Google Auth and Credential manager classes to prevent reflection/parsing issues
 -keep class androidx.credentials.** { *; }
+-keep class androidx.credentials.playservices.** { *; }
+
+# Google Identity - keep credential types and their static TYPE_ constants
 -keep class com.google.android.libraries.identity.googleid.** { *; }
+-keepclassmembers class com.google.android.libraries.identity.googleid.GoogleIdTokenCredential {
+    public static final java.lang.String TYPE_GOOGLE_ID_TOKEN_CREDENTIAL;
+    public static *** createFrom(...);
+}
 
 # Google Places SDK
 -keep class com.google.android.libraries.places.** { *; }
