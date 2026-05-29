@@ -2,6 +2,7 @@ package com.tourly.app.chat.data.repository
 
 import com.tourly.app.BuildConfig
 import com.tourly.app.chat.data.dto.ChatMessageDto
+import com.tourly.app.chat.domain.exception.ChatException
 import com.tourly.app.chat.domain.model.Message
 import com.tourly.app.chat.domain.repository.ChatRepository
 import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
@@ -13,6 +14,7 @@ import io.ktor.client.request.get
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +38,7 @@ import java.util.UUID.randomUUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import timber.log.Timber
+import java.time.format.DateTimeParseException
 
 @Singleton
 class ChatRepositoryImpl @Inject constructor(
@@ -79,8 +82,9 @@ class ChatRepositoryImpl @Inject constructor(
                 Timber.d("ChatRepository: Resolved valid user ID: $id")
                 id
             }
-        } catch (e: Exception) {
-            Timber.e("ChatRepository: Timeout waiting for user profile")
+        } catch (e: TimeoutCancellationException) {
+            val ex = ChatException.Timeout("Timeout waiting for user profile")
+            Timber.e(ex, "ChatRepository: ${ex.message}")
             -1L
         }
     }
@@ -177,7 +181,8 @@ class ChatRepositoryImpl @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                Timber.e(e, "WebSocket subscription error: ${e.message}")
+                val ex = ChatException.ConnectionError(e.message ?: "WebSocket subscription error")
+                Timber.e(ex, "WebSocket subscription error")
                 stompSession = null
             }
         }
@@ -201,10 +206,16 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun sendMessage(tourId: Long, content: String): Result<Unit> {
         return try {
             val userId = ensureValidUserId()
-            if (userId == -1L) return Result.Error(code = "USER_NOT_FOUND", message = "User not found")
+            if (userId == -1L) {
+                val ex = ChatException.UserNotFound()
+                return Result.Error(code = ex.code, message = ex.message!!)
+            }
             
             val user = (getUserProfileUseCase() as? Result.Success)?.data 
-                ?: return Result.Error(code = "USER_NOT_FOUND", message = "User not found")
+                ?: run {
+                    val ex = ChatException.UserNotFound()
+                    return Result.Error(code = ex.code, message = ex.message!!)
+                }
 
             val session = getSession()
             val dto = ChatMessageDto(
@@ -229,9 +240,10 @@ class ChatRepositoryImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (e: Exception) {
-            Timber.e(e, "Send message error: ${e.message}")
+            val ex = ChatException.SendFailed(e.message ?: "Failed to send message")
+            Timber.e(ex, "Send message error")
             stompSession = null
-            Result.Error(code = "SEND_FAILED", message = e.message ?: "Failed to send message")
+            Result.Error(code = ex.code, message = ex.message ?: "Failed to send message")
         }
     }
 
@@ -253,7 +265,7 @@ class ChatRepositoryImpl @Inject constructor(
             content = dto.content,
             timestamp = try {
                 LocalDateTime.parse(dto.timestamp)
-            } catch (e: Exception) {
+            } catch (e: DateTimeParseException) {
                 LocalDateTime.now()
             },
             isFromMe = isFromMe,
