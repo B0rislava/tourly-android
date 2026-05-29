@@ -22,6 +22,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.websocket.ktor.KtorWebSocketClient
+import timber.log.Timber
 import javax.inject.Singleton
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -58,15 +59,15 @@ object NetworkModule {
                 
                 bearer {
                     loadTokens {
-                        println("HTTP Client: loadTokens called - attempting to load from storage...")
+                        Timber.d("HTTP Client: loadTokens called - attempting to load from storage...")
                         val accessToken = tokenManager.getToken()
                         val refreshToken = tokenManager.getRefreshToken()
-                        println("HTTP Client: loadTokens - Access: ${accessToken?.take(10)}..., Refresh: ${refreshToken?.take(10)}...")
+                        Timber.d("HTTP Client: loadTokens - Access length: ${accessToken?.length}, Refresh length: ${refreshToken?.length}")
                         if (accessToken != null && refreshToken != null) {
-                            println("HTTP Client: loadTokens - Returning valid tokens")
+                            Timber.d("HTTP Client: loadTokens - Returning valid tokens")
                             BearerTokens(accessToken, refreshToken)
                         } else {
-                            println("HTTP Client: loadTokens - Returning NULL tokens (Access=${accessToken != null}, Refresh=${refreshToken != null})")
+                            Timber.d("HTTP Client: loadTokens - Returning NULL tokens (Access=${accessToken != null}, Refresh=${refreshToken != null})")
                             null
                         }
                     }
@@ -83,7 +84,7 @@ object NetworkModule {
                             // Double check if another request already refreshed the token
                             val currentRefreshToken = tokenManager.getRefreshToken()
 
-                            println("HTTP Client: Synchronized refresh attempt...")
+                            Timber.d("HTTP Client: Synchronized refresh attempt...")
                             
                             val refreshToken = currentRefreshToken ?: return@refreshTokens null
                             
@@ -103,10 +104,10 @@ object NetworkModule {
                                     if (refreshResponse.status.isSuccess()) {
                                         val tokens = refreshResponse.body<RefreshTokenResponseDto>()
                                         tokenManager.saveTokens(tokens.accessToken, tokens.refreshToken)
-                                        println("HTTP Client: Token refresh successful")
+                                        Timber.d("HTTP Client: Token refresh successful")
                                         BearerTokens(tokens.accessToken, tokens.refreshToken)
                                     } else {
-                                        println("HTTP Client: Token refresh failed with status ${refreshResponse.status}")
+                                        Timber.w("HTTP Client: Token refresh failed with status ${refreshResponse.status}")
                                         tokenManager.clearToken()
                                         tokenManager.clearRefreshToken()
                                         null
@@ -115,7 +116,7 @@ object NetworkModule {
                                     refreshClient.close()
                                 }
                             } catch (e: Exception) {
-                                println("HTTP Client: Failed to refresh token: ${e.message}")
+                                Timber.e(e, "HTTP Client: Failed to refresh token")
                                 tokenManager.clearToken()
                                 tokenManager.clearRefreshToken()
                                 null
@@ -128,7 +129,7 @@ object NetworkModule {
             install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
-                        println("HTTP Client: $message")
+                        Timber.v("HTTP Client: $message")
                     }
                 }
                 level = LogLevel.INFO

@@ -67,3 +67,10 @@
 # Google Places SDK
 -keep class com.google.android.libraries.places.** { *; }
 -dontwarn com.google.android.libraries.places.**
+
+# Timber
+-assumenosideeffects class timber.log.Timber {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}

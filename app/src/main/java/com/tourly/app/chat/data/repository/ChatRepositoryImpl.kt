@@ -35,6 +35,7 @@ import java.time.LocalDateTime
 import java.util.UUID.randomUUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import timber.log.Timber
 
 @Singleton
 class ChatRepositoryImpl @Inject constructor(
@@ -59,10 +60,10 @@ class ChatRepositoryImpl @Inject constructor(
     private suspend fun refreshUserProfile() {
         val result = getUserProfileUseCase()
         if (result is Result.Success) {
-            println("ChatRepository: User profile refreshed. Current ID: ${result.data.id}")
+            Timber.d("ChatRepository: User profile refreshed. Current ID: ${result.data.id}")
             _currentUserId.value = result.data.id
         } else {
-            println("ChatRepository: Failed to refresh user profile")
+            Timber.e("ChatRepository: Failed to refresh user profile")
         }
     }
 
@@ -70,16 +71,16 @@ class ChatRepositoryImpl @Inject constructor(
         if (_currentUserId.value != -1L) {
             return _currentUserId.value
         }
-        println("ChatRepository: Current user ID is invalid (-1). Refreshing...")
+        Timber.d("ChatRepository: Current user ID is invalid (-1). Refreshing...")
         refreshUserProfile()
         return try {
             withTimeout(3000L) {
                 val id = _currentUserId.filter { it != -1L }.first()
-                println("ChatRepository: Resolved valid user ID: $id")
+                Timber.d("ChatRepository: Resolved valid user ID: $id")
                 id
             }
         } catch (e: Exception) {
-            println("ChatRepository: Timeout waiting for user profile")
+            Timber.e("ChatRepository: Timeout waiting for user profile")
             -1L
         }
     }
@@ -91,7 +92,7 @@ class ChatRepositoryImpl @Inject constructor(
         val wsUrl = (if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/")
             .replace("http", "ws") + "ws/websocket"
         
-        println("Connecting to WebSocket: $wsUrl")
+        Timber.d("Connecting to WebSocket: $wsUrl")
         val session = stompClient.connect(wsUrl)
             .withJsonConversions(Json { ignoreUnknownKeys = true })
         
@@ -101,25 +102,25 @@ class ChatRepositoryImpl @Inject constructor(
 
     override fun getMessages(tourId: Long): Flow<List<Message>> = callbackFlow {
         val userId = ensureValidUserId()
-        println("ChatRepository: Starting message flow with userId=$userId for tour=$tourId")
+        Timber.d("ChatRepository: Starting message flow with userId=$userId for tour=$tourId")
 
         // Fetch tour details to get guide ID
         var tourGuideId = -1L
         val tourResult = getTourDetailsUseCase(tourId)
         if (tourResult is Result.Success) {
             tourGuideId = tourResult.data.tourGuideId
-            println("ChatRepository: Found tour guide ID: $tourGuideId")
+            Timber.d("ChatRepository: Found tour guide ID: $tourGuideId")
         }
 
         // 1. Fetch History Always (Refresh)
         launch {
-            println("ChatRepository: Fetching history for tour $tourId...")
+            Timber.d("ChatRepository: Fetching history for tour $tourId...")
             val historyUrl = "${BuildConfig.BASE_URL}chat/$tourId/messages"
             
             when (val result = NetworkResponseMapper.map<List<ChatMessageDto>> { httpClient.get(historyUrl) }) {
                 is Result.Success -> {
                     val history = result.data
-                    println("ChatRepository: Fetched ${history.size} messages from history for tour $tourId")
+                    Timber.d("ChatRepository: Fetched ${history.size} messages from history for tour $tourId")
                     
                     // MERGE with existing optimistic messages checking for duplicates
                     _messages.update { current ->
@@ -137,12 +138,12 @@ class ChatRepositoryImpl @Inject constructor(
                             .distinctBy { it.id }
                             .sortedBy { it.timestamp }
                             
-                        println("ChatRepository: Merged history. Total: ${merged.size} (Pending optimistic: ${pendingOptimistic.size})")
+                        Timber.d("ChatRepository: Merged history. Total: ${merged.size} (Pending optimistic: ${pendingOptimistic.size})")
                         current + (tourId to merged)
                     }
                 }
                 is Result.Error -> {
-                    println("ChatRepository: Failed to fetch history: ${result.message}")
+                    Timber.e("ChatRepository: Failed to fetch history: ${result.message}")
                 }
             }
         }
@@ -152,7 +153,7 @@ class ChatRepositoryImpl @Inject constructor(
             try {
                 val session = getSession()
                 session.subscribe<ChatMessageDto>("/topic/messages/$tourId").collect { dto ->
-                    println("Received STOMP message: ${dto.content}")
+                    Timber.d("Received STOMP message: ${dto.content}")
                     _messages.update { current ->
                         val tourMsgs = current[tourId] ?: emptyList()
                         
@@ -162,7 +163,7 @@ class ChatRepositoryImpl @Inject constructor(
                         }
 
                         if (optimisticIndex != -1) {
-                            println("ChatRepository: Replacing optimistic msg ${tourMsgs[optimisticIndex].id} with real msg ${dto.id}")
+                            Timber.d("ChatRepository: Replacing optimistic msg ${tourMsgs[optimisticIndex].id} with real msg ${dto.id}")
                             val mutable = tourMsgs.toMutableList()
                             mutable[optimisticIndex] = dto
                             current + (tourId to mutable)
@@ -176,7 +177,7 @@ class ChatRepositoryImpl @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                println("WebSocket subscription error: ${e.message}")
+                Timber.e(e, "WebSocket subscription error: ${e.message}")
                 stompSession = null
             }
         }
@@ -189,7 +190,7 @@ class ChatRepositoryImpl @Inject constructor(
                 dtos.map { mapDtoToDomain(it, uid, tourGuideId) }
             }
             .onEach { messages ->
-                // println("ChatRepository: Emitting ${messages.size} messages")
+                // Timber.d("ChatRepository: Emitting ${messages.size} messages")
                 trySend(messages)
             }
             .launchIn(this)
@@ -214,7 +215,7 @@ class ChatRepositoryImpl @Inject constructor(
                 timestamp = LocalDateTime.now().toString()
             )
             
-            println("Sending STOMP message: ${dto.content}")
+            Timber.d("Sending STOMP message: ${dto.content}")
             session.convertAndSend("/app/chat/$tourId", dto)
             
             // Optimistically update UI immediately
@@ -223,19 +224,19 @@ class ChatRepositoryImpl @Inject constructor(
                 // Use a temporary ID (negative timestamp) to avoid collision with real DB IDs
                 val tempId = -(System.currentTimeMillis())
                 val tempMsg = dto.copy(id = tempId)
-                println("ChatRepository: Optimistic update for msg: ${dto.content} (tempId=$tempId)")
+                Timber.d("ChatRepository: Optimistic update for msg: ${dto.content} (tempId=$tempId)")
                 current + (tourId to (tourMsgs + tempMsg))
             }
             Result.Success(Unit)
         } catch (e: Exception) {
-            println("Send message error: ${e.message}")
+            Timber.e(e, "Send message error: ${e.message}")
             stompSession = null
             Result.Error(code = "SEND_FAILED", message = e.message ?: "Failed to send message")
         }
     }
 
     override fun clear() {
-        println("ChatRepository: Clearing session state for logout")
+        Timber.d("ChatRepository: Clearing session state for logout")
         stompSession = null
         _currentUserId.value = -1L
         _messages.value = emptyMap() // Clear cache to prevent stale messages across users

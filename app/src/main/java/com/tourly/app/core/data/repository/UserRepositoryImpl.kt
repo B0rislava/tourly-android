@@ -17,6 +17,7 @@ import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.NetworkResponseMapper
 import kotlinx.coroutines.flow.map
 import dagger.hilt.android.qualifiers.ApplicationContext
+import timber.log.Timber
 
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.data.mapper.UserMapper
@@ -111,7 +112,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun logout() {
-        println("UserRepository: Starting logout process...")
+        Timber.d("UserRepository: Starting logout process...")
 
         // Clear token from storage
         tokenManager.clearToken()
@@ -120,7 +121,7 @@ class UserRepositoryImpl @Inject constructor(
 
         // Clear local cache
         _currentUserProfile.value = null
-        println("UserRepository: Token cleared via Standard Ktor Auth Clear - logout complete")
+        Timber.d("UserRepository: Token cleared via Standard Ktor Auth Clear - logout complete")
     }
     
     override fun getTokenFlow(): Flow<Boolean> {

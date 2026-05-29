@@ -17,13 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tourly.app.chat.domain.model.Message
 import java.time.format.DateTimeFormatter
+import timber.log.Timber
 
 @Composable
 fun MessageItem(
     message: Message,
     modifier: Modifier = Modifier
 ) {
-    println("MessageItem: Rendering msg ${message.id}: isFromMe=${message.isFromMe}, content='${message.content}'")
+    Timber.d("MessageItem: Rendering msg ${message.id}: isFromMe=${message.isFromMe}, content='${message.content}'")
     val alignment = if (message.isFromMe) Alignment.CenterEnd else Alignment.CenterStart
     val bubbleColor = if (message.isFromMe) {
         MaterialTheme.colorScheme.primary

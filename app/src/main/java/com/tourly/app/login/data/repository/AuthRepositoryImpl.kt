@@ -13,6 +13,7 @@ import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.data.mapper.UserMapper
+import timber.log.Timber
 
 
 class AuthRepositoryImpl @Inject constructor(
@@ -21,15 +22,15 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<User> {
-        println("AuthRepository: Attempting login for $email")
+        Timber.d("AuthRepository: Attempting login for $email")
         return when (val result = NetworkResponseMapper.map<LoginResponseDto> { apiService.login(LoginRequestDto(email, password)) }) {
             is Result.Success -> {
-                println("AuthRepository: Login successful, saving token (length: ${result.data.accessToken.length})")
+                Timber.d("AuthRepository: Login successful, token length: ${result.data.accessToken.length}")
                 tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
                 Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> {
-                println("AuthRepository: Login failed - ${result.message} (Code: ${result.code})")
+                Timber.w("AuthRepository: Login failed - ${result.message} (Code: ${result.code})")
                 result
             }
         }
@@ -63,9 +64,9 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun verifyCode(email: String, code: String): Result<User> {
         return when (val result = NetworkResponseMapper.map<LoginResponseDto> { apiService.verifyCode(email, code) }) {
             is Result.Success -> {
-                println("AuthRepository: Verification successful, saving tokens...")
+                Timber.d("AuthRepository: Verification successful, saving tokens...")
                 tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
-                println("AuthRepository: Tokens saved successfully")
+                Timber.d("AuthRepository: Tokens saved successfully")
                 Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> result
