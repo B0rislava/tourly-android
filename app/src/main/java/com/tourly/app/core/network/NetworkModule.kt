@@ -35,6 +35,7 @@ import io.ktor.http.encodedPath
 import com.tourly.app.BuildConfig
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.Mutex
+import com.tourly.app.core.domain.exception.AuthException
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -108,6 +109,8 @@ object NetworkModule {
                                         BearerTokens(tokens.accessToken, tokens.refreshToken)
                                     } else {
                                         Timber.w("HTTP Client: Token refresh failed with status ${refreshResponse.status}")
+                                        val ex = AuthException.TokenRevoked("Refresh token invalid or expired")
+                                        Timber.e(ex, "HTTP Client: Token revoked")
                                         tokenManager.clearToken()
                                         tokenManager.clearRefreshToken()
                                         null

@@ -8,6 +8,8 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.tourly.app.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.tourly.app.core.domain.exception.AuthException
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,8 +48,12 @@ class GoogleAuthManager @Inject constructor(
                 else -> null
             }
         } catch (e: GetCredentialException) {
+            val ex = AuthException.GoogleSignInFailed("Credential exception", cause = e)
+            Timber.e(ex, "GoogleAuthManager: Get credential failed")
             null
         } catch (e: Exception) {
+            val ex = AuthException.GoogleSignInFailed("Unknown error during sign in", cause = e)
+            Timber.e(ex, "GoogleAuthManager: Unknown error")
             null
         }
     }

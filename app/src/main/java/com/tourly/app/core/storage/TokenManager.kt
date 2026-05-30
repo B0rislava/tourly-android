@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import com.tourly.app.core.domain.exception.StorageException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,14 +48,15 @@ class TokenManagerImpl @Inject constructor(
             }
 
             val savedToken = getToken()
-                ?: throw Exception("Token verification failed - token not found after save")
+                ?: throw StorageException.TokenSaveFailed("Token verification failed - token not found after save")
 
             Timber.d("TokenManager: Token saved and verified successfully (length: ${savedToken.length})")
 
         } catch (e: Exception) {
-            Timber.e(e, "TokenManager: Failed to save token")
+            val ex = StorageException.TokenSaveFailed(cause = e)
+            Timber.e(ex, "TokenManager: Failed to save token")
             e.printStackTrace()
-            throw e
+            throw ex
         }
     }
 
@@ -75,8 +77,9 @@ class TokenManagerImpl @Inject constructor(
             Timber.d("TokenManager: Token retrieved successfully (length: ${token.length})")
             token
         } catch (e: Exception) {
+            val ex = StorageException.TokenReadFailed(cause = e)
             // If decryption fails (corrupted data), clear the token
-            Timber.w(e, "TokenManager: Decryption failed - clearing corrupted token")
+            Timber.w(ex, "TokenManager: Decryption failed - clearing corrupted token")
             e.printStackTrace()
 
             // Clear the corrupted data
@@ -94,7 +97,8 @@ class TokenManagerImpl @Inject constructor(
             }
             Timber.d("TokenManager: Token cleared from storage")
         } catch (e: Exception) {
-            Timber.e(e, "TokenManager: Failed to clear token")
+            val ex = StorageException.TokenSaveFailed("Failed to clear token", cause = e)
+            Timber.e(ex, "TokenManager: Failed to clear token")
             e.printStackTrace()
         }
     }
@@ -111,9 +115,10 @@ class TokenManagerImpl @Inject constructor(
                     val decryptedBytes = aead.decrypt(encryptedBytes, null)
                     String(decryptedBytes, Charsets.UTF_8)
                 } catch (e: Exception) {
+                    val ex = StorageException.TokenReadFailed("Flow decryption failed", cause = e)
                     // If decryption fails in the Flow, we can't call clearToken()
                     // (it would cause infinite loop), so just return null
-                    Timber.w(e, "TokenManager: Flow decryption failed")
+                    Timber.w(ex, "TokenManager: Flow decryption failed")
                     e.printStackTrace()
                     null
                 }
@@ -132,7 +137,8 @@ class TokenManagerImpl @Inject constructor(
             }
             Timber.d("TokenManager: Refresh token saved successfully")
         } catch (e: Exception) {
-            Timber.e(e, "TokenManager: Failed to save refresh token")
+            val ex = StorageException.TokenSaveFailed("Failed to save refresh token", cause = e)
+            Timber.e(ex, "TokenManager: Failed to save refresh token")
             e.printStackTrace()
         }
     }
@@ -149,7 +155,8 @@ class TokenManagerImpl @Inject constructor(
             Timber.d("TokenManager: Refresh token retrieved successfully (length: ${token.length})")
             token
         } catch (e: Exception) {
-            Timber.w(e, "TokenManager: Failed to decrypt refresh token")
+            val ex = StorageException.TokenReadFailed("Failed to decrypt refresh token", cause = e)
+            Timber.w(ex, "TokenManager: Failed to decrypt refresh token")
             clearRefreshToken()
             null
         }
@@ -161,7 +168,8 @@ class TokenManagerImpl @Inject constructor(
                 preferences.remove(REFRESH_TOKEN)
             }
         } catch (e: Exception) {
-            Timber.e(e, "TokenManager: Failed to clear refresh token")
+            val ex = StorageException.TokenSaveFailed("Failed to clear refresh token", cause = e)
+            Timber.e(ex, "TokenManager: Failed to clear refresh token")
         }
     }
 
@@ -180,9 +188,10 @@ class TokenManagerImpl @Inject constructor(
             }
             Timber.d("TokenManager: Atomic token save complete. Access len: ${accessToken.length}, Refresh len: ${refreshToken.length}")
         } catch (e: Exception) {
-            Timber.e(e, "TokenManager: Failed to save tokens atomically")
+            val ex = StorageException.TokenSaveFailed("Failed to save tokens atomically", cause = e)
+            Timber.e(ex, "TokenManager: Failed to save tokens atomically")
             e.printStackTrace()
-            throw e
+            throw ex
         }
     }
 }

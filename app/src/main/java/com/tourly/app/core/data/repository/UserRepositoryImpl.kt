@@ -18,8 +18,8 @@ import com.tourly.app.core.network.NetworkResponseMapper
 import kotlinx.coroutines.flow.map
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
-
 import com.tourly.app.core.domain.model.User
+import com.tourly.app.core.domain.exception.UserException
 import com.tourly.app.core.data.mapper.UserMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +50,14 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserProfile(userId: Long): Result<User> {
         return when (val result = NetworkResponseMapper.map<UserDto> { authApiService.getProfileById(userId) }) {
             is Result.Success -> Result.Success(UserMapper.mapToDomain(result.data))
-            is Result.Error -> result
+            is Result.Error -> {
+                if (result.code == "NOT_FOUND") {
+                    val ex = UserException.ProfileNotFound(result.message)
+                    Result.Error(code = ex.code, message = ex.message!!, errors = result.errors)
+                } else {
+                    result
+                }
+            }
         }
     }
 
@@ -86,10 +93,12 @@ class UserRepositoryImpl @Inject constructor(
             if (bytes != null) {
                 uploadProfilePicture(bytes)
             } else {
-                Result.Error(code = "FILE_ERROR", message = "Failed to read image file")
+                val ex = UserException.ImageReadError("Failed to read image file")
+                Result.Error(code = ex.code, message = ex.message!!)
             }
         } catch (e: Exception) {
-            Result.Error(code = "FILE_ERROR", message = e.message ?: "Error processing image")
+            val ex = UserException.ImageReadError(e.message ?: "Error processing image", cause = e)
+            Result.Error(code = ex.code, message = ex.message!!)
         }
     }
 

@@ -13,6 +13,7 @@ import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.data.mapper.UserMapper
+import com.tourly.app.core.domain.exception.AuthException
 import timber.log.Timber
 
 
@@ -30,8 +31,9 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> {
-                Timber.w("AuthRepository: Login failed - ${result.message} (Code: ${result.code})")
-                result
+                val ex = AuthException.LoginFailed(result.message)
+                Timber.w("AuthRepository: Login failed - ${ex.message} (Code: ${result.code})")
+                Result.Error(code = ex.code, message = ex.message!!, errors = result.errors)
             }
         }
     }

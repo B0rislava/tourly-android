@@ -53,6 +53,7 @@ import com.tourly.app.dashboard.presentation.ui.components.GuideReviewCard
 import com.tourly.app.dashboard.presentation.ui.components.StatCard
 import com.tourly.app.login.domain.UserRole
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 import java.util.Locale
 
 @Composable
@@ -381,7 +382,7 @@ internal fun DashboardSuccessContent(
                         val filteredTours = uiState.tours.filter { tour ->
                             val isPast = try {
                                 LocalDate.parse(tour.scheduledDate).isBefore(currentDate)
-                            } catch (e: Exception) {
+                            } catch (e: DateTimeParseException) {
                                 false
                             }
                             if (guideToursFilter == "ACTIVE") !isPast else isPast

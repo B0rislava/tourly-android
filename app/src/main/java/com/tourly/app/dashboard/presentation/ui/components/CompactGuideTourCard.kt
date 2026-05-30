@@ -37,6 +37,7 @@ import com.tourly.app.R
 import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 @Composable
 fun CompactGuideTourCard(
@@ -89,7 +90,7 @@ fun CompactGuideTourCard(
                         Column {
                             val isPast = try {
                                 LocalDate.parse(tour.scheduledDate).isBefore(currentDate)
-                            } catch (e: Exception) {
+                            } catch (e: DateTimeParseException) {
                                 false
                             }
                             val badgeColor = if (isPast) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)

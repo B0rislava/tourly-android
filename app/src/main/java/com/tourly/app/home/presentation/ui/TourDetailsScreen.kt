@@ -28,6 +28,7 @@ import com.tourly.app.login.domain.UserRole
 import androidx.compose.ui.res.stringResource
 import com.tourly.app.R
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 @Composable
 fun TourDetailsScreen(
@@ -76,7 +77,7 @@ fun TourDetailsScreen(
                     
                     val isPast = try {
                         LocalDate.parse(tour.scheduledDate).isBefore(LocalDate.now())
-                    } catch (e: Exception) {
+                    } catch (e: DateTimeParseException) {
                         false
                     }
                     

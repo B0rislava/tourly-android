@@ -12,11 +12,13 @@ import com.tourly.app.core.domain.model.LocationPrediction
 import com.tourly.app.core.domain.model.PlaceDetails
 import com.tourly.app.core.domain.model.ReverseGeocodedAddress
 import com.tourly.app.core.domain.repository.LocationRepository
+import com.tourly.app.core.domain.exception.LocationException
 import com.tourly.app.core.network.Result
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -74,7 +76,8 @@ class LocationRepositoryImpl @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                continuation.resume(Result.Error("GEOCODER_ERROR", e.message ?: "Unknown error"))
+                val ex = LocationException.ProviderError("Geocoder error", cause = e)
+                continuation.resume(Result.Error(code = ex.code, message = ex.message!!))
             }
         }
     }
@@ -108,8 +111,15 @@ class LocationRepositoryImpl @Inject constructor(
             }
             
             Result.Success(predictions)
+        } catch (e: SecurityException) {
+            val ex = LocationException.PermissionDenied("Location permission denied", cause = e)
+            Result.Error(code = ex.code, message = ex.message!!)
+        } catch (e: TimeoutException) {
+            val ex = LocationException.Timeout("Location search timed out", cause = e)
+            Result.Error(code = ex.code, message = ex.message!!)
         } catch (e: Exception) {
-            Result.Error(code = "PLACES_ERROR", message = e.message ?: "Unknown error")
+            val ex = LocationException.ProviderError("Places search error", cause = e)
+            Result.Error(code = ex.code, message = ex.message!!)
         }
     }
 
@@ -148,8 +158,15 @@ class LocationRepositoryImpl @Inject constructor(
                     country = country
                 )
             )
+        } catch (e: SecurityException) {
+            val ex = LocationException.PermissionDenied("Location permission denied", cause = e)
+            Result.Error(code = ex.code, message = ex.message!!)
+        } catch (e: TimeoutException) {
+            val ex = LocationException.Timeout("Place details request timed out", cause = e)
+            Result.Error(code = ex.code, message = ex.message!!)
         } catch (e: Exception) {
-            Result.Error(code = "PLACES_ERROR", message = e.message ?: "Unknown error")
+            val ex = LocationException.ProviderError("Places details error", cause = e)
+            Result.Error(code = ex.code, message = ex.message!!)
         }
     }
 }

@@ -14,6 +14,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import com.tourly.app.core.network.NetworkResponseMapper
 import java.time.LocalDateTime
+import java.time.format.DateTimeParseException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -75,7 +76,7 @@ class ReviewRepositoryImpl @Inject constructor(
             tourRating = dto.tourRating,
             guideRating = dto.guideRating,
             comment = dto.comment,
-            createdAt = try { LocalDateTime.parse(dto.createdAt) } catch (e: Exception) { LocalDateTime.now() },
+            createdAt = try { LocalDateTime.parse(dto.createdAt) } catch (e: DateTimeParseException) { LocalDateTime.now() },
             tourTitle = dto.tourTitle
         )
     }

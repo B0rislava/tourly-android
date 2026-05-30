@@ -20,6 +20,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import java.security.KeyStore
 import androidx.core.content.edit
+import com.tourly.app.core.domain.exception.StorageException
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tourly_secure_prefs")
 
@@ -56,7 +57,11 @@ abstract class StorageModule {
             } catch (e: Exception) {
                 // If the key is invalid (e.g. after reinstall), clear everything and recreate
                 clearCorruptedKeys(context)
-                getAeadPrimitive(context)
+                try {
+                    getAeadPrimitive(context)
+                } catch (retryException: Exception) {
+                    throw StorageException.KeyGenerationFailed(cause = retryException)
+                }
             }
         }
 
@@ -90,8 +95,9 @@ abstract class StorageModule {
                     keyStore.deleteEntry(MASTER_KEY_ALIAS)
                 }
             } catch (e: Exception) {
+                val ex = StorageException.KeystoreError("Failed to clear corrupted keys", cause = e)
                 // Log the error but don't crash
-                e.printStackTrace()
+                ex.printStackTrace()
             }
         }
     }
