@@ -160,16 +160,6 @@ fun SignUpContent(
                 }
             }
 
-            if (signUpError != null) {
-                Text(
-                    text = signUpError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 8.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-
             Spacer(modifier = Modifier.height(12.dp))
 
             OrDivider()

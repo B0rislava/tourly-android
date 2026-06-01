@@ -1,5 +1,6 @@
 package com.tourly.app.login.presentation.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.R
@@ -134,46 +135,48 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    fun googleLogin() {
+    fun googleLogin(context: Context) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, loginError = null) }
             
-            val idToken = googleAuthManager.getGoogleIdToken()
-            
-            if (idToken != null) {
-                // First attempt without role to see if user exists
-                when (val result = googleSignInUseCase(idToken, null)) {
-                    is Result.Success -> {
-                        _uiState.update { state ->
-                            state.copy(
-                                isLoading = false,
-                                isSuccess = true
-                            )
-                        }
-                    }
-                    is Result.Error -> {
-                        // Check for the specific "user not registered" error message
-                        // Note: We need to make sure the Result object contains the right code
-                        if (result.code == "TY-7") {
+            when (val tokenResult = googleAuthManager.getGoogleIdToken(context)) {
+                is Result.Success -> {
+                    val idToken = tokenResult.data
+                    // First attempt without role to see if user exists
+                    when (val result = googleSignInUseCase(idToken, null)) {
+                        is Result.Success -> {
                             _uiState.update { state ->
                                 state.copy(
                                     isLoading = false,
-                                    showRoleSelectionDialog = true,
-                                    pendingGoogleIdToken = idToken
+                                    isSuccess = true
                                 )
                             }
-                        } else {
-                            _uiState.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    loginError = result.message
-                                )
+                        }
+                        is Result.Error -> {
+                            // Check for the specific "user not registered" error message
+                            // Note: We need to make sure the Result object contains the right code
+                            if (result.code == "TY-7") {
+                                _uiState.update { state ->
+                                    state.copy(
+                                        isLoading = false,
+                                        showRoleSelectionDialog = true,
+                                        pendingGoogleIdToken = idToken
+                                    )
+                                }
+                            } else {
+                                _uiState.update { state ->
+                                    state.copy(
+                                        isLoading = false,
+                                        loginError = result.message
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            } else {
-                _uiState.update { it.copy(isLoading = false) }
+                is Result.Error -> {
+                    _uiState.update { it.copy(isLoading = false, loginError = tokenResult.message) }
+                }
             }
         }
     }
