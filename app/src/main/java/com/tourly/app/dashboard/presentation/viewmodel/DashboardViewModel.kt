@@ -50,7 +50,9 @@ class DashboardViewModel @Inject constructor(
 
     fun loadDashboardData() {
         viewModelScope.launch {
-            _uiState.value = DashboardUiState.Loading
+            if (_uiState.value !is DashboardUiState.Success) {
+                _uiState.value = DashboardUiState.Loading
+            }
             
             when (val userResult = getUserProfileUseCase()) {
                 is Result.Success -> {

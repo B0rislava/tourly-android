@@ -19,10 +19,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.R
 import com.tourly.app.core.presentation.state.UserUiState
-import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.core.presentation.viewmodel.UserEvent
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.text.font.FontWeight
+import com.tourly.app.core.presentation.ui.theme.OutfitFamily
+import androidx.compose.material3.ExperimentalMaterial3Api
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePasswordScreen(
     onNavigateBack: () -> Unit,
@@ -63,13 +70,28 @@ fun ChangePasswordScreen(
 
     Scaffold(
         topBar = {
-            SimpleTopBar(
-                title = "Change Password",
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Change Password",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontFamily = OutfitFamily,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                )
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }

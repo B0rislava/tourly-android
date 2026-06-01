@@ -3,8 +3,11 @@ package com.tourly.app.profile.presentation.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,13 +16,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.state.UserUiState
+import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
+import com.tourly.app.profile.presentation.ui.components.ProfileSkeleton
 
 @Composable
 fun ProfileScreen(
@@ -39,7 +45,22 @@ fun ProfileScreen(
     }
 
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            if (userId != null && userId != -1L) {
+                SimpleTopBar(
+                    title = stringResource(id = com.tourly.app.R.string.profile),
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(id = com.tourly.app.R.string.back)
+                            )
+                        }
+                    }
+                )
+            }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -56,7 +77,7 @@ fun ProfileScreen(
                     )
                 }
                 is UserUiState.Loading -> {
-                    CircularProgressIndicator()
+                    ProfileSkeleton()
                 }
                 is UserUiState.Success -> {
                     ProfileContent(
@@ -65,6 +86,7 @@ fun ProfileScreen(
                         onBackClick = onBackClick,
                         isSavingAvatar = state.isSavingAvatar,
                         tours = state.tours,
+                        reviews = state.reviews,
                         onFollowClick = { userViewModel.toggleFollow() }
                     )
                 }

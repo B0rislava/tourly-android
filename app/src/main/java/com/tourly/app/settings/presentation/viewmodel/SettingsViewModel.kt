@@ -42,6 +42,13 @@ class SettingsViewModel @Inject constructor(
     private val _currentLanguage = MutableStateFlow(AppLanguage.ENGLISH)
     val currentLanguage: StateFlow<AppLanguage> = _currentLanguage.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    fun clearError() {
+        _error.value = null
+    }
+
     init {
         viewModelScope.launch {
             themeRepository.themeMode.collect {
@@ -81,7 +88,7 @@ class SettingsViewModel @Inject constructor(
             when (val result = getUserProfileUseCase()) {
                 is Result.Success -> _user.value = result.data
                 is Result.Error -> {
-                    // TODO handle error
+                    _error.value = result.message ?: "Failed to refresh user profile"
                 }
             }
         }
@@ -113,7 +120,8 @@ class SettingsViewModel @Inject constructor(
                     onSuccess()
                 }
                 is Result.Error -> {
-                    // TODO: Handle error
+                    val resultError = deleteAccountUseCase() as? Result.Error
+                    _error.value = resultError?.message ?: "Failed to delete account"
                 }
             }
         }

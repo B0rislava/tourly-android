@@ -19,7 +19,6 @@ import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material.icons.filled.Delete
@@ -209,12 +208,7 @@ fun SettingsContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SettingsGroup {
-                    SettingsItem(
-                        icon = Icons.Outlined.Notifications,
-                        title = stringResource(id = R.string.notifications),
-                        onClick = onNavigateNotifications
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(start = 56.dp))
+
                     SettingsItem(
                         icon = Icons.Outlined.DarkMode,
                         title = stringResource(id = R.string.theme),

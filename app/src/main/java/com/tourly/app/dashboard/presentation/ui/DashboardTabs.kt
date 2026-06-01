@@ -33,8 +33,7 @@ internal enum class DashboardTab {
 internal fun DashboardTabs(
     selectedTab: DashboardTab,
     onTabSelected: (DashboardTab) -> Unit,
-    upcomingCount: Int,
-    savedCount: Int
+    upcomingCount: Int
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
@@ -63,7 +62,6 @@ internal fun DashboardTabs(
             )
             DashboardTabItem(
                 title = stringResource(id = R.string.saved_short),
-                count = savedCount,
                 isSelected = selectedTab == DashboardTab.SAVED,
                 onClick = { onTabSelected(DashboardTab.SAVED) },
                 modifier = Modifier.weight(1f)

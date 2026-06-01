@@ -75,7 +75,7 @@ class NotificationViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    // Show error
+                    _uiState.update { state -> state.copy(error = "Failed to mark notification as read") }
                 }
             }
         }
@@ -91,7 +91,7 @@ class NotificationViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    // TODO: ViewModel
+                    _uiState.update { state -> state.copy(error = "Failed to mark all notifications as read") }
                 }
             }
         }

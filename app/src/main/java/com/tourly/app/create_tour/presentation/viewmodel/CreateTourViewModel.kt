@@ -95,7 +95,7 @@ class CreateTourViewModel @Inject constructor(
                     _addressPredictions.value = emptyList()
                 }
                 is Result.Error -> {
-                    // TODO: Handle error
+                    _events.send(CreateTourEvent.Error(result.message ?: "Failed to get place details"))
                 }
             }
         }
@@ -144,7 +144,7 @@ class CreateTourViewModel @Inject constructor(
                     ) }
                 }
                 is Result.Error -> {
-                    // TODO: Handle error
+                    _events.send(CreateTourEvent.Error(result.message ?: "Failed to get address"))
                 }
             }
         }

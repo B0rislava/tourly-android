@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -97,7 +96,7 @@ fun TourChatCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -124,14 +123,6 @@ fun TourChatCard(
                     )
                 }
             }
-
-            // Arrow / Indicator
-            Icon(
-                imageVector = Icons.Default.ChatBubbleOutline,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                modifier = Modifier.size(20.dp)
-            )
         }
     }
 }

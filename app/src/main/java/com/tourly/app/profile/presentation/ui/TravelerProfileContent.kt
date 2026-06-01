@@ -1,6 +1,5 @@
 package com.tourly.app.profile.presentation.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,10 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +33,6 @@ fun TravelerProfileContent(
     user: User,
     isOwnProfile: Boolean = true,
     isSavingAvatar: Boolean = false,
-    onBackClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -45,70 +40,61 @@ fun TravelerProfileContent(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(16.dp),
+            .padding(top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (!isOwnProfile) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            ProfileHeader(
+                firstName = user.firstName,
+                lastName = user.lastName,
+                email = user.email,
+                role = user.role,
+                profilePictureUrl = user.profilePictureUrl,
+                isOwnProfile = isOwnProfile,
+                isSavingAvatar = isSavingAvatar
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Stats Section
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back)
+                ProfileStatItem(
+                    icon = Icons.Default.People,
+                    value = "${user.followingCount}",
+                    label = stringResource(id = R.string.following),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+
+            // Bio Section
+            if (!user.bio.isNullOrBlank()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(id = R.string.about_me),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontFamily = OutfitFamily,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = user.bio,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = OutfitFamily,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                Spacer(modifier = Modifier.height(24.dp))
             }
-        }
-
-        ProfileHeader(
-            firstName = user.firstName,
-            lastName = user.lastName,
-            email = user.email,
-            role = user.role,
-            profilePictureUrl = user.profilePictureUrl,
-            isOwnProfile = isOwnProfile,
-            isSavingAvatar = isSavingAvatar
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Stats Section
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ProfileStatItem(
-                icon = Icons.Default.People,
-                value = "${user.followingCount}",
-                label = stringResource(id = R.string.following),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-
-
-        // Bio Section
-        if (!user.bio.isNullOrBlank()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(id = R.string.about_me),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontFamily = OutfitFamily,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = user.bio,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = OutfitFamily,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

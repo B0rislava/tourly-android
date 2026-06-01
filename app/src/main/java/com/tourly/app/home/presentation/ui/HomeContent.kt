@@ -9,18 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
 import com.tourly.app.R
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
@@ -32,6 +28,7 @@ import com.tourly.app.home.presentation.ui.components.ErrorState
 import com.tourly.app.home.presentation.ui.components.HomeFilterSection
 import com.tourly.app.home.presentation.ui.components.HomeHeaderSection
 import com.tourly.app.core.presentation.ui.components.TourItemCard
+import com.tourly.app.home.presentation.ui.components.HomeSkeleton
 import com.tourly.app.login.domain.UserRole
 import java.time.LocalDate
 
@@ -112,14 +109,7 @@ fun HomeContent(
                 when (uiState) {
                     is HomeUiState.Loading -> {
                         item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 50.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
+                            HomeSkeleton()
                         }
                     }
 
@@ -179,26 +169,7 @@ fun HomeContent(
                                             fontFamily = OutfitFamily
                                         )
 
-                                        // Count Badge
-                                        Surface(
-                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ) {
-                                            Text(
-                                                text = pluralStringResource(
-                                                    id = R.plurals.tour_count,
-                                                    count = uiState.tours.size,
-                                                    uiState.tours.size
-                                                ),
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                modifier = Modifier.padding(
-                                                    horizontal = 8.dp,
-                                                    vertical = 4.dp
-                                                )
-                                            )
 
-                                        }
                                     }
                                 }
                             }

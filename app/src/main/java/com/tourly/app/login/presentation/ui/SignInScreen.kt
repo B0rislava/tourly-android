@@ -3,6 +3,8 @@ package com.tourly.app.login.presentation.ui
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -94,7 +96,6 @@ fun SignInScreen(
             onPasswordChange = viewModel::onPasswordChange,
             emailError = uiState.emailError?.let { stringResource(it) },
             passwordError = uiState.passwordError?.let { stringResource(it) },
-            loginError = uiState.loginError,
             isLoading = uiState.isLoading,
             onLoginClick = viewModel::login,
             onRegisterClick = onNavigateToSignUp,
@@ -103,7 +104,9 @@ fun SignInScreen(
 
         SnackbarHost(
             hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 48.dp)
         )
     }
 }
@@ -128,7 +131,6 @@ fun PreviewSignInScreen() {
             onPasswordChange = {},
             emailError = null,
             passwordError = null,
-            loginError = null,
             isLoading = false,
             onLoginClick = {},
             onRegisterClick = {},

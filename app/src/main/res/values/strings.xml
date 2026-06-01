@@ -28,9 +28,11 @@
     <string name="full_name">Full Name</string>
 
     <string name="login">Login</string>
+    <string name="logging_in">Logging in…</string>
     <string name="logout">Logout</string>
     <string name="logout_confirmation_text">Are you sure you want to log out?</string>
     <string name="register">Register</string>
+    <string name="registering">Registering…</string>
 
     <string name="no_account">Don\'t have an account?</string>
     <string name="have_account">Already have an account?</string>
@@ -74,8 +76,8 @@
     <string name="delete_account">Delete Account</string>
     <string name="delete_account_confirmation">Are you sure you want to delete your account? This action is permanent and cannot be undone.</string>
 
-    <string name="or_with">Or with</string>
-    <string name="google">Google</string>
+    <string name="or_with">or</string>
+    <string name="google">Continue with Google</string>
     <string name="google_sign_up">Sign up with Google</string>
     <string name="agree_terms">I Agree With The Terms And Conditions</string>
     <string name="confirm_password">Confirm Password</string>
@@ -212,6 +214,7 @@
     <string name="favorite">Favorite</string>
     <string name="saved">Saved</string>
     <string name="places_count">Places: %1$d / %2$d</string>
+    <string name="available_spots">Available spots</string>
     <string name="your_guide">Your guide</string>
     <string name="about_this_tour">About this tour</string>
     <string name="meeting_location">Meeting Location</string>

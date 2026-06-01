@@ -16,6 +16,7 @@ import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import com.tourly.app.core.domain.usecase.ObserveUserProfileUseCase
+import com.tourly.app.reviews.domain.usecase.GetGuideReviewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,6 +41,7 @@ class UserViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val toggleFollowUseCase: ToggleFollowUseCase,
     private val observeUserProfileUseCase: ObserveUserProfileUseCase,
+    private val getGuideReviewsUseCase: GetGuideReviewsUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -145,6 +147,7 @@ class UserViewModel @Inject constructor(
                 
                 if (user.role == UserRole.GUIDE) {
                     fetchTours()
+                    fetchGuideReviews(user.id)
                 }
             }
             is Result.Error -> {
@@ -166,6 +169,7 @@ class UserViewModel @Inject constructor(
                     )
                     if (user.role == UserRole.GUIDE) {
                         fetchOtherUserTours(userId)
+                        fetchGuideReviews(userId)
                     }
                 }
                 is Result.Error -> {
@@ -184,7 +188,21 @@ class UserViewModel @Inject constructor(
                 }
             }
             is Result.Error -> {
-                // TODO: Handle error
+                _events.emit(UserEvent.Message(result.message ?: "Failed to fetch tours"))
+            }
+        }
+    }
+
+    private suspend fun fetchGuideReviews(guideId: Long) {
+        when (val result = getGuideReviewsUseCase(guideId)) {
+            is Result.Success -> {
+                val current = _uiState.value
+                if (current is UserUiState.Success) {
+                    _uiState.value = current.copy(reviews = result.data)
+                }
+            }
+            is Result.Error -> {
+                _events.emit(UserEvent.Message(result.message ?: "Failed to fetch reviews"))
             }
         }
     }
@@ -201,7 +219,7 @@ class UserViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    // TODO: Handle error
+                    _events.emit(UserEvent.Message(result.message ?: "Failed to fetch tours"))
                 }
             }
         }
