@@ -1,14 +1,19 @@
 package com.tourly.app.profile.presentation.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,11 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.state.UserUiState
-import com.tourly.app.core.presentation.ui.components.SimpleTopBar
 import com.tourly.app.core.presentation.viewmodel.UserViewModel
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.login.domain.UserRole
@@ -32,6 +38,8 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     userId: Long? = null,
     userViewModel: UserViewModel = hiltViewModel(),
+    onTourClick: (Long) -> Unit = {},
+    onSettingsClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
     val userState by userViewModel.uiState.collectAsState()
@@ -44,63 +52,97 @@ fun ProfileScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            if (userId != null && userId != -1L) {
-                SimpleTopBar(
-                    title = stringResource(id = com.tourly.app.R.string.profile),
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = com.tourly.app.R.string.back)
-                            )
-                        }
+    val isOtherProfile = userId != null && userId != -1L
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(top = 16.dp)
+    ) {
+            // Header without app-bar background (matches "My tours" / "Your group chats").
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = if (isOtherProfile) 4.dp else 16.dp,
+                        end = if (isOtherProfile) 16.dp else 4.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isOtherProfile) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = com.tourly.app.R.string.back)
+                        )
                     }
+                }
+
+                Text(
+                    text = stringResource(id = com.tourly.app.R.string.profile),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontFamily = OutfitFamily,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(
+                        start = if (isOtherProfile) 20.dp else 0.dp,
+                        top = 8.dp,
+                        bottom = 8.dp
+                    )
                 )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                if (!isOtherProfile) {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = stringResource(id = com.tourly.app.R.string.settings)
+                        )
+                    }
+                }
             }
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
-            when (val state = userState) {
-                is UserUiState.Idle -> {
-                    Text(
-                        text = "No user data available",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontFamily = OutfitFamily
-                    )
-                }
-                is UserUiState.Loading -> {
-                    ProfileSkeleton()
-                }
-                is UserUiState.Success -> {
-                    ProfileContent(
-                        user = state.user,
-                        isOwnProfile = state.isOwnProfile,
-                        onBackClick = onBackClick,
-                        isSavingAvatar = state.isSavingAvatar,
-                        tours = state.tours,
-                        reviews = state.reviews,
-                        onFollowClick = { userViewModel.toggleFollow() }
-                    )
-                }
-                is UserUiState.Error -> {
-                    Text(
-                        text = "Error: ${state.message}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                when (val state = userState) {
+                    is UserUiState.Idle -> {
+                        Text(
+                            text = "No user data available",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = OutfitFamily
+                        )
+                    }
+                    is UserUiState.Loading -> {
+                        ProfileSkeleton()
+                    }
+                    is UserUiState.Success -> {
+                        ProfileContent(
+                            user = state.user,
+                            isOwnProfile = state.isOwnProfile,
+                            onBackClick = onBackClick,
+                            isSavingAvatar = state.isSavingAvatar,
+                            tours = state.tours,
+                            reviews = state.reviews,
+                            onFollowClick = { userViewModel.toggleFollow() },
+                            onTourClick = onTourClick
+                        )
+                    }
+                    is UserUiState.Error -> {
+                        Text(
+                            text = "Error: ${state.message}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
     }
-}
+
 
 @Preview(showBackground = true)
 @Composable

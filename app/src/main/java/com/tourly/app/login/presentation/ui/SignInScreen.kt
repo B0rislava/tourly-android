@@ -9,7 +9,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,9 +32,6 @@ fun SignInScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.resetState()
-    }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
@@ -50,11 +46,6 @@ fun SignInScreen(
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.resetState()
-        }
-    }
 
     if (uiState.showVerificationDialog) {
         VerificationCodeDialog(

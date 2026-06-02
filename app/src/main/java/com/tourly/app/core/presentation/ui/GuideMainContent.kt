@@ -2,10 +2,6 @@ package com.tourly.app.core.presentation.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -14,7 +10,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.tourly.app.R
 import com.tourly.app.chat.presentation.ui.ChatScreen
 import com.tourly.app.core.presentation.state.UserUiState
 import com.tourly.app.core.presentation.ui.components.BottomNavDestination
@@ -65,21 +60,13 @@ fun GuideMainContent(
 
                 if (selectedDestination != BottomNavDestination.GUIDE_HOME &&
                     selectedDestination != BottomNavDestination.GUIDE_DASHBOARD &&
-                    selectedDestination != BottomNavDestination.CHAT
+                    selectedDestination != BottomNavDestination.CHAT &&
+                    selectedDestination != BottomNavDestination.PROFILE
                 ) {
                     SimpleTopBar(
                         title = stringResource(id = selectedDestination.labelResId),
                         navigationIcon = {},
-                        actions = {
-                            if (selectedDestination == BottomNavDestination.PROFILE) {
-                                IconButton(onClick = onNavigateToSettings) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Settings,
-                                        contentDescription = stringResource(id = R.string.settings)
-                                    )
-                                }
-                            }
-                        }
+                        actions = {}
                     )
                 }
             },
@@ -125,6 +112,8 @@ fun GuideMainContent(
                 BottomNavDestination.PROFILE -> {
                     ProfileScreen(
                         userViewModel = userViewModel,
+                        onTourClick = onTourClick,
+                        onSettingsClick = onNavigateToSettings,
                         modifier = Modifier.padding(paddingValues)
                     )
                 }

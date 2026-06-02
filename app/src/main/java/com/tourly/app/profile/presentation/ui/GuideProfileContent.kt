@@ -63,6 +63,7 @@ fun GuideProfileContent(
     isSavingAvatar: Boolean = false,
     tours: List<Tour>,
     reviews: List<Review> = emptyList(),
+    onTourClick: (Long) -> Unit = {},
     onFollowClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
@@ -267,7 +268,7 @@ fun GuideProfileContent(
         item {
             Surface(
                 shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -284,7 +285,8 @@ fun GuideProfileContent(
                             .clickable { selectedTab = 0 },
                         shape = RoundedCornerShape(20.dp),
                         color = if (selectedTab == 0) MaterialTheme.colorScheme.surface else Color.Transparent,
-                        contentColor = if (selectedTab == 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                        contentColor = if (selectedTab == 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        shadowElevation = if (selectedTab == 0) 1.dp else 0.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -302,7 +304,8 @@ fun GuideProfileContent(
                             .clickable { selectedTab = 1 },
                         shape = RoundedCornerShape(20.dp),
                         color = if (selectedTab == 1) MaterialTheme.colorScheme.surface else Color.Transparent,
-                        contentColor = if (selectedTab == 1) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                        contentColor = if (selectedTab == 1) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                        shadowElevation = if (selectedTab == 1) 1.dp else 0.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -336,7 +339,7 @@ fun GuideProfileContent(
                     Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                         TourItemCard(
                             tour = tour,
-                            onClick = { /* TODO */ }
+                            onClick = { onTourClick(tour.id) }
                         )
                     }
                 }

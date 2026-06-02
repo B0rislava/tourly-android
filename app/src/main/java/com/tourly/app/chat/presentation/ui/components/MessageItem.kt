@@ -29,12 +29,12 @@ fun MessageItem(
     val bubbleColor = if (message.isFromMe) {
         MaterialTheme.colorScheme.primary
     } else {
-        MaterialTheme.colorScheme.surfaceVariant
+        MaterialTheme.colorScheme.surface
     }
     val contentColor = if (message.isFromMe) {
         MaterialTheme.colorScheme.onPrimary
     } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
+        MaterialTheme.colorScheme.onSurface
     }
     val bubbleShape = if (message.isFromMe) {
         RoundedCornerShape(16.dp, 16.dp, 0.dp, 16.dp)
@@ -82,7 +82,8 @@ fun MessageItem(
                 color = bubbleColor,
                 contentColor = contentColor,
                 shape = bubbleShape,
-                tonalElevation = if (message.isFromMe) 0.dp else 2.dp
+                tonalElevation = if (message.isFromMe) 0.dp else 2.dp,
+                shadowElevation = if (message.isFromMe) 0.dp else 1.dp
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(

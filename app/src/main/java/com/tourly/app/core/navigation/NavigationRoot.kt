@@ -280,6 +280,9 @@ fun NavigationRoot(
                             NavEntry(key) {
                                 ProfileScreen(
                                     userId = key.userId,
+                                    onTourClick = { tourId ->
+                                        backStack.add(Route.TourDetails(tourId))
+                                    },
                                     onBackClick = { backStack.removeLastOrNull() }
                                 )
                             }

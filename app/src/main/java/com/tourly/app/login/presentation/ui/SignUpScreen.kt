@@ -9,7 +9,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,16 +32,6 @@ fun SignUpScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     
-    // Reset state on entry to prevent stale verification dialogs
-    LaunchedEffect(Unit) {
-        viewModel.resetState()
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.resetState()
-        }
-    }
 
     // Handle verification success
     LaunchedEffect(uiState.verificationSuccess) {

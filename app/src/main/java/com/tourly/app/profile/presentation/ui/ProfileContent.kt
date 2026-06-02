@@ -14,6 +14,7 @@ fun ProfileContent(
     isOwnProfile: Boolean = true,
     onBackClick: () -> Unit = {},
     onFollowClick: () -> Unit = {},
+    onTourClick: (Long) -> Unit = {},
     isSavingAvatar: Boolean = false,
     tours: List<Tour> = emptyList(),
     reviews: List<Review> = emptyList()
@@ -27,6 +28,7 @@ fun ProfileContent(
             reviews = reviews,
             onBackClick = onBackClick,
             onFollowClick = onFollowClick,
+            onTourClick = onTourClick,
             modifier = modifier
         )
     } else {
@@ -34,6 +36,7 @@ fun ProfileContent(
             user = user,
             isOwnProfile = isOwnProfile,
             isSavingAvatar = isSavingAvatar,
+            reviews = reviews,
             modifier = modifier
         )
     }
