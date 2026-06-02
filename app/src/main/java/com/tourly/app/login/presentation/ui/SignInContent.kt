@@ -37,6 +37,7 @@ fun SignInContent(
     isLoading: Boolean,
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
     onGoogleLoginClick: () -> Unit,
 ) {
     Box(
@@ -101,6 +102,14 @@ fun SignInContent(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 isLoading = isLoading
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            ClickableText(
+                prefixText = "",
+                actionText = stringResource(id = R.string.forgot_password),
+                onActionClick = onForgotPasswordClick
             )
 
             Spacer(modifier = Modifier.height(12.dp))

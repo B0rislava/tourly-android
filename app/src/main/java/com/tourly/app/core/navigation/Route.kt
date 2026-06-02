@@ -14,6 +14,13 @@ sealed interface Route: NavKey {
 
     @Serializable
     data object SignUp: Route, NavKey
+
+    @Serializable
+    data object ForgotPassword : Route, NavKey
+
+    @Serializable
+    data class ResetPassword(val email: String, val resetCode: String) : Route, NavKey
+
   
     @Serializable
     data object TravelerMain : Route, NavKey

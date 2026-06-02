@@ -28,6 +28,7 @@ import com.tourly.app.login.presentation.viewmodel.SignInViewModel
 fun SignInScreen(
     viewModel: SignInViewModel = hiltViewModel(),
     onNavigateToSignUp: () -> Unit = {},
+    onNavigateToForgotPassword: () -> Unit = {},
     onLoginSuccess: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -90,6 +91,7 @@ fun SignInScreen(
             isLoading = uiState.isLoading,
             onLoginClick = viewModel::login,
             onRegisterClick = onNavigateToSignUp,
+            onForgotPasswordClick = onNavigateToForgotPassword,
             onGoogleLoginClick = { viewModel.googleLogin(context) }
         )
 
@@ -125,6 +127,7 @@ fun PreviewSignInScreen() {
             isLoading = false,
             onLoginClick = {},
             onRegisterClick = {},
+            onForgotPasswordClick = {},
             onGoogleLoginClick = {}
         )
     }

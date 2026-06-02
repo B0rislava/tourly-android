@@ -6,6 +6,7 @@ import com.tourly.app.login.data.dto.LoginRequestDto
 import com.tourly.app.login.data.dto.LoginResponseDto
 import com.tourly.app.login.data.dto.RegisterRequestDto
 import com.tourly.app.login.data.dto.RegisterResponseDto
+import com.tourly.app.login.data.dto.ResetPasswordRequestDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.domain.repository.AuthRepository
 import com.tourly.app.core.storage.TokenManager
@@ -86,6 +87,20 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> result
+        }
+    }
+
+    override suspend fun forgotPassword(email: String): Result<Unit> {
+        return NetworkResponseMapper.map { apiService.forgotPassword(email) }
+    }
+
+    override suspend fun verifyResetCode(email: String, code: String): Result<Unit> {
+        return NetworkResponseMapper.map { apiService.verifyResetCode(email, code) }
+    }
+
+    override suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit> {
+        return NetworkResponseMapper.map {
+            apiService.resetPassword(ResetPasswordRequestDto(email, resetCode, newPassword))
         }
     }
 }

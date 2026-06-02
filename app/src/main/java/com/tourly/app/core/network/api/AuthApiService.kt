@@ -2,6 +2,7 @@ package com.tourly.app.core.network.api
 
 import com.tourly.app.login.data.dto.LoginRequestDto
 import com.tourly.app.login.data.dto.RegisterRequestDto
+import com.tourly.app.login.data.dto.ResetPasswordRequestDto
 import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
@@ -101,5 +102,29 @@ class AuthApiService @Inject constructor(
 
     suspend fun unfollowUser(userId: Long): HttpResponse {
         return client.delete("users/$userId/follow")
+    }
+
+    suspend fun forgotPassword(email: String): HttpResponse {
+        return client.post("auth/forgot-password") {
+            url {
+                parameters.append("email", email)
+            }
+        }
+    }
+
+    suspend fun verifyResetCode(email: String, code: String): HttpResponse {
+        return client.post("auth/verify-reset-code") {
+            url {
+                parameters.append("email", email)
+                parameters.append("code", code)
+            }
+        }
+    }
+
+    suspend fun resetPassword(request: ResetPasswordRequestDto): HttpResponse {
+        return client.post("auth/reset-password") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
     }
 }

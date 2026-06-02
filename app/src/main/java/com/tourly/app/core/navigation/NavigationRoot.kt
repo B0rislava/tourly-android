@@ -12,6 +12,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.tourly.app.core.presentation.ui.MainScreen
+import com.tourly.app.login.presentation.ui.ForgotPasswordScreen
+import com.tourly.app.login.presentation.ui.ResetPasswordScreen
 import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
@@ -95,6 +97,9 @@ fun NavigationRoot(
                                     onNavigateToSignUp = {
                                         backStack.add(Route.SignUp)
                                     },
+                                    onNavigateToForgotPassword = {
+                                        backStack.add(Route.ForgotPassword)
+                                    },
                                     onLoginSuccess = {
                                         backStack.clear()
                                         backStack.add(Route.TravelerMain) 
@@ -111,6 +116,34 @@ fun NavigationRoot(
                                     onSignUpSuccess = {
                                         backStack.clear()
                                         backStack.add(Route.TravelerMain)
+                                    }
+                                )
+                            }
+                        }
+                        is Route.ForgotPassword -> {
+                            NavEntry(key) {
+                                ForgotPasswordScreen(
+                                    onVerificationSuccess = { email, code ->
+                                        backStack.add(Route.ResetPassword(email, code))
+                                    },
+                                    onBackToLoginClick = {
+                                        backStack.removeLastOrNull()
+                                    }
+                                )
+                            }
+                        }
+                        is Route.ResetPassword -> {
+                            NavEntry(key) {
+                                ResetPasswordScreen(
+                                    email = key.email,
+                                    resetCode = key.resetCode,
+                                    onResetSuccess = {
+                                        backStack.clear()
+                                        backStack.add(Route.SignIn)
+                                    },
+                                    onBackToLoginClick = {
+                                        backStack.clear()
+                                        backStack.add(Route.SignIn)
                                     }
                                 )
                             }
