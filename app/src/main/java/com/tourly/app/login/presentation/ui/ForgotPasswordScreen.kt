@@ -59,7 +59,7 @@ fun ForgotPasswordScreen(
             onEmailChange = viewModel::onEmailChange,
             emailError = uiState.emailError?.let { stringResource(it) },
             isLoading = uiState.isLoading,
-            sendError = uiState.sendError,
+            sendError = uiState.sendErrorRes?.let { stringResource(it) } ?: uiState.sendError,
             onSendClick = viewModel::sendResetEmail,
             onBackToLoginClick = onBackToLoginClick
         )
