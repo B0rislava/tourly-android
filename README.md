@@ -2,15 +2,15 @@
 
 # TOURLY
 
-### *Connecting Travelers with Local Experiences*
+### *A unified full-stack platform bridging the gap between local excursion guides and travelers*
 
-![Status](https://img.shields.io/badge/Status-Project_Completed-success?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
+![Dagger Hilt](https://img.shields.io/badge/Dagger_Hilt-000000?style=for-the-badge&logo=dagger&logoColor=white)
+![Ktor](https://img.shields.io/badge/Ktor-FF6C37?style=for-the-badge&logo=ktor&logoColor=white)
 
-**A unified full-stack platform bridging the gap between local excursion guides and travelers**
-
-[Features](#features) • [Tech Stack](#tech-stack) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Project Structure](#project-structure)
+[Features](#features) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Project Structure](#project-structure)
 
 ---
 
@@ -82,28 +82,6 @@ Real-time messaging via WebSockets for seamless guide-traveler interaction
 
 ---
 
-## Tech Stack
-
-<div align="center">
-
-### Mobile Environment (Android)
-
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
-![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
-![Dagger Hilt](https://img.shields.io/badge/Dagger_Hilt-000000?style=for-the-badge&logo=dagger&logoColor=white)
-![Ktor](https://img.shields.io/badge/Ktor-087CFA?style=for-the-badge&logo=ktor&logoColor=white)
-
-### Backend Infrastructure
-
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
-![WebSockets](https://img.shields.io/badge/WebSockets-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
-
-</div>
-
----
 
 ## Architecture
 
