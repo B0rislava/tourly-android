@@ -19,5 +19,5 @@ sealed interface DashboardUiState {
         val reviews: List<Review> = emptyList(),
         val currentDate: LocalDate = LocalDate.now()
     ) : DashboardUiState
-    data class Error(val message: String) : DashboardUiState
+    data class Error(val message: String, val code: String? = null) : DashboardUiState
 }

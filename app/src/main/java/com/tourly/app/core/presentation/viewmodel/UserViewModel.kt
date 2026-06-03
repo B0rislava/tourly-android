@@ -17,6 +17,7 @@ import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import com.tourly.app.core.domain.usecase.ObserveUserProfileUseCase
 import com.tourly.app.reviews.domain.usecase.GetGuideReviewsUseCase
+import com.tourly.app.reviews.domain.usecase.GetTravelerReviewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,6 +46,7 @@ class UserViewModel @Inject constructor(
     private val toggleFollowUseCase: ToggleFollowUseCase,
     private val observeUserProfileUseCase: ObserveUserProfileUseCase,
     private val getGuideReviewsUseCase: GetGuideReviewsUseCase,
+    private val getTravelerReviewsUseCase: GetTravelerReviewsUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -153,6 +155,11 @@ class UserViewModel @Inject constructor(
                         is Result.Success -> fetchedReviews = reviewsResult.data
                         is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
                     }
+                } else if (user.role == UserRole.TRAVELER) {
+                    when (val reviewsResult = getTravelerReviewsUseCase(user.id)) {
+                        is Result.Success -> fetchedReviews = reviewsResult.data
+                        is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
+                    }
                 }
 
                 _uiState.value = UserUiState.Success(
@@ -187,6 +194,11 @@ class UserViewModel @Inject constructor(
                             is Result.Error -> _events.emit(UserEvent.Message(toursResult.message ?: "Failed to fetch tours"))
                         }
                         when (val reviewsResult = getGuideReviewsUseCase(userId)) {
+                            is Result.Success -> fetchedReviews = reviewsResult.data
+                            is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
+                        }
+                    } else if (user.role == UserRole.TRAVELER) {
+                        when (val reviewsResult = getTravelerReviewsUseCase(userId)) {
                             is Result.Success -> fetchedReviews = reviewsResult.data
                             is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
                         }
