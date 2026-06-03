@@ -14,6 +14,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import javax.inject.Inject
 import io.ktor.client.request.forms.submitFormWithBinaryData
+import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.forms.formData
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Headers
@@ -69,31 +70,34 @@ class AuthApiService @Inject constructor(
     }
 
     suspend fun verifyCode(email: String, code: String): HttpResponse {
-        return client.post("auth/verify-code") {
-            url {
-                parameters.append("email", email)
-                parameters.append("code", code)
+        return client.submitForm(
+            url = "auth/verify-code",
+            formParameters = io.ktor.http.parameters {
+                append("email", email)
+                append("code", code)
             }
-        }
+        )
     }
 
     suspend fun resendCode(email: String): HttpResponse {
-        return client.post("auth/resend-code") {
-            url {
-                parameters.append("email", email)
+        return client.submitForm(
+            url = "auth/resend-code",
+            formParameters = io.ktor.http.parameters {
+                append("email", email)
             }
-        }
+        )
     }
 
     suspend fun googleLogin(idToken: String, role: String? = null): HttpResponse {
-        return client.post("auth/google") {
-            url {
-                parameters.append("idToken", idToken)
+        return client.submitForm(
+            url = "auth/google",
+            formParameters = io.ktor.http.parameters {
+                append("idToken", idToken)
                 if (role != null) {
-                    parameters.append("role", role)
+                    append("role", role)
                 }
             }
-        }
+        )
     }
 
     suspend fun followUser(userId: Long): HttpResponse {
@@ -105,20 +109,22 @@ class AuthApiService @Inject constructor(
     }
 
     suspend fun forgotPassword(email: String): HttpResponse {
-        return client.post("auth/forgot-password") {
-            url {
-                parameters.append("email", email)
+        return client.submitForm(
+            url = "auth/forgot-password",
+            formParameters = io.ktor.http.parameters {
+                append("email", email)
             }
-        }
+        )
     }
 
     suspend fun verifyResetCode(email: String, code: String): HttpResponse {
-        return client.post("auth/verify-reset-code") {
-            url {
-                parameters.append("email", email)
-                parameters.append("code", code)
+        return client.submitForm(
+            url = "auth/verify-reset-code",
+            formParameters = io.ktor.http.parameters {
+                append("email", email)
+                append("code", code)
             }
-        }
+        )
     }
 
     suspend fun resetPassword(request: ResetPasswordRequestDto): HttpResponse {

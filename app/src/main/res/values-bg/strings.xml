@@ -213,7 +213,6 @@
     <string name="error_passwords_dont_match">Паролите не съвпадат</string>
     <string name="error_terms_not_accepted">Трябва да приемете общите условия</string>
     <string name="error_password_empty">Паролата не може да бъде празна</string>
-    <string name="error_google_account_no_password">Този акаунт използва Google вход. Моля, влезте с Google.</string>
 
     <!-- Tour Details -->
     <string name="edit_tour">Редактиране на обиколка</string>

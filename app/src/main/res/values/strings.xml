@@ -207,7 +207,6 @@
     <string name="error_passwords_dont_match">Passwords do not match</string>
     <string name="error_terms_not_accepted">You must agree to the terms and conditions</string>
     <string name="error_password_empty">Password cannot be empty</string>
-    <string name="error_google_account_no_password">This account uses Google Sign-In. Please log in with Google instead.</string>
 
     <!-- Tour Details -->
     <string name="edit_tour">Edit Tour</string>

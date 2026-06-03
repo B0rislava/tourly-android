@@ -52,13 +52,7 @@ class ForgotPasswordViewModel @Inject constructor(
                     startResendTimer()
                 }
                 is Result.Error -> {
-                    if (result.code == "TY-9") {
-                        _uiState.update {
-                            it.copy(isLoading = false, sendErrorRes = R.string.error_google_account_no_password, sendError = null)
-                        }
-                    } else {
-                        _uiState.update { it.copy(isLoading = false, sendError = result.message, sendErrorRes = null) }
-                    }
+                    _uiState.update { it.copy(isLoading = false, sendError = result.message) }
                 }
             }
         }

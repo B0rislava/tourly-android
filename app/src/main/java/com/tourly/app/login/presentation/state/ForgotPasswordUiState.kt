@@ -7,7 +7,6 @@ data class ForgotPasswordUiState(
     // Phase 1: sending OTP
     val isLoading: Boolean = false,
     val sendError: String? = null,
-    val sendErrorRes: Int? = null,
 
     // Phase 2: OTP dialog
     val showVerificationDialog: Boolean = false,
