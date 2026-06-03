@@ -21,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -73,26 +74,25 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             observeAuthStateUseCase()
                 .distinctUntilChanged()
-                .collect { isLoggedIn ->
+                .collectLatest { isLoggedIn ->
                     if (isLoggedIn) {
                         // Observe the global user flow via UseCase
-                        launch {
-                            observeUserProfileUseCase().collect { profile ->
-                                if (profile != null) {
-                                    val currentState = _uiState.value
-                                    if (currentState is UserUiState.Success && currentState.isOwnProfile) {
-                                        _uiState.value = currentState.copy(user = profile)
-                                    } else {
-                                        // Initialize Success state if not already there and we have user data
-                                        _uiState.value = UserUiState.Success(
-                                            user = profile,
-                                            isOwnProfile = true
-                                        )
-                                    }
+                        // Using collectLatest cancels this block (including the collect) when isLoggedIn changes
+                        observeUserProfileUseCase().collect { profile ->
+                            if (profile != null) {
+                                val currentState = _uiState.value
+                                if (currentState is UserUiState.Success && currentState.isOwnProfile) {
+                                    _uiState.value = currentState.copy(user = profile)
                                 } else {
-                                    // If logged in but no profile yet, trigger fetch
-                                    fetchUserProfile()
+                                    // Initialize Success state if not already there and we have user data
+                                    _uiState.value = UserUiState.Success(
+                                        user = profile,
+                                        isOwnProfile = true
+                                    )
                                 }
+                            } else {
+                                // If logged in but no profile yet, trigger fetch
+                                fetchUserProfile()
                             }
                         }
                     } else {

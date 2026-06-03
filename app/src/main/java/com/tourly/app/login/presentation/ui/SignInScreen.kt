@@ -36,6 +36,7 @@ fun SignInScreen(
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
+            viewModel.onSuccessConsumed()
             onLoginSuccess()
         }
     }
@@ -43,6 +44,7 @@ fun SignInScreen(
     // Handle verification success from login screen
     LaunchedEffect(uiState.verificationSuccess) {
         if (uiState.verificationSuccess) {
+            viewModel.onVerificationSuccessConsumed()
             onLoginSuccess()
         }
     }

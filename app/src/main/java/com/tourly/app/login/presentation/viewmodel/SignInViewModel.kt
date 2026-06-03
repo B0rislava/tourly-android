@@ -37,6 +37,14 @@ class SignInViewModel @Inject constructor(
         _uiState.value = SignInUiState()
     }
 
+    fun onSuccessConsumed() {
+        _uiState.update { it.copy(isSuccess = false) }
+    }
+
+    fun onVerificationSuccessConsumed() {
+        _uiState.update { it.copy(verificationSuccess = false) }
+    }
+
     fun onEmailChange(email: String) {
         _uiState.update {
             it.copy(

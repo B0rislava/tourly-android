@@ -77,6 +77,14 @@ class SignUpViewModel @Inject constructor(
         _uiState.value = SignUpUiState()
     }
 
+    fun onSuccessConsumed() {
+        _uiState.update { it.copy(isSuccess = false) }
+    }
+
+    fun onVerificationSuccessConsumed() {
+        _uiState.update { it.copy(verificationSuccess = false) }
+    }
+
     fun onVerificationCodeChange(code: String) {
         if (code.length <= 6) {
             _uiState.update { it.copy(verificationCode = code, verificationError = null) }

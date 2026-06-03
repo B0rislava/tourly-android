@@ -36,6 +36,7 @@ fun SignUpScreen(
     // Handle verification success
     LaunchedEffect(uiState.verificationSuccess) {
         if (uiState.verificationSuccess) {
+            viewModel.onVerificationSuccessConsumed()
             onSignUpSuccess()
         }
     }
@@ -43,6 +44,7 @@ fun SignUpScreen(
     // Handle Google Sign-Up success
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
+            viewModel.onSuccessConsumed()
             onSignUpSuccess()
         }
     }
