@@ -2,7 +2,7 @@
 
 # TOURLY
 
-### *A unified full-stack platform bridging the gap between local excursion guides and travelers*
+### *A unified mobile platform bridging the gap between local excursion guides and travelers*
 
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
@@ -10,7 +10,7 @@
 ![Dagger Hilt](https://img.shields.io/badge/Dagger_Hilt-000000?style=for-the-badge&logo=dagger&logoColor=white)
 ![Ktor](https://img.shields.io/badge/Ktor-FF6C37?style=for-the-badge&logo=ktor&logoColor=white)
 
-[Features](#features) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Project Structure](#project-structure)
+[Overview](#overview) • [Features](#features) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Project Structure](#project-structure)
 
 ---
 
@@ -42,7 +42,7 @@
 
 ## Overview
 
-**Tourly** provides a seamless interface for discovering unique tours, managing real-time bookings, and facilitating direct communication via low-latency messaging protocols. Whether you're a traveler seeking authentic local experiences or a guide wanting to share your expertise, Tourly makes it happen.
+**Tourly** is a modern, fully-reactive Android application built entirely with Kotlin and Jetpack Compose. Designed to bridge the gap between local excursion guides and travelers, it delivers a premium user experience for discovering unique tours, managing bookings, and navigating locations via Google maps. The application strictly follows Clean Architecture principles and the MVVM pattern, utilizing Dagger Hilt for dependency injection, Ktor for efficient networking, and STOMP over WebSockets for seamless, real-time communication.
 
 ---
 
