@@ -69,7 +69,8 @@ fun FilterButton(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(24.dp),
-        color = if (isActive) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant,
+        color = if (isActive) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        shadowElevation = 1.dp,
         modifier = modifier
     ) {
         Row(
@@ -124,7 +125,8 @@ fun DateFilterButton(
     Surface(
         onClick = { showDatePicker = true },
         shape = CircleShape,
-        color = if (selectedDate != null) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+        color = if (selectedDate != null) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        shadowElevation = 1.dp,
         modifier = modifier.size(56.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {

@@ -342,7 +342,7 @@ internal fun DashboardSuccessContent(
                         item {
                             Surface(
                                 shape = RoundedCornerShape(16.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
                             ) {
                                 Row(
@@ -352,30 +352,32 @@ internal fun DashboardSuccessContent(
                                     Surface(
                                         modifier = Modifier.weight(1f).height(36.dp).clickable { guideToursFilter = "ACTIVE" },
                                         shape = RoundedCornerShape(12.dp),
-                                        color = if (guideToursFilter == "ACTIVE") MaterialTheme.colorScheme.surface else Color.Transparent
+                                        color = if (guideToursFilter == "ACTIVE") MaterialTheme.colorScheme.surface else Color.Transparent,
+                                        contentColor = if (guideToursFilter == "ACTIVE") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        shadowElevation = if (guideToursFilter == "ACTIVE") 1.dp else 0.dp
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
                                             Text(
                                                 text = stringResource(id = R.string.active),
                                                 style = MaterialTheme.typography.labelMedium,
                                                 fontFamily = OutfitFamily,
-                                                fontWeight = if (guideToursFilter == "ACTIVE") FontWeight.Bold else FontWeight.Medium,
-                                                color = if (guideToursFilter == "ACTIVE") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                                fontWeight = if (guideToursFilter == "ACTIVE") FontWeight.Bold else FontWeight.Medium
                                             )
                                         }
                                     }
                                     Surface(
                                         modifier = Modifier.weight(1f).height(36.dp).clickable { guideToursFilter = "PAST" },
                                         shape = RoundedCornerShape(12.dp),
-                                        color = if (guideToursFilter == "PAST") MaterialTheme.colorScheme.surface else Color.Transparent
+                                        color = if (guideToursFilter == "PAST") MaterialTheme.colorScheme.surface else Color.Transparent,
+                                        contentColor = if (guideToursFilter == "PAST") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        shadowElevation = if (guideToursFilter == "PAST") 1.dp else 0.dp
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
                                             Text(
                                                 text = stringResource(id = R.string.past),
                                                 style = MaterialTheme.typography.labelMedium,
                                                 fontFamily = OutfitFamily,
-                                                fontWeight = if (guideToursFilter == "PAST") FontWeight.Bold else FontWeight.Medium,
-                                                color = if (guideToursFilter == "PAST") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                                                fontWeight = if (guideToursFilter == "PAST") FontWeight.Bold else FontWeight.Medium
                                             )
                                         }
                                     }

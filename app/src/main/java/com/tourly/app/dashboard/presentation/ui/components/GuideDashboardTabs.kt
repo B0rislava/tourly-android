@@ -34,7 +34,7 @@ internal fun GuideDashboardTabs(
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        color = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Row(
             modifier = Modifier
@@ -50,7 +50,9 @@ internal fun GuideDashboardTabs(
                         .height(48.dp)
                         .clickable { onTabSelected(tab) },
                     shape = RoundedCornerShape(20.dp),
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+                    color = if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent,
+                    contentColor = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                    shadowElevation = if (isSelected) 1.dp else 0.dp
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
@@ -61,8 +63,7 @@ internal fun GuideDashboardTabs(
                             },
                             style = MaterialTheme.typography.labelLarge,
                             fontFamily = OutfitFamily,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                         )
                     }
                 }

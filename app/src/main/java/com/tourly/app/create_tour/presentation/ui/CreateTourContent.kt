@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -92,10 +93,12 @@ fun CreateTourContent(
     buttonText: String = stringResource(id = R.string.create_tour),
     onButtonClick: () -> Unit = onCreateTour
 ) {
+    var mapTouched by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState(), enabled = !mapTouched)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
@@ -161,6 +164,17 @@ fun CreateTourContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial)
+                            val isTouched = event.changes.any { it.pressed }
+                            if (mapTouched != isTouched) {
+                                mapTouched = isTouched
+                            }
+                        }
+                    }
+                }
         ) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),

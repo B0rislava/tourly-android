@@ -44,9 +44,10 @@ fun CategoryRow(
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    containerColor = MaterialTheme.colorScheme.surface,
                     labelColor = MaterialTheme.colorScheme.onSurface
                 ),
+                elevation = FilterChipDefaults.filterChipElevation(elevation = 1.dp),
                 border = null
             )
         }

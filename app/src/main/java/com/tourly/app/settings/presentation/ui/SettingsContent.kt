@@ -255,9 +255,10 @@ fun SettingsContent(
                         .height(56.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    ),
+                    elevation = ButtonDefaults.filledTonalButtonElevation(defaultElevation = 1.dp)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Logout,
