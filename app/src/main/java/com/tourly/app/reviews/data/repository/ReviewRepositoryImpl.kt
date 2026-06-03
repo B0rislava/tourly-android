@@ -58,6 +58,15 @@ class ReviewRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getReviewsForTraveler(travelerId: Long): Result<List<Review>> {
+        return when (val result = NetworkResponseMapper.map<List<ReviewDto>> {
+            httpClient.get("${BuildConfig.BASE_URL}reviews/travelers/$travelerId")
+        }) {
+            is Result.Success -> Result.Success(result.data.map { mapDtoToDomain(it) })
+            is Result.Error -> result
+        }
+    }
+
     override suspend fun getMyReviews(): Result<List<Review>> {
         return when (val result = NetworkResponseMapper.map<List<ReviewDto>> {
             httpClient.get("${BuildConfig.BASE_URL}reviews/my")
