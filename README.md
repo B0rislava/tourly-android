@@ -4,11 +4,11 @@
 
 ### *A unified mobile platform bridging the gap between local excursion guides and travelers*
 
-![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
-![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
-![Dagger Hilt](https://img.shields.io/badge/Dagger_Hilt-000000?style=for-the-badge&logo=dagger&logoColor=white)
-![Ktor](https://img.shields.io/badge/Ktor-FF6C37?style=for-the-badge&logo=ktor&logoColor=white)
+[![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-00BCD4?style=for-the-badge&logo=jetpackcompose&logoColor=white)](https://developer.android.com/compose)
+[![Dagger Hilt](https://img.shields.io/badge/Dagger_Hilt-2196F3?style=for-the-badge&logo=dagger&logoColor=white)](https://dagger.dev/hilt/)
+[![Ktor](https://img.shields.io/badge/Ktor-E020A0?style=for-the-badge&logo=ktor&logoColor=white)](https://ktor.io/)
 
 [Overview](#overview) • [Features](#features) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Project Structure](#project-structure)
 
