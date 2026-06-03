@@ -273,46 +273,55 @@ fun CreateTourContent(
             )
         }
 
-        SectionTitle(
-            title = stringResource(id = R.string.tour_date),
-            icon = Icons.Outlined.CalendarToday
-        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Box(modifier = Modifier.weight(1f)) {
-                CustomTextField(
-                    value = state.scheduledDate?.let {
-                        ofEpochMilli(it)
-                            .atZone(ZoneId.of("UTC"))
-                            .toLocalDate()
-                            .format(ofLocalizedDate(FormatStyle.MEDIUM))
-                    } ?: "",
-                    onValueChange = {},
-                    placeholder = stringResource(id = R.string.tour_date_example),
-                    error = state.dateError,
+            Column(modifier = Modifier.weight(1f)) {
+                SectionTitle(
+                    title = stringResource(id = R.string.tour_date),
+                    icon = Icons.Outlined.CalendarToday
                 )
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clickable { showDatePicker = true }
-                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box {
+                    CustomTextField(
+                        value = state.scheduledDate?.let {
+                            ofEpochMilli(it)
+                                .atZone(ZoneId.of("UTC"))
+                                .toLocalDate()
+                                .format(ofLocalizedDate(FormatStyle.MEDIUM))
+                        } ?: "",
+                        onValueChange = {},
+                        placeholder = stringResource(id = R.string.tour_date_example),
+                        error = state.dateError,
+                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { showDatePicker = true }
+                    )
+                }
             }
-            
-            Box(modifier = Modifier.weight(1f)) {
-                CustomTextField(
-                    value = state.startTime?.format(ofLocalizedTime(FormatStyle.SHORT)) ?: "",
-                    onValueChange = {},
-                    placeholder = stringResource(id = R.string.time_example),
-                    error = state.timeError,
-                )
 
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clickable { showTimePicker = true }
+            Column(modifier = Modifier.weight(1f)) {
+                SectionTitle(
+                    title = stringResource(id = R.string.start_time),
+                    icon = Icons.Outlined.AccessTime
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box {
+                    CustomTextField(
+                        value = state.startTime?.format(ofLocalizedTime(FormatStyle.SHORT)) ?: "",
+                        onValueChange = {},
+                        placeholder = stringResource(id = R.string.time_example),
+                        error = state.timeError,
+                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { showTimePicker = true }
+                    )
+                }
             }
         }
 
@@ -325,6 +334,7 @@ fun CreateTourContent(
                     title = stringResource(id = R.string.tour_duration),
                     icon = Icons.Outlined.AccessTime
                 )
+                Spacer(modifier = Modifier.height(8.dp))
                 CustomTextField(
                     value = state.duration,
                     onValueChange = onDurationChanged,
@@ -339,6 +349,7 @@ fun CreateTourContent(
                     title = stringResource(id = R.string.tour_max_group),
                     icon = Icons.Outlined.Group
                 )
+                Spacer(modifier = Modifier.height(8.dp))
                 CustomTextField(
                     value = state.maxGroupSize,
                     onValueChange = onMaxGroupSizeChanged,
