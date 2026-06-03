@@ -196,7 +196,7 @@ Android Device Requirements
 ### Installation
 
 **Option 1: Install APK**
-1. Download the latest APK from the [Releases](https://github.com/yourusername/tourly/releases) page
+1. Download the latest APK from the [Releases](https://github.com/B0rislava/tourly-android/releases) page
 2. Enable "Install from Unknown Sources" in your device settings
 3. Open the downloaded APK file and follow the installation prompts
 
