@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.tourly.app.core.presentation.ui.GuideMainScreen
 import com.tourly.app.home.presentation.ui.TourDetailsScreen
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.tourly.app.home.presentation.viewmodel.TourDetailsViewModel
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.core.presentation.ui.utils.rememberWindowSizeState
@@ -12,6 +13,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.tourly.app.core.presentation.ui.MainScreen
+import com.tourly.app.login.presentation.ui.ForgotPasswordScreen
+import com.tourly.app.login.presentation.ui.ResetPasswordScreen
 import com.tourly.app.login.presentation.ui.SignInScreen
 import com.tourly.app.login.presentation.ui.SignUpScreen
 import com.tourly.app.onboarding.presentation.ui.WelcomeScreen
@@ -28,6 +31,7 @@ import com.tourly.app.notifications.presentation.ui.NotificationScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.tourly.app.core.presentation.ui.components.BottomNavDestination
 import com.tourly.app.settings.presentation.ui.ChangePasswordScreen
 import com.tourly.app.settings.presentation.ui.EditProfileScreen
@@ -95,6 +99,9 @@ fun NavigationRoot(
                                     onNavigateToSignUp = {
                                         backStack.add(Route.SignUp)
                                     },
+                                    onNavigateToForgotPassword = {
+                                        backStack.add(Route.ForgotPassword)
+                                    },
                                     onLoginSuccess = {
                                         backStack.clear()
                                         backStack.add(Route.TravelerMain) 
@@ -111,6 +118,34 @@ fun NavigationRoot(
                                     onSignUpSuccess = {
                                         backStack.clear()
                                         backStack.add(Route.TravelerMain)
+                                    }
+                                )
+                            }
+                        }
+                        is Route.ForgotPassword -> {
+                            NavEntry(key) {
+                                ForgotPasswordScreen(
+                                    onVerificationSuccess = { email, code ->
+                                        backStack.add(Route.ResetPassword(email, code))
+                                    },
+                                    onBackToLoginClick = {
+                                        backStack.removeLastOrNull()
+                                    }
+                                )
+                            }
+                        }
+                        is Route.ResetPassword -> {
+                            NavEntry(key) {
+                                ResetPasswordScreen(
+                                    email = key.email,
+                                    resetCode = key.resetCode,
+                                    onResetSuccess = {
+                                        backStack.clear()
+                                        backStack.add(Route.SignIn)
+                                    },
+                                    onBackToLoginClick = {
+                                        backStack.clear()
+                                        backStack.add(Route.SignIn)
                                     }
                                 )
                             }
@@ -279,7 +314,11 @@ fun NavigationRoot(
                         is Route.Profile -> {
                             NavEntry(key) {
                                 ProfileScreen(
+                                    modifier = Modifier.statusBarsPadding(),
                                     userId = key.userId,
+                                    onTourClick = { tourId ->
+                                        backStack.add(Route.TourDetails(tourId))
+                                    },
                                     onBackClick = { backStack.removeLastOrNull() }
                                 )
                             }

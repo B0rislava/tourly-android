@@ -28,9 +28,11 @@
     <string name="full_name">Full Name</string>
 
     <string name="login">Login</string>
+    <string name="logging_in">Logging in…</string>
     <string name="logout">Logout</string>
     <string name="logout_confirmation_text">Are you sure you want to log out?</string>
     <string name="register">Register</string>
+    <string name="registering">Registering…</string>
 
     <string name="no_account">Don\'t have an account?</string>
     <string name="have_account">Already have an account?</string>
@@ -74,8 +76,8 @@
     <string name="delete_account">Delete Account</string>
     <string name="delete_account_confirmation">Are you sure you want to delete your account? This action is permanent and cannot be undone.</string>
 
-    <string name="or_with">Or with</string>
-    <string name="google">Google</string>
+    <string name="or_with">or</string>
+    <string name="google">Continue with Google</string>
     <string name="google_sign_up">Sign up with Google</string>
     <string name="agree_terms">I Agree With The Terms And Conditions</string>
     <string name="confirm_password">Confirm Password</string>
@@ -132,7 +134,7 @@
     <string name="past">Past</string>
     <string name="saved_short">Saved</string>
     <string name="saved_tours">Saved Tours</string>
-    <string name="no_tours_created">You haven\'t created any tours yet.</string>
+    <string name="no_tours_created">You don\'t have any upcoming tours.</string>
     <string name="back">Back</string>
     <string name="guide_dashboard">Guide Dashboard</string>
     <string name="tours">Tours</string>
@@ -212,6 +214,7 @@
     <string name="favorite">Favorite</string>
     <string name="saved">Saved</string>
     <string name="places_count">Places: %1$d / %2$d</string>
+    <string name="available_spots">Available spots</string>
     <string name="your_guide">Your guide</string>
     <string name="about_this_tour">About this tour</string>
     <string name="meeting_location">Meeting Location</string>
@@ -257,5 +260,29 @@
     <string name="chat">Chat</string>
     <string name="profile">Profile</string>
     <string name="create_tour">Create Tour</string>
+
+    <!-- Forgot Password -->
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="forgot_password_title">Forgot password?</string>
+    <string name="forgot_password_subtitle">Don\'t worry, happens to the best of us.\nType your email to reset your password.</string>
+    <string name="send">Send</string>
+    <string name="sending">Sending…</string>
+    <string name="remember_password">Remember password?</string>
+    <string name="log_in">Log in</string>
+
+    <!-- Reset Password -->
+    <string name="reset_password_title">Reset Password</string>
+    <string name="reset_password_subtitle">Enter your new password below.</string>
+    <string name="new_password_label">New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="resetting">Resetting…</string>
+    <string name="password_reset_success">Password reset successfully!</string>
+
+    <!-- OTP verification for password reset -->
+    <string name="check_your_email">Check your email</string>
+    <string name="otp_sent_subtitle">We sent a 6-digit code to %1$s.\nEnter it below to verify.</string>
+    <string name="reset_code_success">Code verified! Set your new password.</string>
+
 
 </resources>

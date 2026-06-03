@@ -31,7 +31,9 @@ class ChatViewModel @Inject constructor(
 
     fun loadChats() {
         viewModelScope.launch {
-            _uiState.value = ChatUiState.Loading
+            if (_uiState.value !is ChatUiState.Success) {
+                _uiState.value = ChatUiState.Loading
+            }
             
             val userResult = getUserProfileUseCase()
             if (userResult is Result.Error) {

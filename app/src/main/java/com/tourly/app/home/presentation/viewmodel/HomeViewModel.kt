@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeParseException
 import javax.inject.Inject
 
 sealed interface HomeEvent {
@@ -99,7 +100,7 @@ class HomeViewModel @Inject constructor(
                     try {
                         val tourDate = LocalDate.parse(tour.scheduledDate)
                         !tourDate.isBefore(currentDate)
-                    } catch (e: Exception) {
+                    } catch (e: DateTimeParseException) {
                         true
                     }
                 }

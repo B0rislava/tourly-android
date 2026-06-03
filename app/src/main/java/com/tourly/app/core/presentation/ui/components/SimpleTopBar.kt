@@ -11,6 +11,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 
@@ -26,12 +27,13 @@ fun SimpleTopBar(
         title = {
             Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.CenterStart
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Bold,
                     fontFamily = OutfitFamily
                 )
             }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.domain.model.Tour
+import com.tourly.app.core.domain.model.Review
 import com.tourly.app.login.domain.UserRole
 
 @Composable
@@ -13,8 +14,10 @@ fun ProfileContent(
     isOwnProfile: Boolean = true,
     onBackClick: () -> Unit = {},
     onFollowClick: () -> Unit = {},
+    onTourClick: (Long) -> Unit = {},
     isSavingAvatar: Boolean = false,
-    tours: List<Tour> = emptyList()
+    tours: List<Tour> = emptyList(),
+    reviews: List<Review> = emptyList()
 ) {
     if (user.role == UserRole.GUIDE) {
         GuideProfileContent(
@@ -22,8 +25,10 @@ fun ProfileContent(
             isOwnProfile = isOwnProfile,
             isSavingAvatar = isSavingAvatar,
             tours = tours,
+            reviews = reviews,
             onBackClick = onBackClick,
             onFollowClick = onFollowClick,
+            onTourClick = onTourClick,
             modifier = modifier
         )
     } else {
@@ -31,7 +36,7 @@ fun ProfileContent(
             user = user,
             isOwnProfile = isOwnProfile,
             isSavingAvatar = isSavingAvatar,
-            onBackClick = onBackClick,
+            reviews = reviews,
             modifier = modifier
         )
     }

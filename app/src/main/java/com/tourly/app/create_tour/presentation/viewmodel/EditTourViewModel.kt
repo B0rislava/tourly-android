@@ -177,7 +177,7 @@ class EditTourViewModel @Inject constructor(
                     ) }
                 }
                 is Result.Error -> {
-                    // TODO: Handle error
+                    _events.send(CreateTourEvent.Error(result.message ?: "Failed to reverse geocode"))
                 }
             }
         }
@@ -240,7 +240,7 @@ class EditTourViewModel @Inject constructor(
                     _addressPredictions.value = emptyList()
                 }
                 is Result.Error -> {
-                    // TODO: Handle error
+                    _events.send(CreateTourEvent.Error(result.message ?: "Failed to get place details"))
                 }
             }
         }

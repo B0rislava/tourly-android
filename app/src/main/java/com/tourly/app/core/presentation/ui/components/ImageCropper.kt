@@ -51,6 +51,7 @@ import kotlin.math.min
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import java.io.IOException
 
 enum class CropShape {
     Circle, Rectangle
@@ -107,7 +108,7 @@ fun ImageCropperDialog(
                         else -> originalBitmap
                     }
                 }
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
@@ -138,7 +139,7 @@ fun ImageCropperDialog(
                                 out.flush()
                                 out.close()
                                 onCrop(Uri.fromFile(file))
-                            } catch (e: Exception) {
+                            } catch (e: IOException) {
                                 e.printStackTrace()
                             }
                         },

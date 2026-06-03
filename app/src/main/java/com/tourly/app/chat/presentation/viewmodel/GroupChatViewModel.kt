@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import timber.log.Timber
 
 @HiltViewModel
 class GroupChatViewModel @Inject constructor(
@@ -55,10 +56,10 @@ class GroupChatViewModel @Inject constructor(
         messagesJob?.cancel()
         messagesJob = viewModelScope.launch {
             getMessagesUseCase(tourId).collect { messages ->
-                println("GroupChatViewModel: Received ${messages.size} messages")
+                Timber.d("GroupChatViewModel: Received ${messages.size} messages")
                 if (messages.isNotEmpty()) {
                     val last = messages.last()
-                    println("GroupChatViewModel: Last msg: id=${last.id}, content='${last.content}', senderId=${last.senderId}, isFromMe=${last.isFromMe}")
+                    Timber.d("GroupChatViewModel: Last msg: id=${last.id}, content='${last.content}', senderId=${last.senderId}, isFromMe=${last.isFromMe}")
                 }
                 _uiState.update { it.copy(messages = messages) }
             }

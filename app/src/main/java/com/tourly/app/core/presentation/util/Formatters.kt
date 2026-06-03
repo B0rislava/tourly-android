@@ -2,9 +2,11 @@ package com.tourly.app.core.presentation.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
+import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
 
 object Formatters {
@@ -17,7 +19,7 @@ object Formatters {
             val date = LocalDate.parse(dateString)
             val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", locale)
             date.format(formatter)
-        } catch (e: Exception) {
+        } catch (e: DateTimeParseException) {
             dateString
         }
     }
@@ -42,7 +44,7 @@ object Formatters {
             } else {
                 durationString
             }
-        } catch (e: Exception) {
+        } catch (e: IllegalArgumentException) {
             durationString
         }
     }
@@ -63,7 +65,7 @@ object Formatters {
                     dateTime.format(formatter)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: DateTimeException) {
             ""
         }
     }

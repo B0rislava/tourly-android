@@ -142,8 +142,12 @@ fun VerificationCodeDialog(
                         if (it.length <= 6 && it.all { char -> char.isDigit() }) onCodeChange(it)
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    modifier = Modifier.fillMaxWidth(),
                     decorationBox = {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
                             repeat(6) { index ->
                                 val char = when {
                                     index >= code.length -> ""
@@ -153,7 +157,8 @@ fun VerificationCodeDialog(
                                 
                                 Box(
                                     modifier = Modifier
-                                        .size(width = 45.dp, height = 55.dp)
+                                        .weight(1f)
+                                        .height(55.dp)
                                         .border(
                                             width = if (isFocused) 2.dp else 1.dp,
                                             color = if (isFocused) MaterialTheme.colorScheme.primary 

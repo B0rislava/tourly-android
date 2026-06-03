@@ -53,6 +53,7 @@ import com.tourly.app.dashboard.presentation.ui.components.GuideReviewCard
 import com.tourly.app.dashboard.presentation.ui.components.StatCard
 import com.tourly.app.login.domain.UserRole
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 import java.util.Locale
 
 @Composable
@@ -129,32 +130,34 @@ internal fun DashboardSuccessContent(
         if (uiState.role == UserRole.TRAVELER) {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 24.dp, bottom = 16.dp)
+                    .padding(top = 16.dp, bottom = 8.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.my_tours),
                     style = MaterialTheme.typography.headlineMedium,
                     fontFamily = OutfitFamily,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
                 Text(
                     text = stringResource(id = R.string.manage_bookings_saved),
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = OutfitFamily,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Tabs
-                DashboardTabs(
-                    selectedTab = selectedTab,
-                    onTabSelected = { selectedTab = it },
-                    upcomingCount = uiState.bookings.count { it.status != "COMPLETED" && it.status != "CANCELLED" },
-                    savedCount = uiState.savedTours.size
-                )
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    DashboardTabs(
+                        selectedTab = selectedTab,
+                        onTabSelected = { selectedTab = it },
+                        upcomingCount = uiState.bookings.count { it.status != "COMPLETED" && it.status != "CANCELLED" }
+                    )
+                }
             }
         }
 
@@ -236,30 +239,33 @@ internal fun DashboardSuccessContent(
             }
         } else {
             // Guide Dashboard
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.guide_dashboard),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontFamily = OutfitFamily,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                Text(
+                    text = stringResource(id = R.string.welcome_back_user, uiState.userName),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontFamily = OutfitFamily,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+            
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(20.dp),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Header
-                item {
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.guide_dashboard),
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontFamily = OutfitFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(id = R.string.welcome_back_user, uiState.userName),
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontFamily = OutfitFamily,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
                 // Stats
                 item {
                     Row(
@@ -381,7 +387,7 @@ internal fun DashboardSuccessContent(
                         val filteredTours = uiState.tours.filter { tour ->
                             val isPast = try {
                                 LocalDate.parse(tour.scheduledDate).isBefore(currentDate)
-                            } catch (e: Exception) {
+                            } catch (e: DateTimeParseException) {
                                 false
                             }
                             if (guideToursFilter == "ACTIVE") !isPast else isPast

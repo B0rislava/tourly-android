@@ -16,15 +16,19 @@ import com.tourly.app.profile.data.dto.UpdateProfileRequestDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.profile.presentation.state.EditProfileUiState
 import com.tourly.app.core.domain.usecase.ObserveUserProfileUseCase
+import com.tourly.app.reviews.domain.usecase.GetGuideReviewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.lifecycle.SavedStateHandle
 import com.tourly.app.R
+import com.tourly.app.core.domain.model.Review
+import com.tourly.app.core.domain.model.Tour
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -40,6 +44,7 @@ class UserViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val toggleFollowUseCase: ToggleFollowUseCase,
     private val observeUserProfileUseCase: ObserveUserProfileUseCase,
+    private val getGuideReviewsUseCase: GetGuideReviewsUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -69,26 +74,25 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             observeAuthStateUseCase()
                 .distinctUntilChanged()
-                .collect { isLoggedIn ->
+                .collectLatest { isLoggedIn ->
                     if (isLoggedIn) {
                         // Observe the global user flow via UseCase
-                        launch {
-                            observeUserProfileUseCase().collect { profile ->
-                                if (profile != null) {
-                                    val currentState = _uiState.value
-                                    if (currentState is UserUiState.Success && currentState.isOwnProfile) {
-                                        _uiState.value = currentState.copy(user = profile)
-                                    } else {
-                                        // Initialize Success state if not already there and we have user data
-                                        _uiState.value = UserUiState.Success(
-                                            user = profile,
-                                            isOwnProfile = true
-                                        )
-                                    }
+                        // Using collectLatest cancels this block (including the collect) when isLoggedIn changes
+                        observeUserProfileUseCase().collect { profile ->
+                            if (profile != null) {
+                                val currentState = _uiState.value
+                                if (currentState is UserUiState.Success && currentState.isOwnProfile) {
+                                    _uiState.value = currentState.copy(user = profile)
                                 } else {
-                                    // If logged in but no profile yet, trigger fetch
-                                    fetchUserProfile()
+                                    // Initialize Success state if not already there and we have user data
+                                    _uiState.value = UserUiState.Success(
+                                        user = profile,
+                                        isOwnProfile = true
+                                    )
                                 }
+                            } else {
+                                // If logged in but no profile yet, trigger fetch
+                                fetchUserProfile()
                             }
                         }
                     } else {
@@ -129,23 +133,34 @@ class UserViewModel @Inject constructor(
 
     private suspend fun fetchUserProfile() {
         val currentState = _uiState.value
-        // If we are currently showing someone else's profile, we MUST reload everything
-        if (currentState !is UserUiState.Success || !currentState.isOwnProfile) {
+        if (currentState !is UserUiState.Success) {
             _uiState.value = UserUiState.Loading
         }
         
         when (val result = getUserProfileUseCase()) {
             is Result.Success -> {
                 val user = result.data
+                
+                var fetchedTours: List<Tour> = emptyList()
+                var fetchedReviews: List<Review> = emptyList()
+                
+                if (user.role == UserRole.GUIDE) {
+                    when (val toursResult = getMyToursUseCase()) {
+                        is Result.Success -> fetchedTours = toursResult.data
+                        is Result.Error -> _events.emit(UserEvent.Message(toursResult.message ?: "Failed to fetch tours"))
+                    }
+                    when (val reviewsResult = getGuideReviewsUseCase(user.id)) {
+                        is Result.Success -> fetchedReviews = reviewsResult.data
+                        is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
+                    }
+                }
+
                 _uiState.value = UserUiState.Success(
                     user = user,
                     isOwnProfile = true, // Always true for this method
-                    tours = if (user.role == UserRole.GUIDE) (currentState as? UserUiState.Success)?.tours ?: emptyList() else emptyList()
+                    tours = fetchedTours,
+                    reviews = fetchedReviews
                 )
-                
-                if (user.role == UserRole.GUIDE) {
-                    fetchTours()
-                }
             }
             is Result.Error -> {
                 _uiState.value = UserUiState.Error(result.message)
@@ -156,17 +171,33 @@ class UserViewModel @Inject constructor(
 
     fun fetchOtherUserProfile(userId: Long) {
         viewModelScope.launch {
-            _uiState.value = UserUiState.Loading
+            if (_uiState.value !is UserUiState.Success) {
+                _uiState.value = UserUiState.Loading
+            }
             when (val result = getUserProfileByIdUseCase(userId)) {
                 is Result.Success -> {
                     val user = result.data
+                    
+                    var fetchedTours: List<Tour> = emptyList()
+                    var fetchedReviews: List<Review> = emptyList()
+                    
+                    if (user.role == UserRole.GUIDE) {
+                        when (val toursResult = getUserToursUseCase(userId)) {
+                            is Result.Success -> fetchedTours = toursResult.data
+                            is Result.Error -> _events.emit(UserEvent.Message(toursResult.message ?: "Failed to fetch tours"))
+                        }
+                        when (val reviewsResult = getGuideReviewsUseCase(userId)) {
+                            is Result.Success -> fetchedReviews = reviewsResult.data
+                            is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
+                        }
+                    }
+
                     _uiState.value = UserUiState.Success(
                         user = user,
-                        isOwnProfile = false
+                        isOwnProfile = false,
+                        tours = fetchedTours,
+                        reviews = fetchedReviews
                     )
-                    if (user.role == UserRole.GUIDE) {
-                        fetchOtherUserTours(userId)
-                    }
                 }
                 is Result.Error -> {
                     _uiState.value = UserUiState.Error(result.message)
@@ -184,7 +215,7 @@ class UserViewModel @Inject constructor(
                 }
             }
             is Result.Error -> {
-                // TODO: Handle error
+                _events.emit(UserEvent.Message(result.message ?: "Failed to fetch tours"))
             }
         }
     }
@@ -201,7 +232,7 @@ class UserViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    // TODO: Handle error
+                    _events.emit(UserEvent.Message(result.message ?: "Failed to fetch tours"))
                 }
             }
         }

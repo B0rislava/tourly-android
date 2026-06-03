@@ -49,6 +49,14 @@ fun SettingsScreen(
         }
     }
 
+    val error by viewModel.error.collectAsState()
+    LaunchedEffect(error) {
+        error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
 
     // Refresh user data when returning to this screen
     LaunchedEffect(Unit) {

@@ -6,6 +6,7 @@ import com.tourly.app.login.data.dto.LoginRequestDto
 import com.tourly.app.login.data.dto.LoginResponseDto
 import com.tourly.app.login.data.dto.RegisterRequestDto
 import com.tourly.app.login.data.dto.RegisterResponseDto
+import com.tourly.app.login.data.dto.ResetPasswordRequestDto
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.login.domain.repository.AuthRepository
 import com.tourly.app.core.storage.TokenManager
@@ -13,6 +14,8 @@ import com.tourly.app.core.network.Result
 import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.data.mapper.UserMapper
+import com.tourly.app.core.domain.exception.AuthException
+import timber.log.Timber
 
 
 class AuthRepositoryImpl @Inject constructor(
@@ -21,16 +24,17 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<User> {
-        println("AuthRepository: Attempting login for $email")
+        Timber.d("AuthRepository: Attempting login for $email")
         return when (val result = NetworkResponseMapper.map<LoginResponseDto> { apiService.login(LoginRequestDto(email, password)) }) {
             is Result.Success -> {
-                println("AuthRepository: Login successful, saving token (length: ${result.data.accessToken.length})")
+                Timber.d("AuthRepository: Login successful, token length: ${result.data.accessToken.length}")
                 tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
                 Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> {
-                println("AuthRepository: Login failed - ${result.message} (Code: ${result.code})")
-                result
+                val ex = AuthException.LoginFailed(result.message)
+                Timber.w("AuthRepository: Login failed - ${ex.message} (Code: ${result.code})")
+                Result.Error(code = ex.code, message = ex.message!!, errors = result.errors)
             }
         }
     }
@@ -63,9 +67,9 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun verifyCode(email: String, code: String): Result<User> {
         return when (val result = NetworkResponseMapper.map<LoginResponseDto> { apiService.verifyCode(email, code) }) {
             is Result.Success -> {
-                println("AuthRepository: Verification successful, saving tokens...")
+                Timber.d("AuthRepository: Verification successful, saving tokens...")
                 tokenManager.saveTokens(result.data.accessToken, result.data.refreshToken)
-                println("AuthRepository: Tokens saved successfully")
+                Timber.d("AuthRepository: Tokens saved successfully")
                 Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> result
@@ -83,6 +87,20 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.Success(UserMapper.mapToDomain(result.data.user))
             }
             is Result.Error -> result
+        }
+    }
+
+    override suspend fun forgotPassword(email: String): Result<Unit> {
+        return NetworkResponseMapper.map { apiService.forgotPassword(email) }
+    }
+
+    override suspend fun verifyResetCode(email: String, code: String): Result<Unit> {
+        return NetworkResponseMapper.map { apiService.verifyResetCode(email, code) }
+    }
+
+    override suspend fun resetPassword(email: String, resetCode: String, newPassword: String): Result<Unit> {
+        return NetworkResponseMapper.map {
+            apiService.resetPassword(ResetPasswordRequestDto(email, resetCode, newPassword))
         }
     }
 }

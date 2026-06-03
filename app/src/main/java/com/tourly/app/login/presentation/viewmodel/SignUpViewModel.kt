@@ -1,5 +1,6 @@
 package com.tourly.app.login.presentation.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tourly.app.R
@@ -76,6 +77,14 @@ class SignUpViewModel @Inject constructor(
         _uiState.value = SignUpUiState()
     }
 
+    fun onSuccessConsumed() {
+        _uiState.update { it.copy(isSuccess = false) }
+    }
+
+    fun onVerificationSuccessConsumed() {
+        _uiState.update { it.copy(verificationSuccess = false) }
+    }
+
     fun onVerificationCodeChange(code: String) {
         if (code.length <= 6) {
             _uiState.update { it.copy(verificationCode = code, verificationError = null) }
@@ -133,45 +142,47 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun googleSignUp() {
+    fun googleSignUp(context: Context) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, signUpError = null) }
             
-            val idToken = googleAuthManager.getGoogleIdToken()
-            
-            if (idToken != null) {
-                // Pass null initially to check if user exists or force role selection
-                when (val result = googleSignInUseCase(idToken, null)) {
-                    is Result.Success -> {
-                        _uiState.update { state ->
-                            state.copy(
-                                isLoading = false,
-                                isSuccess = true
-                            )
-                        }
-                    }
-                    is Result.Error -> {
-                        // If user is not found (meaning new user and no role provided), show dialog
-                        if (result.code == "TY-7") {
-                             _uiState.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    showRoleSelectionDialog = true,
-                                    pendingGoogleIdToken = idToken
-                                )
-                            }
-                        } else {
+            when (val tokenResult = googleAuthManager.getGoogleIdToken(context)) {
+                is Result.Success -> {
+                    val idToken = tokenResult.data
+                    // Pass null initially to check if user exists or force role selection
+                    when (val result = googleSignInUseCase(idToken, null)) {
+                        is Result.Success -> {
                             _uiState.update { state ->
                                 state.copy(
                                     isLoading = false,
-                                    signUpError = result.message
+                                    isSuccess = true
                                 )
+                            }
+                        }
+                        is Result.Error -> {
+                            // If user is not found (meaning new user and no role provided), show dialog
+                            if (result.code == "TY-7") {
+                                 _uiState.update { state ->
+                                    state.copy(
+                                        isLoading = false,
+                                        showRoleSelectionDialog = true,
+                                        pendingGoogleIdToken = idToken
+                                    )
+                                }
+                            } else {
+                                _uiState.update { state ->
+                                    state.copy(
+                                        isLoading = false,
+                                        signUpError = result.message
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            } else {
-                _uiState.update { it.copy(isLoading = false) }
+                is Result.Error -> {
+                    _uiState.update { it.copy(isLoading = false, signUpError = tokenResult.message) }
+                }
             }
         }
     }

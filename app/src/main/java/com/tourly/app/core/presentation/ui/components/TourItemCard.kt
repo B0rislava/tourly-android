@@ -1,12 +1,5 @@
 package com.tourly.app.core.presentation.ui.components
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -42,8 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,6 +48,7 @@ import com.tourly.app.core.domain.model.Tour
 import com.tourly.app.core.presentation.util.Formatters
 import com.tourly.app.login.domain.UserRole
 import java.util.Locale.getDefault
+import com.tourly.app.core.presentation.ui.components.foundation.shimmerEffect
 
 @Composable
 fun TourItemCard(
@@ -96,8 +88,10 @@ fun TourItemCard(
                     val state = painter.state
                     when (state) {
                         is AsyncImagePainter.State.Loading, is AsyncImagePainter.State.Empty -> {
-                            ShimmerBox(
-                                modifier = Modifier.fillMaxSize()
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .shimmerEffect()
                             )
                         }
 
@@ -259,9 +253,8 @@ fun TourItemCard(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
-                            // TODO: Extract text
                             imageVector = Icons.Outlined.Person,
-                            contentDescription = "Available spots",
+                            contentDescription = stringResource(id = R.string.available_spots),
                             tint = if (tour.availableSpots > 0) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(16.dp)
                         )
@@ -323,35 +316,4 @@ fun TourItemCard(
     }
 }
 
-@Composable
-fun ShimmerBox(modifier: Modifier = Modifier) {
-    val shimmerColors = listOf(
-        Color.LightGray.copy(alpha = 0.6f),
-        Color.LightGray.copy(alpha = 0.2f),
-        Color.LightGray.copy(alpha = 0.6f),
-    )
 
-    val transition = rememberInfiniteTransition(label = "shimmer")
-    val translateAnim = transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1000,
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "shimmer"
-    )
-
-    val brush = Brush.linearGradient(
-        colors = shimmerColors,
-        start = Offset.Zero,
-        end = Offset(x = translateAnim.value, y = translateAnim.value)
-    )
-
-    Box(
-        modifier = modifier.background(brush)
-    )
-}

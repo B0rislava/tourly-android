@@ -9,6 +9,8 @@ import com.google.crypto.tink.Aead
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
+import com.tourly.app.core.domain.exception.StorageException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,7 +38,7 @@ class TokenManagerImpl @Inject constructor(
 
     override suspend fun saveToken(token: String) {
         try {
-            println("TokenManager: Starting token save (length: ${token.length})...")
+            Timber.d("TokenManager: Starting token save (length: ${token.length})...")
             val encryptedBytes = aead.encrypt(token.toByteArray(Charsets.UTF_8), null)
             val encryptedString = Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
 
@@ -46,14 +48,15 @@ class TokenManagerImpl @Inject constructor(
             }
 
             val savedToken = getToken()
-                ?: throw Exception("Token verification failed - token not found after save")
+                ?: throw StorageException.TokenSaveFailed("Token verification failed - token not found after save")
 
-            println("TokenManager: Token saved and verified successfully (length: ${savedToken.length})")
+            Timber.d("TokenManager: Token saved and verified successfully (length: ${savedToken.length})")
 
         } catch (e: Exception) {
-            println("TokenManager: Failed to save token: ${e.message}")
+            val ex = StorageException.TokenSaveFailed(cause = e)
+            Timber.e(ex, "TokenManager: Failed to save token")
             e.printStackTrace()
-            throw e
+            throw ex
         }
     }
 
@@ -64,18 +67,19 @@ class TokenManagerImpl @Inject constructor(
             }.first()
 
             if (encryptedString == null) {
-                println("TokenManager: No token found in storage")
+                Timber.d("TokenManager: No token found in storage")
                 return null
             }
 
             val encryptedBytes = Base64.decode(encryptedString, Base64.DEFAULT)
             val decryptedBytes = aead.decrypt(encryptedBytes, null)
             val token = String(decryptedBytes, Charsets.UTF_8)
-            println("TokenManager: Token retrieved successfully (length: ${token.length})")
+            Timber.d("TokenManager: Token retrieved successfully (length: ${token.length})")
             token
         } catch (e: Exception) {
+            val ex = StorageException.TokenReadFailed(cause = e)
             // If decryption fails (corrupted data), clear the token
-            println("TokenManager: Decryption failed - clearing corrupted token: ${e.message}")
+            Timber.w(ex, "TokenManager: Decryption failed - clearing corrupted token")
             e.printStackTrace()
 
             // Clear the corrupted data
@@ -91,9 +95,10 @@ class TokenManagerImpl @Inject constructor(
             dataStore.edit { preferences ->
                 preferences.remove(AUTH_TOKEN)
             }
-            println("TokenManager: Token cleared from storage")
+            Timber.d("TokenManager: Token cleared from storage")
         } catch (e: Exception) {
-            println("TokenManager: Failed to clear token: ${e.message}")
+            val ex = StorageException.TokenSaveFailed("Failed to clear token", cause = e)
+            Timber.e(ex, "TokenManager: Failed to clear token")
             e.printStackTrace()
         }
     }
@@ -110,9 +115,10 @@ class TokenManagerImpl @Inject constructor(
                     val decryptedBytes = aead.decrypt(encryptedBytes, null)
                     String(decryptedBytes, Charsets.UTF_8)
                 } catch (e: Exception) {
+                    val ex = StorageException.TokenReadFailed("Flow decryption failed", cause = e)
                     // If decryption fails in the Flow, we can't call clearToken()
                     // (it would cause infinite loop), so just return null
-                    println("TokenManager: Flow decryption failed: ${e.message}")
+                    Timber.w(ex, "TokenManager: Flow decryption failed")
                     e.printStackTrace()
                     null
                 }
@@ -122,16 +128,17 @@ class TokenManagerImpl @Inject constructor(
 
     override suspend fun saveRefreshToken(token: String) {
         try {
-            println("TokenManager: Starting refresh token save (length: ${token.length})...")
+            Timber.d("TokenManager: Starting refresh token save (length: ${token.length})...")
             val encryptedBytes = aead.encrypt(token.toByteArray(Charsets.UTF_8), null)
             val encryptedString = Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
 
             dataStore.edit { preferences ->
                 preferences[REFRESH_TOKEN] = encryptedString
             }
-            println("TokenManager: Refresh token saved successfully")
+            Timber.d("TokenManager: Refresh token saved successfully")
         } catch (e: Exception) {
-            println("TokenManager: Failed to save refresh token: ${e.message}")
+            val ex = StorageException.TokenSaveFailed("Failed to save refresh token", cause = e)
+            Timber.e(ex, "TokenManager: Failed to save refresh token")
             e.printStackTrace()
         }
     }
@@ -140,15 +147,16 @@ class TokenManagerImpl @Inject constructor(
         return try {
             val encryptedString = dataStore.data.map { preferences ->
                 preferences[REFRESH_TOKEN]
-            }.first() ?: return null.also { println("TokenManager: No refresh token found") }
+            }.first() ?: return null.also { Timber.d("TokenManager: No refresh token found") }
 
             val encryptedBytes = Base64.decode(encryptedString, Base64.DEFAULT)
             val decryptedBytes = aead.decrypt(encryptedBytes, null)
             val token = String(decryptedBytes, Charsets.UTF_8)
-            println("TokenManager: Refresh token retrieved successfully (length: ${token.length})")
+            Timber.d("TokenManager: Refresh token retrieved successfully (length: ${token.length})")
             token
         } catch (e: Exception) {
-            println("TokenManager: Failed to decrypt refresh token: ${e.message}")
+            val ex = StorageException.TokenReadFailed("Failed to decrypt refresh token", cause = e)
+            Timber.w(ex, "TokenManager: Failed to decrypt refresh token")
             clearRefreshToken()
             null
         }
@@ -160,13 +168,14 @@ class TokenManagerImpl @Inject constructor(
                 preferences.remove(REFRESH_TOKEN)
             }
         } catch (e: Exception) {
-            println("TokenManager: Failed to clear refresh token: ${e.message}")
+            val ex = StorageException.TokenSaveFailed("Failed to clear refresh token", cause = e)
+            Timber.e(ex, "TokenManager: Failed to clear refresh token")
         }
     }
 
     override suspend fun saveTokens(accessToken: String, refreshToken: String) {
         try {
-            println("TokenManager: Starting atomic token save...")
+            Timber.d("TokenManager: Starting atomic token save...")
             val encryptedTokenBytes = aead.encrypt(accessToken.toByteArray(Charsets.UTF_8), null)
             val encryptedTokenString = Base64.encodeToString(encryptedTokenBytes, Base64.DEFAULT)
 
@@ -177,11 +186,12 @@ class TokenManagerImpl @Inject constructor(
                 preferences[AUTH_TOKEN] = encryptedTokenString
                 preferences[REFRESH_TOKEN] = encryptedRefreshString
             }
-            println("TokenManager: Atomic token save complete. Access len: ${accessToken.length}, Refresh len: ${refreshToken.length}")
+            Timber.d("TokenManager: Atomic token save complete. Access len: ${accessToken.length}, Refresh len: ${refreshToken.length}")
         } catch (e: Exception) {
-            println("TokenManager: Failed to save tokens atomically: ${e.message}")
+            val ex = StorageException.TokenSaveFailed("Failed to save tokens atomically", cause = e)
+            Timber.e(ex, "TokenManager: Failed to save tokens atomically")
             e.printStackTrace()
-            throw e
+            throw ex
         }
     }
 }

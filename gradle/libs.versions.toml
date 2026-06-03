@@ -18,6 +18,7 @@ material3 = "1.4.0"
 adaptive = "1.0.0"
 ktor = "3.0.1"
 datastore = "1.1.2"
+timber = "5.0.1"
 tink = "1.20.0"
 coil = "2.4.0"
 foundation = "1.10.0"
@@ -29,6 +30,9 @@ credentials = "1.5.0"
 googleid = "1.2.0"
 krossbow = "9.3.0"
 appcompat = "1.7.0"
+mockk = "1.13.10"
+coroutinesTest = "1.8.0"
+turbine = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -86,6 +90,13 @@ google-places = { module = "com.google.android.libraries.places:places", version
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
+
+# Testing
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

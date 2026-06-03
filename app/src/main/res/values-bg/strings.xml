@@ -27,9 +27,11 @@
     <string name="full_name">Име и фамилия</string>
 
     <string name="login">Вход</string>
+    <string name="logging_in">Влизане…</string>
     <string name="logout">Изход</string>
     <string name="logout_confirmation_text">Сигурни ли сте, че искате да излезете от профила си?</string>
     <string name="register">Регистрация</string>
+    <string name="registering">Регистриране…</string>
 
     <string name="no_account">Нямате акаунт?</string>
     <string name="have_account">Вече имате акаунт?</string>
@@ -75,7 +77,7 @@
     <string name="delete_account">Изтриване на акаунт</string>
     <string name="delete_account_confirmation">Сигурни ли сте, че искате да изтриете акаунта си? Това действие е постоянно и не може да бъде отменено.</string>
 
-    <string name="or_with">Или чрез</string>
+    <string name="or_with">или</string>
     <string name="google">Google</string>
     <string name="google_sign_up">Регистрация с Google</string>
     <string name="agree_terms">Съгласен съм с Общите условия</string>
@@ -136,7 +138,7 @@
     <string name="past">Минали</string>
     <string name="saved_short">Запазени</string>
     <string name="saved_tours">Запазени обиколки</string>
-    <string name="no_tours_created">Все още не сте създали нито една обиколка.</string>
+    <string name="no_tours_created">Нямате предстоящи обиколки.</string>
 
     <string name="back">Назад</string>
     <string name="guide_dashboard">Табло на гида</string>
@@ -219,6 +221,7 @@
     <string name="favorite">Любим</string>
     <string name="saved">Запазено</string>
     <string name="places_count">Места: %1$d / %2$d</string>
+    <string name="available_spots">Свободни места</string>
     <string name="your_guide">Вашият гид</string>
     <string name="about_this_tour">За тази обиколка</string>
 
@@ -266,5 +269,29 @@
     <string name="chat">Чат</string>
     <string name="profile">Профил</string>
     <string name="create_tour">Създай тур</string>
+
+    <!-- Forgot Password -->
+    <string name="forgot_password">Забравена Парола?</string>
+    <string name="forgot_password_title">Забравена парола?</string>
+    <string name="forgot_password_subtitle">Не се притеснявай, случва се.\nВъведи имейла си, за да промениш паролата си.</string>
+    <string name="send">Изпрати</string>
+    <string name="sending">Изпраща се…</string>
+    <string name="remember_password">Помните паролата?</string>
+    <string name="log_in">Вход</string>
+
+    <!-- Reset Password -->
+    <string name="reset_password_title">Промяна на Парола</string>
+    <string name="reset_password_subtitle">Въведете новата си парола по-долу.</string>
+    <string name="new_password_label">Нова Парола</string>
+    <string name="confirm_new_password">Потвърждаване на новата парола</string>
+    <string name="reset_password">Промяна на парола</string>
+    <string name="resetting">Променя се…</string>
+    <string name="password_reset_success">Паролата Ви беше успешно променена!</string>
+
+    <!-- OTP verification for password reset -->
+    <string name="check_your_email">Проверете имейла си</string>
+    <string name="otp_sent_subtitle">Изпратихме ви 6-цифрен код на %1$s.\nВъведете го по-долу, за да потвърдите.</string>
+    <string name="reset_code_success">Кодът е потвърден! Задайте новата си парола</string>
+
 
 </resources>
