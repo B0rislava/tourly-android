@@ -1,9 +1,14 @@
 package com.tourly.app.profile.presentation.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -60,6 +65,8 @@ fun EditProfileContent(
     modifier: Modifier = Modifier
 ) {
 
+    val context = LocalContext.current
+
     var pendingImageUri by remember { mutableStateOf<Uri?>(null) }
 
     if (pendingImageUri != null) {
@@ -84,6 +91,22 @@ fun EditProfileContent(
         }
     )
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            photoPickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+    }
+
+    val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -96,11 +119,20 @@ fun EditProfileContent(
         // Profile Picture
         Box(
             modifier = Modifier.clickable {
-                photoPickerLauncher.launch(
-                    PickVisualMediaRequest(
-                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                val isGranted = ContextCompat.checkSelfPermission(
+                    context,
+                    permissionToRequest
+                ) == PackageManager.PERMISSION_GRANTED
+
+                if (isGranted) {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
                     )
-                )
+                } else {
+                    permissionLauncher.launch(permissionToRequest)
+                }
             }
         ) {
             UserAvatar(

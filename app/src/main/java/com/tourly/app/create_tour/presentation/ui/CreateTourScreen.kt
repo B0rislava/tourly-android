@@ -1,9 +1,14 @@
 package com.tourly.app.create_tour.presentation.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -32,6 +37,8 @@ fun CreateTourScreen(
     val uiState by viewModel.uiState.collectAsState()
     val addressPredictions by viewModel.addressPredictions.collectAsState()
 
+    val context = LocalContext.current
+
     var pendingImageUri by remember { mutableStateOf<Uri?>(null) }
 
     if (pendingImageUri != null) {
@@ -56,6 +63,22 @@ fun CreateTourScreen(
         if (uri != null) {
             pendingImageUri = uri
         }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            imagePickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+    }
+
+    val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
     }
 
     LaunchedEffect(Unit) {
@@ -92,9 +115,18 @@ fun CreateTourScreen(
         onStartTimeChanged = viewModel::onStartTimeChanged,
         onTagToggled = viewModel::onTagToggled,
         onImageSelected = {
-            imagePickerLauncher.launch(
-                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-            )
+            val isGranted = ContextCompat.checkSelfPermission(
+                context,
+                permissionToRequest
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (isGranted) {
+                imagePickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            } else {
+                permissionLauncher.launch(permissionToRequest)
+            }
         },
         onLocationPredictionClick = viewModel::onLocationSelected,
         addressPredictions = addressPredictions,
