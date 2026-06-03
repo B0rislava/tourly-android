@@ -23,48 +23,106 @@ import com.tourly.app.core.presentation.ui.components.foundation.shimmerEffect
 @Composable
 fun ProfileSkeleton(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier.fillMaxSize().padding(top = 16.dp)
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
-        // Avatar placeholder
-        Box(modifier = Modifier.size(100.dp).clip(CircleShape).shimmerEffect())
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Name
-        Box(modifier = Modifier.fillMaxWidth(0.5f).height(28.dp).clip(RoundedCornerShape(8.dp)).shimmerEffect())
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Role/Email
-        Box(modifier = Modifier.fillMaxWidth(0.3f).height(16.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Stats row placeholder
+        // --- Row 1: Avatar + Name & Stats ---
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            repeat(3) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(modifier = Modifier.width(40.dp).height(24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(modifier = Modifier.width(60.dp).height(16.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            // Avatar circle
+            Box(modifier = Modifier.size(80.dp).clip(CircleShape).shimmerEffect())
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Name + stats column
+            Column(verticalArrangement = Arrangement.Center) {
+                // Name line
+                Box(modifier = Modifier.width(140.dp).height(22.dp).clip(RoundedCornerShape(6.dp)).shimmerEffect())
+                Spacer(modifier = Modifier.height(10.dp))
+                // Stats row (tours + followers)
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Column {
+                        Box(modifier = Modifier.width(30.dp).height(18.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(modifier = Modifier.width(70.dp).height(12.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+                    }
+                    Column {
+                        Box(modifier = Modifier.width(30.dp).height(18.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(modifier = Modifier.width(60.dp).height(12.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        // --- Row 2: Star rating + numeric rating + review count ---
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // 5 star placeholders
+            Box(modifier = Modifier.width(110.dp).height(20.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Box(modifier = Modifier.width(32.dp).height(20.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Box(modifier = Modifier.width(60.dp).height(16.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+        }
 
-        // Bio or generic content
-        Box(modifier = Modifier.fillMaxWidth().height(16.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-        Spacer(modifier = Modifier.height(8.dp))
-        Box(modifier = Modifier.fillMaxWidth(0.8f).height(16.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-        Spacer(modifier = Modifier.height(8.dp))
-        Box(modifier = Modifier.fillMaxWidth(0.6f).height(16.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(32.dp))
+        // --- Follow button placeholder ---
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(44.dp)
+                .clip(RoundedCornerShape(50.dp))
+                .shimmerEffect()
+        )
 
-        // Tours / Bottom tabs
-        Box(modifier = Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(16.dp)).shimmerEffect())
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // --- About Me section ---
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+            // Section title
+            Box(modifier = Modifier.width(80.dp).height(18.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = Modifier.height(8.dp))
+            // Bio lines
+            Box(modifier = Modifier.fillMaxWidth().height(14.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = Modifier.height(6.dp))
+            Box(modifier = Modifier.fillMaxWidth(0.85f).height(14.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = Modifier.height(6.dp))
+            Box(modifier = Modifier.fillMaxWidth(0.65f).height(14.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // --- Segmented control (Feed / Reviews tabs) ---
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(48.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // --- Tour card placeholders ---
+        repeat(2) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .height(130.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .shimmerEffect()
+            )
+        }
     }
 }

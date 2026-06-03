@@ -16,20 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.StarHalf
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarOutline
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,7 +34,6 @@ import com.tourly.app.core.domain.model.User
 import com.tourly.app.core.presentation.ui.theme.OutfitFamily
 import com.tourly.app.dashboard.presentation.ui.components.GuideReviewCard
 import com.tourly.app.login.domain.UserRole
-import java.util.Locale.getDefault
 
 @Composable
 fun TravelerProfileContent(
@@ -121,49 +113,7 @@ fun TravelerProfileContent(
             }
         }
         
-        // Stars Rating Row
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Draw 5 stars
-                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                    for (i in 1..5) {
-                        val icon = when {
-                            user.rating >= i -> Icons.Default.Star
-                            user.rating >= i - 0.5 -> Icons.AutoMirrored.Filled.StarHalf
-                            else -> Icons.Default.StarOutline
-                        }
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = Color(0xFFFFB800), // Gold color
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-                
-                Text(
-                    text = String.format(getDefault(), "%.1f", user.rating),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontFamily = OutfitFamily,
-                    fontWeight = FontWeight.Bold
-                )
-                
-                Text(
-                    text = "(${pluralStringResource(id = R.plurals.reviews_label, count = user.reviewsCount, user.reviewsCount)})",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontFamily = OutfitFamily,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
+        // No Stars Rating for Traveler
         // Bio
         item {
             if (!user.bio.isNullOrBlank()) {

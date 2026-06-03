@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.lifecycle.SavedStateHandle
 import com.tourly.app.R
+import com.tourly.app.core.domain.model.Review
+import com.tourly.app.core.domain.model.Tour
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -131,24 +133,34 @@ class UserViewModel @Inject constructor(
 
     private suspend fun fetchUserProfile() {
         val currentState = _uiState.value
-        // If we are currently showing someone else's profile, we MUST reload everything
-        if (currentState !is UserUiState.Success || !currentState.isOwnProfile) {
+        if (currentState !is UserUiState.Success) {
             _uiState.value = UserUiState.Loading
         }
         
         when (val result = getUserProfileUseCase()) {
             is Result.Success -> {
                 val user = result.data
+                
+                var fetchedTours: List<Tour> = emptyList()
+                var fetchedReviews: List<Review> = emptyList()
+                
+                if (user.role == UserRole.GUIDE) {
+                    when (val toursResult = getMyToursUseCase()) {
+                        is Result.Success -> fetchedTours = toursResult.data
+                        is Result.Error -> _events.emit(UserEvent.Message(toursResult.message ?: "Failed to fetch tours"))
+                    }
+                    when (val reviewsResult = getGuideReviewsUseCase(user.id)) {
+                        is Result.Success -> fetchedReviews = reviewsResult.data
+                        is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
+                    }
+                }
+
                 _uiState.value = UserUiState.Success(
                     user = user,
                     isOwnProfile = true, // Always true for this method
-                    tours = if (user.role == UserRole.GUIDE) (currentState as? UserUiState.Success)?.tours ?: emptyList() else emptyList()
+                    tours = fetchedTours,
+                    reviews = fetchedReviews
                 )
-                
-                if (user.role == UserRole.GUIDE) {
-                    fetchTours()
-                    fetchGuideReviews(user.id)
-                }
             }
             is Result.Error -> {
                 _uiState.value = UserUiState.Error(result.message)
@@ -159,18 +171,33 @@ class UserViewModel @Inject constructor(
 
     fun fetchOtherUserProfile(userId: Long) {
         viewModelScope.launch {
-            _uiState.value = UserUiState.Loading
+            if (_uiState.value !is UserUiState.Success) {
+                _uiState.value = UserUiState.Loading
+            }
             when (val result = getUserProfileByIdUseCase(userId)) {
                 is Result.Success -> {
                     val user = result.data
+                    
+                    var fetchedTours: List<Tour> = emptyList()
+                    var fetchedReviews: List<Review> = emptyList()
+                    
+                    if (user.role == UserRole.GUIDE) {
+                        when (val toursResult = getUserToursUseCase(userId)) {
+                            is Result.Success -> fetchedTours = toursResult.data
+                            is Result.Error -> _events.emit(UserEvent.Message(toursResult.message ?: "Failed to fetch tours"))
+                        }
+                        when (val reviewsResult = getGuideReviewsUseCase(userId)) {
+                            is Result.Success -> fetchedReviews = reviewsResult.data
+                            is Result.Error -> _events.emit(UserEvent.Message(reviewsResult.message ?: "Failed to fetch reviews"))
+                        }
+                    }
+
                     _uiState.value = UserUiState.Success(
                         user = user,
-                        isOwnProfile = false
+                        isOwnProfile = false,
+                        tours = fetchedTours,
+                        reviews = fetchedReviews
                     )
-                    if (user.role == UserRole.GUIDE) {
-                        fetchOtherUserTours(userId)
-                        fetchGuideReviews(userId)
-                    }
                 }
                 is Result.Error -> {
                     _uiState.value = UserUiState.Error(result.message)
@@ -189,20 +216,6 @@ class UserViewModel @Inject constructor(
             }
             is Result.Error -> {
                 _events.emit(UserEvent.Message(result.message ?: "Failed to fetch tours"))
-            }
-        }
-    }
-
-    private suspend fun fetchGuideReviews(guideId: Long) {
-        when (val result = getGuideReviewsUseCase(guideId)) {
-            is Result.Success -> {
-                val current = _uiState.value
-                if (current is UserUiState.Success) {
-                    _uiState.value = current.copy(reviews = result.data)
-                }
-            }
-            is Result.Error -> {
-                _events.emit(UserEvent.Message(result.message ?: "Failed to fetch reviews"))
             }
         }
     }

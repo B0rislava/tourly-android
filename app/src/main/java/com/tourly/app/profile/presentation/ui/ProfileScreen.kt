@@ -7,13 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,12 +54,15 @@ fun ProfileScreen(
 
     val isOtherProfile = userId != null && userId != -1L
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .padding(top = 16.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(top = 16.dp)
+        ) {
             // Header without app-bar background (matches "My tours" / "Your group chats").
             Row(
                 modifier = Modifier
@@ -120,16 +123,23 @@ fun ProfileScreen(
                         ProfileSkeleton()
                     }
                     is UserUiState.Success -> {
-                        ProfileContent(
-                            user = state.user,
-                            isOwnProfile = state.isOwnProfile,
-                            onBackClick = onBackClick,
-                            isSavingAvatar = state.isSavingAvatar,
-                            tours = state.tours,
-                            reviews = state.reviews,
-                            onFollowClick = { userViewModel.toggleFollow() },
-                            onTourClick = onTourClick
-                        )
+                        val isStale = (isOtherProfile == state.isOwnProfile) || 
+                                      (isOtherProfile && userId != state.user.id)
+                        
+                        if (isStale) {
+                            ProfileSkeleton()
+                        } else {
+                            ProfileContent(
+                                user = state.user,
+                                isOwnProfile = state.isOwnProfile,
+                                onBackClick = onBackClick,
+                                isSavingAvatar = state.isSavingAvatar,
+                                tours = state.tours,
+                                reviews = state.reviews,
+                                onFollowClick = { userViewModel.toggleFollow() },
+                                onTourClick = onTourClick
+                            )
+                        }
                     }
                     is UserUiState.Error -> {
                         Text(
@@ -142,6 +152,7 @@ fun ProfileScreen(
             }
         }
     }
+}
 
 
 @Preview(showBackground = true)

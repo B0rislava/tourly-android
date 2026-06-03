@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.tourly.app.core.presentation.ui.GuideMainScreen
 import com.tourly.app.home.presentation.ui.TourDetailsScreen
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.tourly.app.home.presentation.viewmodel.TourDetailsViewModel
 import com.tourly.app.login.domain.UserRole
 import com.tourly.app.core.presentation.ui.utils.rememberWindowSizeState
@@ -30,6 +31,7 @@ import com.tourly.app.notifications.presentation.ui.NotificationScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.tourly.app.core.presentation.ui.components.BottomNavDestination
 import com.tourly.app.settings.presentation.ui.ChangePasswordScreen
 import com.tourly.app.settings.presentation.ui.EditProfileScreen
@@ -312,6 +314,7 @@ fun NavigationRoot(
                         is Route.Profile -> {
                             NavEntry(key) {
                                 ProfileScreen(
+                                    modifier = Modifier.statusBarsPadding(),
                                     userId = key.userId,
                                     onTourClick = { tourId ->
                                         backStack.add(Route.TourDetails(tourId))
