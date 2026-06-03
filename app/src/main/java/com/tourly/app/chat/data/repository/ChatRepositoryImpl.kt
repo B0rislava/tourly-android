@@ -9,6 +9,7 @@ import com.tourly.app.core.domain.usecase.GetUserProfileUseCase
 import com.tourly.app.home.domain.usecase.GetTourDetailsUseCase
 import com.tourly.app.core.network.NetworkResponseMapper
 import com.tourly.app.core.network.Result
+import com.tourly.app.core.util.DateUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +39,6 @@ import java.util.UUID.randomUUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import timber.log.Timber
-import java.time.format.DateTimeParseException
 
 @Singleton
 class ChatRepositoryImpl @Inject constructor(
@@ -263,11 +263,7 @@ class ChatRepositoryImpl @Inject constructor(
             senderId = dto.senderId,
             senderName = dto.senderName,
             content = dto.content,
-            timestamp = try {
-                LocalDateTime.parse(dto.timestamp)
-            } catch (e: DateTimeParseException) {
-                LocalDateTime.now()
-            },
+            timestamp = DateUtils.parseUtcToLocal(dto.timestamp),
             isFromMe = isFromMe,
             isGuide = isGuide
         )

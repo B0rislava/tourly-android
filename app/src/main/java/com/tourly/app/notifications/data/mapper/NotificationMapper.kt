@@ -1,9 +1,8 @@
 package com.tourly.app.notifications.data.mapper
 
+import com.tourly.app.core.util.DateUtils
 import com.tourly.app.notifications.data.remote.dto.NotificationDto
 import com.tourly.app.notifications.domain.model.Notification
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 fun NotificationDto.toDomain(): Notification {
     return Notification(
@@ -11,7 +10,7 @@ fun NotificationDto.toDomain(): Notification {
         title = title,
         message = message,
         isRead = isRead,
-        createdAt = LocalDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME),
+        createdAt = DateUtils.parseUtcToLocal(createdAt),
         type = type,
         relatedId = relatedId
     )
